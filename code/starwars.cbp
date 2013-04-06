@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="starwars" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Win32 Release">
+				<Option output="./Release/jk2sp" prefix_auto="1" extension_auto="1" />
+				<Option object_output="./Release/exe" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-fexceptions" />
+					<Add option="-O2" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-mcpu=pentiumpro -D_M_IX86=600" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-D_JK2EXE" />
+					<Add option="-D_IMMERSION" />
+					<Add option="-D_FF" />
+					<Add directory="ff/ifc" />
+				</Compiler>
+				<Linker>
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="odbc32" />
+					<Add library="odbccp32" />
+					<Add library="ALut" />
+					<Add library="OpenAL32" />
+					<Add library="winmm" />
+					<Add library="wsock32" />
+					<Add library="ff/ifc/ifc22" />
+				</Linker>
+			</Target>
+			<Target title="Win32 Debug">
+				<Option output="./Debug/jk2sp" prefix_auto="1" extension_auto="1" />
+				<Option object_output="./Debug/exe" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-fexceptions" />
+					<Add option="-g" />
+					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-mcpu=pentiumpro -D_M_IX86=600" />
+					<Add option="-Wall" />
+					<Add option="-D_JK2EXE" />
+					<Add option="-D_IMMERSION" />
+					<Add option="-D_FF" />
+					<Add directory="ff/ifc" />
+				</Compiler>
+				<Linker>
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="odbc32" />
+					<Add library="odbccp32" />
+					<Add library="ALut" />
+					<Add library="OpenAL32" />
+					<Add library="winmm" />
+					<Add library="wsock32" />
+					<Add library="ff/ifc/ifc22" />
+				</Linker>
+			</Target>
+			<Target title="Win32 FinalBuild">
+				<Option output="./FinalBuild/jk2sp" prefix_auto="1" extension_auto="1" />
+				<Option object_output="./FinalBuild/exe" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-mcpu=pentiumpro -D_M_IX86=600" />
+					<Add option="-Wall" />
+					<Add option="-fexceptions" />
+					<Add option="-g" />
+					<Add option="-O2" />
+					<Add option="-DNDEBUG" />
+					<Add option="-DWIN32" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-D__USEA3D" />
+					<Add option="-D__A3D_GEOM" />
+					<Add option="-DFINAL_BUILD" />
+					<Add option="-D_JK2EXE" />
+					<Add option="-D_IMMERSION" />
+					<Add option="-D_FF" />
+					<Add directory="ff/ifc" />
+				</Compiler>
+				<Linker>
+					<Add library="advapi32" />
+					<Add library="winmm" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="ole32" />
+					<Add library="wsock32" />
+					<Add library="ALut" />
+					<Add library="OpenAL32" />
+					<Add library="ff/ifc/ifc22" />
+				</Linker>
+			</Target>
+			<Target title="Win32 SHDebug">
+				<Option output="./SHDebug/jk2sp" prefix_auto="1" extension_auto="1" />
+				<Option object_output="./SHDebug/exe" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-mcpu=pentiumpro -D_M_IX86=600" />
+					<Add option="-Wall" />
+					<Add option="-fexceptions" />
+					<Add option="-g" />
+					<Add option="-D_NPATCH" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_JK2EXE" />
+					<Add option="-DWIN32" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-DMEM_DEBUG" />
+					<Add option="-D_IMMERSION" />
+					<Add option="-D_FF" />
+					<Add directory="ff/ifc" />
+				</Compiler>
+				<Linker>
+					<Add library="ALut" />
+					<Add library="OpenAL32" />
+					<Add library="win32/FeelIt/ffc10d" />
+					<Add library="advapi32" />
+					<Add library="winmm" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="ole32" />
+					<Add library="wsock32" />
+					<Add library="ff/ifc/ifc22" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="0_compiled_first/0_SH_Leak.cpp">
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="client/eax/eax.h" />
+		<Unit filename="client/eax/EaxMan.h" />
+		<Unit filename="client/OpenAL/al.h" />
+		<Unit filename="client/OpenAL/alc.h" />
+		<Unit filename="client/OpenAL/alctypes.h" />
+		<Unit filename="client/OpenAL/altypes.h" />
+		<Unit filename="client/OpenAL/alu.h" />
+		<Unit filename="client/OpenAL/alut.h" />
+		<Unit filename="SHDebug/HA312W32.DLL">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+		</Unit>
+		<Unit filename="smartheap/HEAPAGNT.H">
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="SHDebug/SHW32.DLL" />
+		<Unit filename="smartheap/SMRTHEAP.C">
+			<Option compilerVar="CC" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="smartheap/SMRTHEAP.H">
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="smartheap/smrtheap.hpp">
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="smartheap/HAW32M.LIB">
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="client/cl_cgame.cpp" />
+		<Unit filename="client/cl_cin.cpp" />
+		<Unit filename="client/cl_console.cpp" />
+		<Unit filename="client/cl_input.cpp" />
+		<Unit filename="client/cl_keys.cpp" />
+		<Unit filename="client/cl_main.cpp" />
+		<Unit filename="client/cl_mp3.cpp" />
+		<Unit filename="client/cl_parse.cpp" />
+		<Unit filename="client/cl_scrn.cpp" />
+		<Unit filename="client/cl_ui.cpp" />
+		<Unit filename="qcommon/cm_load.cpp" />
+		<Unit filename="qcommon/cm_patch.cpp" />
+		<Unit filename="qcommon/cm_polylib.cpp" />
+		<Unit filename="qcommon/cm_test.cpp" />
+		<Unit filename="qcommon/cm_trace.cpp" />
+		<Unit filename="qcommon/cmd.cpp" />
+		<Unit filename="qcommon/common.cpp" />
+		<Unit filename="qcommon/cvar.cpp" />
+		<Unit filename="server/exe_headers.cpp" />
+		<Unit filename="qcommon/files.cpp" />
+		<Unit filename="game/genericparser2.cpp" />
+		<Unit filename="qcommon/hstring.cpp" />
+		<Unit filename="qcommon/md4.cpp" />
+		<Unit filename="qcommon/msg.cpp" />
+		<Unit filename="qcommon/net_chan.cpp" />
+		<Unit filename="game/q_math.cpp" />
+		<Unit filename="game/q_shared.cpp" />
+		<Unit filename="client/snd_ambient.cpp" />
+		<Unit filename="client/snd_dma.cpp" />
+		<Unit filename="client/snd_mem.cpp" />
+		<Unit filename="client/snd_mix.cpp" />
+		<Unit filename="client/snd_music.cpp" />
+		<Unit filename="qcommon/strip.cpp" />
+		<Unit filename="server/sv_ccmds.cpp" />
+		<Unit filename="server/sv_client.cpp" />
+		<Unit filename="server/sv_game.cpp" />
+		<Unit filename="server/sv_init.cpp" />
+		<Unit filename="server/sv_main.cpp" />
+		<Unit filename="server/sv_savegame.cpp" />
+		<Unit filename="server/sv_snapshot.cpp" />
+		<Unit filename="server/sv_world.cpp" />
+		<Unit filename="qcommon/unzip.cpp" />
+		<Unit filename="client/vmachine.cpp" />
+		<Unit filename="win32/win_input.cpp" />
+		<Unit filename="win32/win_main.cpp" />
+		<Unit filename="win32/win_shared.cpp" />
+		<Unit filename="win32/win_snd.cpp" />
+		<Unit filename="win32/win_syscon.cpp" />
+		<Unit filename="win32/win_video.cpp" />
+		<Unit filename="win32/win_wndproc.cpp" />
+		<Unit filename="game/anims.h" />
+		<Unit filename="game/b_public.h" />
+		<Unit filename="game/bg_public.h" />
+		<Unit filename="Icarus/BlockStream.h" />
+		<Unit filename="game/bset.h" />
+		<Unit filename="game/bstate.h" />
+		<Unit filename="cgame/cg_public.h" />
+		<Unit filename="client/cl_mp3.h" />
+		<Unit filename="client/client.h" />
+		<Unit filename="client/client_ui.h" />
+		<Unit filename="qcommon/cm_local.h" />
+		<Unit filename="qcommon/cm_patch.h" />
+		<Unit filename="qcommon/cm_polylib.h" />
+		<Unit filename="qcommon/cm_public.h" />
+		<Unit filename="game/common_headers.h" />
+		<Unit filename="server/exe_headers.h" />
+		<Unit filename="client/fffx.h" />
+		<Unit filename="game/g_functions.h" />
+		<Unit filename="game/g_items.h" />
+		<Unit filename="game/g_local.h" />
+		<Unit filename="game/g_nav.h" />
+		<Unit filename="game/g_public.h" />
+		<Unit filename="game/g_shared.h" />
+		<Unit filename="game/genericparser2.h" />
+		<Unit filename="qcommon/hstring.h" />
+		<Unit filename="Icarus/ICARUS.h" />
+		<Unit filename="Icarus/Instance.h" />
+		<Unit filename="Icarus/interface.h" />
+		<Unit filename="Icarus/Interpreter.h" />
+		<Unit filename="client/keys.h" />
+		<Unit filename="Icarus/sequence.h" />
+		<Unit filename="Icarus/Sequencer.h" />
+		<Unit filename="server/server.h" />
+		<Unit filename="client/snd_ambient.h" />
+		<Unit filename="client/snd_local.h" />
+		<Unit filename="client/snd_music.h" />
+		<Unit filename="client/snd_public.h" />
+		<Unit filename="qcommon/sstring.h" />
+		<Unit filename="game/statindex.h" />
+		<Unit filename="qcommon/strip.h" />
+		<Unit filename="qcommon/stripPublic.h" />
+		<Unit filename="Icarus/TaskManager.h" />
+		<Unit filename="game/teams.h" />
+		<Unit filename="Icarus/Tokenizer.h" />
+		<Unit filename="qcommon/unzip.h" />
+		<Unit filename="client/vmachine.h" />
+		<Unit filename="game/weapons.h" />
+		<Unit filename="win32/win_local.h" />
+		<Unit filename="win32/background.bmp" />
+		<Unit filename="win32/clear.bmp" />
+		<Unit filename="EaxMan.dll" />
+		<Unit filename="FFC10.dll" />
+		<Unit filename="FFC10d.dll" />
+		<Unit filename="OpenAL32.dll" />
+		<Unit filename="win32/resource.h" />
+		<Unit filename="win32/starwars.ico" />
+		<Unit filename="win32/winquake.rc" />
+		<Unit filename="ALut.lib" />
+		<Unit filename="OpenAL32.lib" />
+		<Unit filename="mp3code/config.h" />
+		<Unit filename="mp3code/copyright.h" />
+		<Unit filename="mp3code/htable.h" />
+		<Unit filename="mp3code/jdw.h" />
+		<Unit filename="mp3code/L3.h" />
+		<Unit filename="mp3code/mhead.h" />
+		<Unit filename="mp3code/mp3struct.h" />
+		<Unit filename="mp3code/port.h" />
+		<Unit filename="mp3code/small_header.h" />
+		<Unit filename="mp3code/tableawd.h" />
+		<Unit filename="mp3code/cdct.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/csbt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/csbtb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/csbtL3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/cup.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/cupini.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/cupL1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/cupl3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/cwin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/cwinb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/cwinm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/hwin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/l3dq.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/l3init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/mdct.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/mhead.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/msis.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/towave.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/uph.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/upsf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mp3code/wavep.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="win32/FeelIt/FeelBaseTypes.h" />
+		<Unit filename="win32/FeelIt/FeelBox.h" />
+		<Unit filename="win32/FeelIt/FeelCompoundEffect.h" />
+		<Unit filename="win32/FeelIt/FeelCondition.h" />
+		<Unit filename="win32/FeelIt/FeelConstant.h" />
+		<Unit filename="win32/FeelIt/FeelDamper.h" />
+		<Unit filename="win32/FeelIt/FeelDevice.h" />
+		<Unit filename="win32/FeelIt/FeelDXDevice.h" />
+		<Unit filename="win32/FeelIt/FeelEffect.h" />
+		<Unit filename="win32/FeelIt/FeelEllipse.h" />
+		<Unit filename="win32/FeelIt/FeelEnclosure.h" />
+		<Unit filename="win32/FeelIt/FeelFriction.h" />
+		<Unit filename="win32/FeelIt/FeelGrid.h" />
+		<Unit filename="win32/FeelIt/FeelInertia.h" />
+		<Unit filename="win32/FeelIt/FeelitAPI.h" />
+		<Unit filename="win32/FeelIt/FEELitIFR.h" />
+		<Unit filename="win32/FeelIt/FeelMouse.h" />
+		<Unit filename="win32/FeelIt/FeelPeriodic.h" />
+		<Unit filename="win32/FeelIt/FeelProjects.h" />
+		<Unit filename="win32/FeelIt/FeelRamp.h" />
+		<Unit filename="win32/FeelIt/FeelSpring.h" />
+		<Unit filename="win32/FeelIt/FeelTexture.h" />
+		<Unit filename="win32/FeelIt/FFC.h" />
+		<Unit filename="win32/FeelIt/FFCErrors.h" />
+		<Unit filename="win32/FeelIt/fffx_feel.h" />
+		<Unit filename="win32/FeelIt/FFC10.dll" />
+		<Unit filename="win32/FeelIt/FFC10d.dll" />
+		<Unit filename="win32/FeelIt/FFC10d.lib" />
+		<Unit filename="win32/FeelIt/FFC10.lib" />
+		<Unit filename="win32/FeelIt/fffx.cpp" />
+		<Unit filename="win32/FeelIt/fffx_feel.cpp" />
+		<Unit filename="ghoul2/G2.h" />
+		<Unit filename="ghoul2/G2_API.cpp" />
+		<Unit filename="ghoul2/G2_bolts.cpp" />
+		<Unit filename="ghoul2/G2_bones.cpp" />
+		<Unit filename="ghoul2/G2_misc.cpp" />
+		<Unit filename="ghoul2/G2_surfaces.cpp" />
+		<Unit filename="game/ghoul2_shared.h" />
+		<Unit filename="renderer/matcomp.h" />
+		<Unit filename="renderer/mdx_format.h" />
+		<Unit filename="qcommon/MiniHeap.h" />
+		<Unit filename="renderer/glext.h" />
+		<Unit filename="win32/glw_win.h" />
+		<Unit filename="renderer/qgl.h" />
+		<Unit filename="renderer/tr_font.h" />
+		<Unit filename="renderer/tr_jpeg_interface.h" />
+		<Unit filename="renderer/tr_local.h" />
+		<Unit filename="renderer/tr_public.h" />
+		<Unit filename="renderer/tr_quicksprite.h" />
+		<Unit filename="renderer/tr_stl.h" />
+		<Unit filename="renderer/tr_types.h" />
+		<Unit filename="renderer/tr_WorldEffects.h" />
+		<Unit filename="renderer/MatComp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="renderer/tr_animation.cpp" />
+		<Unit filename="renderer/tr_backend.cpp" />
+		<Unit filename="renderer/tr_bsp.cpp" />
+		<Unit filename="renderer/tr_cmds.cpp" />
+		<Unit filename="renderer/tr_curve.cpp" />
+		<Unit filename="renderer/tr_draw.cpp" />
+		<Unit filename="renderer/tr_font.cpp" />
+		<Unit filename="renderer/tr_ghoul2.cpp" />
+		<Unit filename="renderer/tr_image.cpp" />
+		<Unit filename="renderer/tr_init.cpp" />
+		<Unit filename="renderer/tr_jpeg_interface.cpp" />
+		<Unit filename="renderer/tr_light.cpp" />
+		<Unit filename="renderer/tr_main.cpp" />
+		<Unit filename="renderer/tr_marks.cpp" />
+		<Unit filename="renderer/tr_mesh.cpp" />
+		<Unit filename="renderer/tr_model.cpp" />
+		<Unit filename="renderer/tr_noise.cpp" />
+		<Unit filename="renderer/tr_quicksprite.cpp" />
+		<Unit filename="renderer/tr_scene.cpp" />
+		<Unit filename="renderer/tr_shade.cpp" />
+		<Unit filename="renderer/tr_shade_calc.cpp" />
+		<Unit filename="renderer/tr_shader.cpp" />
+		<Unit filename="renderer/tr_shadows.cpp" />
+		<Unit filename="renderer/tr_sky.cpp" />
+		<Unit filename="renderer/tr_stl.cpp" />
+		<Unit filename="renderer/tr_surface.cpp" />
+		<Unit filename="renderer/tr_surfacesprites.cpp" />
+		<Unit filename="renderer/tr_world.cpp" />
+		<Unit filename="renderer/tr_WorldEffects.cpp" />
+		<Unit filename="win32/win_gamma.cpp" />
+		<Unit filename="win32/win_glimp.cpp" />
+		<Unit filename="win32/win_qgl.cpp" />
+		<Unit filename="game/channels.h" />
+		<Unit filename="ui/gameinfo.h" />
+		<Unit filename="client/keycodes.h" />
+		<Unit filename="ui/menudef.h" />
+		<Unit filename="game/q_shared.h" />
+		<Unit filename="qcommon/qcommon.h" />
+		<Unit filename="qcommon/qfiles.h" />
+		<Unit filename="qcommon/stv_version.h" />
+		<Unit filename="game/surfaceflags.h" />
+		<Unit filename="qcommon/tags.h" />
+		<Unit filename="ui/ui_local.h" />
+		<Unit filename="ui/ui_playerinfo.h" />
+		<Unit filename="ui/ui_public.h" />
+		<Unit filename="ui/ui_shared.h" />
+		<Unit filename="ui/ui_atoms.cpp" />
+		<Unit filename="ui/ui_connect.cpp" />
+		<Unit filename="ui/ui_debug.cpp" />
+		<Unit filename="ui/ui_main.cpp" />
+		<Unit filename="ui/ui_shared.cpp" />
+		<Unit filename="ui/ui_syscalls.cpp" />
+		<Unit filename="jpeg-6/jcapimin.cpp" />
+		<Unit filename="jpeg-6/jccoefct.cpp" />
+		<Unit filename="jpeg-6/jccolor.cpp" />
+		<Unit filename="jpeg-6/jcdctmgr.cpp" />
+		<Unit filename="jpeg-6/jchuff.cpp" />
+		<Unit filename="jpeg-6/jchuff.h" />
+		<Unit filename="jpeg-6/jcinit.cpp" />
+		<Unit filename="jpeg-6/jcmainct.cpp" />
+		<Unit filename="jpeg-6/jcmarker.cpp" />
+		<Unit filename="jpeg-6/jcmaster.cpp" />
+		<Unit filename="jpeg-6/jcomapi.cpp" />
+		<Unit filename="jpeg-6/jconfig.h" />
+		<Unit filename="jpeg-6/jcparam.cpp" />
+		<Unit filename="jpeg-6/jcphuff.cpp" />
+		<Unit filename="jpeg-6/jcprepct.cpp" />
+		<Unit filename="jpeg-6/jcsample.cpp" />
+		<Unit filename="jpeg-6/jctrans.cpp" />
+		<Unit filename="jpeg-6/jdapimin.cpp" />
+		<Unit filename="jpeg-6/jdapistd.cpp" />
+		<Unit filename="jpeg-6/jdatadst.cpp" />
+		<Unit filename="jpeg-6/jdatasrc.cpp" />
+		<Unit filename="jpeg-6/jdcoefct.cpp" />
+		<Unit filename="jpeg-6/jdcolor.cpp" />
+		<Unit filename="jpeg-6/jdct.h" />
+		<Unit filename="jpeg-6/jddctmgr.cpp" />
+		<Unit filename="jpeg-6/jdhuff.cpp" />
+		<Unit filename="jpeg-6/jdhuff.h" />
+		<Unit filename="jpeg-6/jdinput.cpp" />
+		<Unit filename="jpeg-6/jdmainct.cpp" />
+		<Unit filename="jpeg-6/jdmarker.cpp" />
+		<Unit filename="jpeg-6/jdmaster.cpp" />
+		<Unit filename="jpeg-6/jdpostct.cpp" />
+		<Unit filename="jpeg-6/jdsample.cpp" />
+		<Unit filename="jpeg-6/jdtrans.cpp" />
+		<Unit filename="jpeg-6/jerror.cpp" />
+		<Unit filename="jpeg-6/jerror.h" />
+		<Unit filename="jpeg-6/jfdctflt.cpp" />
+		<Unit filename="jpeg-6/jidctflt.cpp" />
+		<Unit filename="jpeg-6/jinclude.h" />
+		<Unit filename="jpeg-6/jmemmgr.cpp" />
+		<Unit filename="jpeg-6/jmemnobs.cpp" />
+		<Unit filename="jpeg-6/jmemsys.h" />
+		<Unit filename="jpeg-6/jmorecfg.h" />
+		<Unit filename="jpeg-6/jpegint.h" />
+		<Unit filename="jpeg-6/jpeglib.h" />
+		<Unit filename="jpeg-6/jutils.cpp" />
+		<Unit filename="jpeg-6/jversion.h" />
+		<Unit filename="encryption/buffer.cpp" />
+		<Unit filename="encryption/buffer.h" />
+		<Unit filename="encryption/cpp_interface.cpp" />
+		<Unit filename="encryption/cpp_interface.h" />
+		<Unit filename="encryption/encryption.h" />
+		<Unit filename="encryption/sockets.cpp" />
+		<Unit filename="encryption/sockets.h" />
+		<Unit filename="ff/IFC/FeelitAPI.h" />
+		<Unit filename="ff/IFC/IFC.h" />
+		<Unit filename="ff/IFC/IFCErrors.h" />
+		<Unit filename="ff/IFC/ImmBaseTypes.h" />
+		<Unit filename="ff/IFC/ImmBox.h" />
+		<Unit filename="ff/IFC/ImmCompoundEffect.h" />
+		<Unit filename="ff/IFC/ImmCondition.h" />
+		<Unit filename="ff/IFC/ImmConstant.h" />
+		<Unit filename="ff/IFC/ImmDamper.h" />
+		<Unit filename="ff/IFC/ImmDevice.h" />
+		<Unit filename="ff/IFC/ImmDevices.h" />
+		<Unit filename="ff/IFC/ImmDXDevice.h" />
+		<Unit filename="ff/IFC/ImmEffect.h" />
+		<Unit filename="ff/IFC/ImmEffectSuite.h" />
+		<Unit filename="ff/IFC/ImmEllipse.h" />
+		<Unit filename="ff/IFC/ImmEnclosure.h" />
+		<Unit filename="ff/IFC/ImmFriction.h" />
+		<Unit filename="ff/IFC/ImmGrid.h" />
+		<Unit filename="ff/IFC/ImmIFR.h" />
+		<Unit filename="ff/IFC/ImmInertia.h" />
+		<Unit filename="ff/IFC/ImmMouse.h" />
+		<Unit filename="ff/IFC/ImmPeriodic.h" />
+		<Unit filename="ff/IFC/ImmProjects.h" />
+		<Unit filename="ff/IFC/ImmRamp.h" />
+		<Unit filename="ff/IFC/ImmSpring.h" />
+		<Unit filename="ff/IFC/ImmTexture.h" />
+		<Unit filename="IFC22.dll" />
+		<Unit filename="ff/IFC/IFC22.lib" />
+		<Unit filename="ff/cl_ff.cpp" />
+		<Unit filename="ff/cl_ff.h" />
+		<Unit filename="ff/common_headers.h" />
+		<Unit filename="ff/ff.cpp" />
+		<Unit filename="ff/ff.h" />
+		<Unit filename="ff/ff_ChannelCompound.h" />
+		<Unit filename="ff/ff_ChannelSet.cpp" />
+		<Unit filename="ff/ff_ChannelSet.h" />
+		<Unit filename="ff/ff_ConfigParser.cpp" />
+		<Unit filename="ff/ff_ConfigParser.h" />
+		<Unit filename="ff/ff_ffset.cpp" />
+		<Unit filename="ff/ff_ffset.h" />
+		<Unit filename="ff/ff_HandleTable.cpp" />
+		<Unit filename="ff/ff_HandleTable.h" />
+		<Unit filename="ff/ff_local.h" />
+		<Unit filename="ff/ff_MultiCompound.cpp" />
+		<Unit filename="ff/ff_MultiCompound.h" />
+		<Unit filename="ff/ff_MultiEffect.cpp" />
+		<Unit filename="ff/ff_MultiEffect.h" />
+		<Unit filename="ff/ff_MultiSet.cpp" />
+		<Unit filename="ff/ff_MultiSet.h" />
+		<Unit filename="ff/ff_public.h" />
+		<Unit filename="ff/ff_snd.cpp" />
+		<Unit filename="ff/ff_snd.h" />
+		<Unit filename="ff/ff_system.cpp" />
+		<Unit filename="ff/ff_system.h" />
+		<Unit filename="ff/ff_utils.cpp" />
+		<Unit filename="ff/ff_utils.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

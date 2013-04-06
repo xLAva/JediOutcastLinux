@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="game" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Linux Release">
+				<Option output="../Release/jk2gamex86" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../Release/game" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-W" />
+					<Add option="-fexceptions" />
+					<Add option="-DLINUX" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_IMMERSION" />
+					<Add directory="../icarus" />
+					<Add directory="./game" />
+				</Compiler>
+				<Linker>
+					<Add option="--image-base 0x20000000" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="odbc32" />
+					<Add library="odbccp32" />
+					<Add library="winmm" />
+				</Linker>
+			</Target>
+			<Target title="Win32 Release">
+				<Option output="../Release/jk2gamex86" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../Release/game" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-W" />
+					<Add option="-fexceptions" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-D_IMMERSION" />
+					<Add directory="../icarus" />
+				</Compiler>
+				<Linker>
+					<Add option="--image-base 0x20000000" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="odbc32" />
+					<Add library="odbccp32" />
+					<Add library="winmm" />
+				</Linker>
+			</Target>
+			<Target title="Win32 Debug">
+				<Option output="../Debug/jk2gamex86" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../Debug/game" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-fexceptions" />
+					<Add option="-g" />
+					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-mcpu=pentiumpro -D_M_IX86=600" />
+					<Add option="-Wall" />
+					<Add option="-D_IMMERSION" />
+					<Add directory="../icarus" />
+				</Compiler>
+				<Linker>
+					<Add option="--image-base 0x20000000" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="odbc32" />
+					<Add library="odbccp32" />
+					<Add library="winmm" />
+				</Linker>
+			</Target>
+			<Target title="Win32 FinalBuild">
+				<Option output="../FinalBuild/jk2gamex86" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../FinalBuild/game" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-mcpu=pentiumpro -D_M_IX86=600" />
+					<Add option="-Wall" />
+					<Add option="-fexceptions" />
+					<Add option="-g" />
+					<Add option="-O2" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-DFINAL_BUILD" />
+					<Add option="-D_IMMERSION" />
+					<Add directory="../icarus" />
+				</Compiler>
+				<Linker>
+					<Add option="--image-base 0x20000000" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="winmm" />
+				</Linker>
+			</Target>
+			<Target title="Win32 SHDebug">
+				<Option output="../SHDebug/jk2gamex86" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../SHDebug/game" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-mcpu=pentiumpro -D_M_IX86=600" />
+					<Add option="-Wall" />
+					<Add option="-fexceptions" />
+					<Add option="-g" />
+					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-DMEM_DEBUG" />
+					<Add option="-D_IMMERSION" />
+					<Add directory="../icarus" />
+				</Compiler>
+				<Linker>
+					<Add option="--image-base 0x20000000" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="winmm" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="../icarus/BlockStream.cpp" />
+		<Unit filename="../icarus/blockstream.h" />
+		<Unit filename="../icarus/icarus.h" />
+		<Unit filename="../icarus/Instance.cpp" />
+		<Unit filename="../icarus/instance.h" />
+		<Unit filename="../icarus/interpreter.h" />
+		<Unit filename="../icarus/Sequence.cpp" />
+		<Unit filename="../icarus/Sequencer.cpp" />
+		<Unit filename="../icarus/sequencer.h" />
+		<Unit filename="../icarus/TaskManager.cpp" />
+		<Unit filename="../icarus/taskmanager.h" />
+		<Unit filename="../icarus/tokenizer.h" />
+		<Unit filename="../icarus/interface.h" />
+		<Unit filename="../icarus/sequence.h" />
+		<Unit filename="../base/ext_data/NPCs.cfg">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="../base/ext_data/items.dat">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="../base/ext_data/weapons.dat">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="../cgame/FX_ATSTMain.cpp" />
+		<Unit filename="../cgame/FX_Blaster.cpp" />
+		<Unit filename="../cgame/FX_Bowcaster.cpp" />
+		<Unit filename="../cgame/FX_BryarPistol.cpp" />
+		<Unit filename="../cgame/FX_DEMP2.cpp" />
+		<Unit filename="../cgame/FX_Disruptor.cpp" />
+		<Unit filename="../cgame/FX_Emplaced.cpp" />
+		<Unit filename="../cgame/FX_Flechette.cpp" />
+		<Unit filename="../cgame/FX_HeavyRepeater.cpp" />
+		<Unit filename="../cgame/FX_RocketLauncher.cpp" />
+		<Unit filename="../cgame/FxParsing.cpp" />
+		<Unit filename="../cgame/FxParsing.h" />
+		<Unit filename="../cgame/FxPrimitives.cpp" />
+		<Unit filename="../cgame/FxPrimitives.h" />
+		<Unit filename="../cgame/FxScheduler.cpp" />
+		<Unit filename="../cgame/FxScheduler.h" />
+		<Unit filename="../cgame/FxSystem.cpp" />
+		<Unit filename="../cgame/FxSystem.h" />
+		<Unit filename="../cgame/FxTemplate.cpp" />
+		<Unit filename="../cgame/FxUtil.cpp" />
+		<Unit filename="../cgame/FxUtil.h" />
+		<Unit filename="../cgame/animtable.h" />
+		<Unit filename="../cgame/cg_camera.cpp" />
+		<Unit filename="../cgame/cg_camera.h" />
+		<Unit filename="../cgame/cg_consolecmds.cpp" />
+		<Unit filename="../cgame/cg_credits.cpp" />
+		<Unit filename="../cgame/cg_draw.cpp" />
+		<Unit filename="../cgame/cg_drawtools.cpp" />
+		<Unit filename="../cgame/cg_effects.cpp" />
+		<Unit filename="../cgame/cg_ents.cpp" />
+		<Unit filename="../cgame/cg_event.cpp" />
+		<Unit filename="../cgame/cg_headers.cpp" />
+		<Unit filename="../cgame/cg_headers.h" />
+		<Unit filename="../cgame/cg_info.cpp" />
+		<Unit filename="../cgame/cg_lights.cpp" />
+		<Unit filename="../cgame/cg_lights.h" />
+		<Unit filename="../cgame/cg_local.h" />
+		<Unit filename="../cgame/cg_localents.cpp" />
+		<Unit filename="../cgame/cg_main.cpp" />
+		<Unit filename="../cgame/cg_marks.cpp" />
+		<Unit filename="../cgame/cg_media.h" />
+		<Unit filename="../cgame/cg_players.cpp" />
+		<Unit filename="../cgame/cg_playerstate.cpp" />
+		<Unit filename="../cgame/cg_predict.cpp" />
+		<Unit filename="../cgame/cg_public.h" />
+		<Unit filename="../cgame/cg_scoreboard.cpp" />
+		<Unit filename="../cgame/cg_servercmds.cpp" />
+		<Unit filename="../cgame/cg_snapshot.cpp" />
+		<Unit filename="../cgame/cg_syscalls.cpp" />
+		<Unit filename="../cgame/cg_text.cpp" />
+		<Unit filename="../cgame/cg_view.cpp" />
+		<Unit filename="../cgame/cg_weapons.cpp" />
+		<Unit filename="../cgame/common_headers.h" />
+		<Unit filename="../cgame/strip_objectives.h" />
+		<Unit filename="../client/fffx.h" />
+		<Unit filename="../client/vmachine.h" />
+		<Unit filename="../ff/ff.h" />
+		<Unit filename="../ff/ff_public.h" />
+		<Unit filename="AI.h" />
+		<Unit filename="AI_Atst.cpp" />
+		<Unit filename="AI_Default.cpp" />
+		<Unit filename="AI_Droid.cpp" />
+		<Unit filename="AI_GalakMech.cpp" />
+		<Unit filename="AI_Grenadier.cpp" />
+		<Unit filename="AI_Howler.cpp" />
+		<Unit filename="AI_ImperialProbe.cpp" />
+		<Unit filename="AI_Interrogator.cpp" />
+		<Unit filename="AI_Jedi.cpp" />
+		<Unit filename="AI_Mark1.cpp" />
+		<Unit filename="AI_Mark2.cpp" />
+		<Unit filename="AI_MineMonster.cpp" />
+		<Unit filename="AI_Remote.cpp" />
+		<Unit filename="AI_Seeker.cpp" />
+		<Unit filename="AI_Sentry.cpp" />
+		<Unit filename="AI_Sniper.cpp" />
+		<Unit filename="AI_Stormtrooper.cpp" />
+		<Unit filename="AI_Utils.cpp" />
+		<Unit filename="G_Timer.cpp" />
+		<Unit filename="NPC.cpp" />
+		<Unit filename="NPC_behavior.cpp" />
+		<Unit filename="NPC_combat.cpp" />
+		<Unit filename="NPC_goal.cpp" />
+		<Unit filename="NPC_misc.cpp" />
+		<Unit filename="NPC_move.cpp" />
+		<Unit filename="NPC_reactions.cpp" />
+		<Unit filename="NPC_senses.cpp" />
+		<Unit filename="NPC_sounds.cpp" />
+		<Unit filename="NPC_spawn.cpp" />
+		<Unit filename="NPC_stats.cpp" />
+		<Unit filename="NPC_utils.cpp" />
+		<Unit filename="Q3_Interface.cpp" />
+		<Unit filename="Q3_Interface.h" />
+		<Unit filename="Q3_Registers.cpp" />
+		<Unit filename="Q3_Registers.h" />
+		<Unit filename="anims.h" />
+		<Unit filename="b_local.h" />
+		<Unit filename="b_public.h" />
+		<Unit filename="bg_lib.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="bg_local.h" />
+		<Unit filename="bg_misc.cpp" />
+		<Unit filename="bg_pangles.cpp" />
+		<Unit filename="bg_panimate.cpp" />
+		<Unit filename="bg_pmove.cpp" />
+		<Unit filename="bg_public.h" />
+		<Unit filename="bg_slidemove.cpp" />
+		<Unit filename="bset.h" />
+		<Unit filename="bstate.h" />
+		<Unit filename="channels.h" />
+		<Unit filename="characters.h" />
+		<Unit filename="common_headers.h" />
+		<Unit filename="dmstates.h" />
+		<Unit filename="events.h" />
+		<Unit filename="fields.h" />
+		<Unit filename="g_ICARUS.cpp" />
+		<Unit filename="g_active.cpp" />
+		<Unit filename="g_breakable.cpp" />
+		<Unit filename="g_camera.cpp" />
+		<Unit filename="g_client.cpp" />
+		<Unit filename="g_cmds.cpp" />
+		<Unit filename="g_combat.cpp" />
+		<Unit filename="g_functions.cpp" />
+		<Unit filename="g_functions.h" />
+		<Unit filename="g_fx.cpp" />
+		<Unit filename="g_headers.cpp" />
+		<Unit filename="g_headers.h" />
+		<Unit filename="g_icarus.h" />
+		<Unit filename="g_inventory.cpp" />
+		<Unit filename="g_itemLoad.cpp" />
+		<Unit filename="g_items.cpp" />
+		<Unit filename="g_items.h" />
+		<Unit filename="g_local.h" />
+		<Unit filename="g_main.cpp" />
+		<Unit filename="g_mem.cpp" />
+		<Unit filename="g_misc.cpp" />
+		<Unit filename="g_misc_model.cpp" />
+		<Unit filename="g_missile.cpp" />
+		<Unit filename="g_mover.cpp" />
+		<Unit filename="g_nav.cpp" />
+		<Unit filename="g_nav.h" />
+		<Unit filename="g_navigator.cpp" />
+		<Unit filename="g_navigator.h" />
+		<Unit filename="g_navnew.cpp" />
+		<Unit filename="g_object.cpp" />
+		<Unit filename="g_objectives.cpp" />
+		<Unit filename="g_public.h" />
+		<Unit filename="g_ref.cpp" />
+		<Unit filename="g_roff.cpp" />
+		<Unit filename="g_roff.h" />
+		<Unit filename="g_savegame.cpp" />
+		<Unit filename="g_session.cpp" />
+		<Unit filename="g_shared.h" />
+		<Unit filename="g_spawn.cpp" />
+		<Unit filename="g_svcmds.cpp" />
+		<Unit filename="g_target.cpp" />
+		<Unit filename="g_trigger.cpp" />
+		<Unit filename="g_turret.cpp" />
+		<Unit filename="g_usable.cpp" />
+		<Unit filename="g_utils.cpp" />
+		<Unit filename="g_weapon.cpp" />
+		<Unit filename="g_weaponLoad.cpp" />
+		<Unit filename="game.def" />
+		<Unit filename="genericparser2.cpp" />
+		<Unit filename="genericparser2.h" />
+		<Unit filename="ghoul2_shared.h" />
+		<Unit filename="npc_headers.h" />
+		<Unit filename="objectives.h" />
+		<Unit filename="q_math.cpp" />
+		<Unit filename="q_shared.cpp" />
+		<Unit filename="q_shared.h" />
+		<Unit filename="say.h" />
+		<Unit filename="statindex.h" />
+		<Unit filename="surfaceflags.h" />
+		<Unit filename="teams.h" />
+		<Unit filename="weapons.h" />
+		<Unit filename="wp_saber.cpp" />
+		<Unit filename="wp_saber.h" />
+		<Unit filename="../ghoul2/G2.h" />
+		<Unit filename="../qcommon/sstring.h" />
+		<Unit filename="../qcommon/stripPublic.h" />
+		<Unit filename="../qcommon/tags.h" />
+		<Unit filename="../qcommon/tri_coll_test.cpp" />
+		<Unit filename="../renderer/mdx_format.h" />
+		<Unit filename="../renderer/tr_types.h" />
+		<Unit filename="../smartheap/HAW32M.LIB">
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="../smartheap/SMRTHEAP.C">
+			<Option compilerVar="CC" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="../ui/gameinfo.cpp" />
+		<Unit filename="../ui/gameinfo.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

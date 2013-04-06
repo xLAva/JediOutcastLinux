@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Linux Release" />
+	<File name="../cgame/FX_ATSTMain.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="189" topLine="0" />
+	</File>
+	<File name="NPC_spawn.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="196" topLine="0" />
+	</File>
+	<File name="g_active.cpp" open="0" top="0" tabpos="7">
+		<Cursor position="217" topLine="0" />
+	</File>
+	<File name="g_combat.cpp" open="0" top="0" tabpos="6">
+		<Cursor position="255" topLine="0" />
+	</File>
+	<File name="g_headers.cpp" open="0" top="0" tabpos="5">
+		<Cursor position="71" topLine="0" />
+	</File>
+	<File name="g_savegame.cpp" open="0" top="0" tabpos="8">
+		<Cursor position="224" topLine="0" />
+	</File>
+	<File name="g_shared.h" open="0" top="0" tabpos="3">
+		<Cursor position="120" topLine="0" />
+	</File>
+	<File name="ghoul2_shared.h" open="0" top="0" tabpos="9">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="q_shared.h" open="0" top="0" tabpos="2">
+		<Cursor position="27918" topLine="1059" />
+	</File>
+	<File name="../icarus/Instance.cpp" open="0" top="0" tabpos="11">
+		<Cursor position="1448" topLine="90" />
+	</File>
+	<File name="../icarus/icarus.h" open="1" top="0" tabpos="2">
+		<Cursor position="773" topLine="1" />
+	</File>
+	<File name="../icarus/sequence.h" open="1" top="1" tabpos="5">
+		<Cursor position="73" topLine="0" />
+	</File>
+	<File name="../icarus/sequencer.h" open="1" top="0" tabpos="3">
+		<Cursor position="163" topLine="0" />
+	</File>
+	<File name="../icarus/taskmanager.h" open="1" top="0" tabpos="4">
+		<Cursor position="96" topLine="0" />
+	</File>
+	<File name="../icarus/tokenizer.h" open="1" top="0" tabpos="1">
+		<Cursor position="5721" topLine="405" />
+	</File>
+</CodeBlocks_layout_file>
