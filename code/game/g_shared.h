@@ -4,7 +4,7 @@
 #include "bg_public.h"
 #include "g_public.h"
 #include "b_public.h"
-#include "../ICARUS/ICARUS.h"
+#include "../icarus/icarus.h"
 #include "../renderer/tr_types.h"
 #include "../cgame/cg_public.h"
 #include "bset.h"

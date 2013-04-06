@@ -913,20 +913,20 @@ int Q_isupper( int c );
 int Q_isalpha( int c );
 
 // portable case insensitive compare
-//inline  int Q_stricmp (const char *s1, const char *s2) {return Q_stricmpn (s1, s2, 99999);}
-//int		Q_strncmp (const char *s1, const char *s2, int n);
-//int		Q_stricmpn (const char *s1, const char *s2, int n);
-//char	*Q_strlwr( char *s1 );
-//char	*Q_strupr( char *s1 );
-//char	*Q_strrchr( const char* string, int c );
+int		Q_strncmp (const char *s1, const char *s2, int n);
+int		Q_stricmpn (const char *s1, const char *s2, int n);
+char	*Q_strlwr( char *s1 );
+char	*Q_strupr( char *s1 );
+char	*Q_strrchr( const char* string, int c );
+inline  int Q_stricmp (const char *s1, const char *s2) {return Q_stricmpn (s1, s2, 99999);}
 
 // NON-portable (but faster) versions
-inline int	Q_stricmp (const char *s1, const char *s2) { return stricmp(s1, s2); }
-inline int	Q_strncmp (const char *s1, const char *s2, int n) { return strncmp(s1, s2, n); }
-inline int	Q_stricmpn (const char *s1, const char *s2, int n) { return strnicmp(s1, s2, n); }
-inline char	*Q_strlwr( char *s1 ) { return strlwr(s1); }
-inline char	*Q_strupr( char *s1 ) { return strupr(s1); }
-inline char	*Q_strrchr( const char* str, int c ) { return strrchr(str, c); }
+//inline int	Q_stricmp (const char *s1, const char *s2) { return stricmp(s1, s2); }
+//inline int	Q_strncmp (const char *s1, const char *s2, int n) { return strncmp(s1, s2, n); }
+//inline int	Q_stricmpn (const char *s1, const char *s2, int n) { return strnicmp(s1, s2, n); }
+//inline char	*Q_strlwr( char *s1 ) { return strlwr(s1); }
+//inline char	*Q_strupr( char *s1 ) { return strupr(s1); }
+//inline char	*Q_strrchr( const char* str, int c ) { return strrchr(str, c); }
 
 
 // buffer size safe library replacements
@@ -1075,7 +1075,7 @@ Ghoul2 Insert Start
 */
 
 #if !defined(GHOUL2_SHARED_H_INC)
-	#include "..\game\ghoul2_shared.h"	//for CGhoul2Info_v
+	#include "../game/ghoul2_shared.h"	//for CGhoul2Info_v
 #endif
 
 /*

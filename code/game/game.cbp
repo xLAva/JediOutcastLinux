@@ -169,19 +169,19 @@
 			</Target>
 		</Build>
 		<Unit filename="../icarus/BlockStream.cpp" />
-		<Unit filename="../icarus/blockstream.h" />
+		<Unit filename="../icarus/BlockStream.h" />
 		<Unit filename="../icarus/icarus.h" />
 		<Unit filename="../icarus/Instance.cpp" />
-		<Unit filename="../icarus/instance.h" />
-		<Unit filename="../icarus/interpreter.h" />
+		<Unit filename="../icarus/Instance.h" />
+		<Unit filename="../icarus/Interpreter.h" />
 		<Unit filename="../icarus/Sequence.cpp" />
 		<Unit filename="../icarus/Sequencer.cpp" />
-		<Unit filename="../icarus/sequencer.h" />
+		<Unit filename="../icarus/Sequencer.h" />
 		<Unit filename="../icarus/TaskManager.cpp" />
-		<Unit filename="../icarus/taskmanager.h" />
-		<Unit filename="../icarus/tokenizer.h" />
-		<Unit filename="../icarus/interface.h" />
-		<Unit filename="../icarus/sequence.h" />
+		<Unit filename="../icarus/TaskManager.h" />
+		<Unit filename="../icarus/Tokenizer.h" />
+		<Unit filename="../icarus/Interface.h" />
+		<Unit filename="../icarus/Sequence.h" />
 		<Unit filename="../base/ext_data/NPCs.cfg">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
@@ -369,7 +369,7 @@
 		<Unit filename="weapons.h" />
 		<Unit filename="wp_saber.cpp" />
 		<Unit filename="wp_saber.h" />
-		<Unit filename="../ghoul2/G2.h" />
+		<Unit filename="../ghoul2/g2.h" />
 		<Unit filename="../qcommon/sstring.h" />
 		<Unit filename="../qcommon/stripPublic.h" />
 		<Unit filename="../qcommon/tags.h" />
