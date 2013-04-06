@@ -6,7 +6,8 @@
 
 //#include "cg_local.h"
 #include "cg_media.h"
-#include "..\game\objectives.h"
+#include "../game/objectives.h"
+#include "../game/g_local.h"
 
 void CG_DrawIconBackground(void);
 void CG_DrawMissionInformation( void );

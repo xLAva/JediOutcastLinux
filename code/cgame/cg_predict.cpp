@@ -7,7 +7,7 @@
 
 //#include "cg_local.h"
 #include "cg_media.h"
-
+#include "../game/g_local.h"
 static	pmove_t		cg_pmove;
 
 static	int			cg_numSolidEntities;

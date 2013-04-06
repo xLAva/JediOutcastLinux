@@ -22,7 +22,7 @@ enum WL_e {
 #define STL_ITERATE( a, b )		for ( a = b.begin(); a != b.end(); a++ )
 #define STL_INSERT( a, b )		a.insert( a.end(), b );
 
-//#include "Tokenizer.h" //LAvaPort -> do we need this?
+#include "Tokenizer.h"
 #include "BlockStream.h"
 #include "Interpreter.h"
 #include "Sequencer.h"

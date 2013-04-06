@@ -137,6 +137,35 @@ void Sys_PumpEvents( void );
 
 #define	PATH_SEP '/'
 
+#define __cdecl
+#define stricmp strcasecmp
+#define strcmpi strcasecmp
+#define strnicmp strncasecmp
+#include <assert.h>
+#include <ctype.h>
+
+char* strupr(char* s)
+{
+  assert(s != (void*)0);
+  while(*s)
+  {
+    *s = toupper((unsigned char)*s);
+     s++;
+  }
+  return s; 
+}
+
+char* strlwr(char* s)
+{
+  assert(s != (void*)0);
+  while(*s)
+  {
+    *s = tolower((unsigned char)*s);
+     s++;
+  }
+  return s; 
+}
+
 #endif
 
 //=============================================================
@@ -698,7 +727,7 @@ inline int Q_irand(int min, int max) {
 }
 
 //returns a float between 0 and 1.0
-inline float random() {
+inline float randomLava() { //LAvaPort -> change all random calls
 	return (rand() / ((float)0x7fff));
 }
 

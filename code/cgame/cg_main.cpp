@@ -6,8 +6,8 @@
 #include "cg_media.h"
 #include "FxScheduler.h"
 
-#include "..\client\vmachine.h"
-#include "..\game\characters.h"
+#include "../client/vmachine.h"
+#include "../game/characters.h"
 #include "cg_lights.h"
 
 #ifdef _IMMERSION
@@ -1756,8 +1756,8 @@ void CG_WriteTheEvilCGHackStuff(void)
 }
 void CG_ReadTheEvilCGHackStuff(void)
 {
-	gi.ReadFromSaveGame('FPSL', (void *)&gi_cg_forcepowerSelect, sizeof(gi_cg_forcepowerSelect));
-	gi.ReadFromSaveGame('IVSL', (void *)&gi_cg_inventorySelect,  sizeof(gi_cg_inventorySelect));
+	gi.ReadFromSaveGame('FPSL', (void *)&gi_cg_forcepowerSelect, sizeof(gi_cg_forcepowerSelect), NULL);
+	gi.ReadFromSaveGame('IVSL', (void *)&gi_cg_inventorySelect,  sizeof(gi_cg_inventorySelect), NULL);
 	gbUseTheseValuesFromLoadSave = qtrue;
 }
 
@@ -3899,6 +3899,9 @@ void CG_DrawDataPadForceSelect( void )
 
 	cgi_SP_GetStringTextString( va("INGAME_%s",forcepowerDesc[cg.DataPadforcepowerSelect]), text, sizeof(text) );
 
+
+
+  /* LAvaPort disable this until I find out where player should come from
 	if (player->client->ps.forcePowerLevel[cg.DataPadforcepowerSelect]==1)
 	{
 		cgi_SP_GetStringTextString( va("INGAME_%s",forcepowerLvl1Desc[cg.DataPadforcepowerSelect]), text2, sizeof(text2) );
@@ -3907,7 +3910,7 @@ void CG_DrawDataPadForceSelect( void )
 	{
 		cgi_SP_GetStringTextString( va("INGAME_%s",forcepowerLvl2Desc[cg.DataPadforcepowerSelect]), text2, sizeof(text2) );
 	}
-	else 
+	else */
 	{
 		cgi_SP_GetStringTextString( va("INGAME_%s",forcepowerLvl3Desc[cg.DataPadforcepowerSelect]), text2, sizeof(text2) );
 	}

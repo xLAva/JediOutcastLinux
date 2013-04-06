@@ -6,13 +6,14 @@
 //#include "cg_local.h"
 #include "cg_media.h"
 #include "FxScheduler.h"
-#include "..\game\ghoul2_shared.h"
-#include "..\game\anims.h"
-#include "..\game\wp_saber.h"
+#include "../game/ghoul2_shared.h"
+#include "../game/anims.h"
+#include "../game/wp_saber.h"
 
 #define	LOOK_SWING_SCALE	0.5
 
 #include "animtable.h"
+#include "../game/npc_headers.h"
 
 
 /*
@@ -4595,7 +4596,7 @@ Ghoul2 Insert End
 	}
 	else
 	{
-		gi.trace( &trace, cent->lerpOrigin, NULL, NULL, cent->gent->client->renderInfo.muzzlePoint, cent->currentState.number, CONTENTS_SOLID );
+		gi.trace( &trace, cent->lerpOrigin, NULL, NULL, cent->gent->client->renderInfo.muzzlePoint, cent->currentState.number, CONTENTS_SOLID, (EG2_Collision)0, 0 );
 	}
 
 	if ( trace.fraction < 1.0f )
@@ -4611,12 +4612,12 @@ Ghoul2 Insert End
 			if ( i )
 			{//tracing from end to base
 				//cgi_CM_BoxTrace( &trace, end, org_, NULL, NULL, 0, MASK_SHOT );
-				gi.trace( &trace, end, NULL, NULL, org_, ENTITYNUM_NONE, MASK_SOLID );
+				gi.trace( &trace, end, NULL, NULL, org_, ENTITYNUM_NONE, MASK_SOLID, (EG2_Collision)0, 0  );
 			}
 			else
 			{//tracing from base to end
 				//cgi_CM_BoxTrace( &trace, end, org_, NULL, NULL, 0, MASK_SHOT );
-				gi.trace( &trace, org_, NULL, NULL, end, ENTITYNUM_NONE, MASK_SOLID|CONTENTS_WATER|CONTENTS_SLIME );
+				gi.trace( &trace, org_, NULL, NULL, end, ENTITYNUM_NONE, MASK_SOLID|CONTENTS_WATER|CONTENTS_SLIME, (EG2_Collision)0, 0  );
 			}
 			
 			if ( trace.fraction < 1.0f )

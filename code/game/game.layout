@@ -1,14 +1,56 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Linux Release" />
+	<File name="../base/ext_data/NPCs.cfg" open="0" top="0" tabpos="0">
+		<Cursor position="10804" topLine="519" />
+	</File>
 	<File name="../cgame/FX_ATSTMain.cpp" open="0" top="0" tabpos="1">
 		<Cursor position="189" topLine="0" />
+	</File>
+	<File name="../cgame/FxPrimitives.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="3288" topLine="155" />
+	</File>
+	<File name="../cgame/FxScheduler.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="2902" topLine="117" />
+	</File>
+	<File name="../cgame/FxScheduler.h" open="0" top="0" tabpos="0">
+		<Cursor position="12138" topLine="383" />
+	</File>
+	<File name="../cgame/cg_camera.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="33003" topLine="1243" />
+	</File>
+	<File name="../cgame/cg_credits.cpp" open="1" top="0" tabpos="3">
+		<Cursor position="2419" topLine="114" />
+	</File>
+	<File name="../cgame/cg_draw.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="14037" topLine="593" />
+	</File>
+	<File name="../cgame/cg_event.cpp" open="1" top="1" tabpos="2">
+		<Cursor position="184" topLine="0" />
+	</File>
+	<File name="../cgame/cg_headers.h" open="0" top="0" tabpos="0">
+		<Cursor position="66" topLine="0" />
+	</File>
+	<File name="../cgame/cg_local.h" open="1" top="0" tabpos="1">
+		<Cursor position="68" topLine="0" />
+	</File>
+	<File name="../cgame/common_headers.h" open="0" top="0" tabpos="0">
+		<Cursor position="78" topLine="0" />
 	</File>
 	<File name="NPC_spawn.cpp" open="0" top="0" tabpos="4">
 		<Cursor position="196" topLine="0" />
 	</File>
-	<File name="bg_public.h" open="1" top="0" tabpos="6">
+	<File name="Q3_Interface.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="209759" topLine="9220" />
+	</File>
+	<File name="bg_lib.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="15191" topLine="502" />
+	</File>
+	<File name="bg_public.h" open="0" top="0" tabpos="6">
 		<Cursor position="4633" topLine="116" />
+	</File>
+	<File name="fields.h" open="0" top="0" tabpos="0">
+		<Cursor position="241" topLine="0" />
 	</File>
 	<File name="g_active.cpp" open="0" top="0" tabpos="7">
 		<Cursor position="217" topLine="0" />
@@ -19,40 +61,58 @@
 	<File name="g_headers.cpp" open="0" top="0" tabpos="5">
 		<Cursor position="71" topLine="0" />
 	</File>
-	<File name="g_public.h" open="1" top="0" tabpos="7">
-		<Cursor position="6838" topLine="120" />
+	<File name="g_local.h" open="0" top="0" tabpos="0">
+		<Cursor position="1775" topLine="0" />
+	</File>
+	<File name="g_public.h" open="0" top="0" tabpos="7">
+		<Cursor position="3158" topLine="43" />
 	</File>
 	<File name="g_savegame.cpp" open="0" top="0" tabpos="8">
 		<Cursor position="224" topLine="0" />
 	</File>
-	<File name="g_shared.h" open="1" top="0" tabpos="3">
+	<File name="g_shared.h" open="0" top="0" tabpos="3">
 		<Cursor position="146" topLine="0" />
 	</File>
 	<File name="ghoul2_shared.h" open="0" top="0" tabpos="9">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="q_shared.h" open="1" top="0" tabpos="2">
-		<Cursor position="17136" topLine="682" />
+	<File name="q_shared.h" open="0" top="0" tabpos="2">
+		<Cursor position="3844" topLine="129" />
 	</File>
-	<File name="../icarus/BlockStream.h" open="1" top="0" tabpos="8">
-		<Cursor position="1631" topLine="50" />
+	<File name="../icarus/BlockStream.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="2234" topLine="89" />
+	</File>
+	<File name="../icarus/BlockStream.h" open="0" top="0" tabpos="8">
+		<Cursor position="1884" topLine="65" />
 	</File>
 	<File name="../icarus/Instance.cpp" open="0" top="0" tabpos="11">
 		<Cursor position="1448" topLine="90" />
 	</File>
-	<File name="../icarus/Interpreter.h" open="1" top="0" tabpos="9">
+	<File name="../icarus/Interface.h" open="0" top="0" tabpos="0">
+		<Cursor position="3012" topLine="30" />
+	</File>
+	<File name="../icarus/Interpreter.h" open="0" top="0" tabpos="9">
 		<Cursor position="4060" topLine="166" />
 	</File>
-	<File name="../icarus/TaskManager.h" open="1" top="1" tabpos="10">
+	<File name="../icarus/Sequence.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="9679" topLine="464" />
+	</File>
+	<File name="../icarus/TaskManager.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="43101" topLine="1822" />
+	</File>
+	<File name="../icarus/TaskManager.h" open="0" top="0" tabpos="10">
 		<Cursor position="1652" topLine="79" />
 	</File>
-	<File name="../icarus/Tokenizer.h" open="1" top="0" tabpos="4">
-		<Cursor position="0" topLine="0" />
+	<File name="../icarus/Tokenizer.h" open="0" top="0" tabpos="4">
+		<Cursor position="13476" topLine="564" />
 	</File>
-	<File name="../icarus/icarus.h" open="1" top="0" tabpos="1">
-		<Cursor position="688" topLine="1" />
+	<File name="../icarus/icarus.h" open="0" top="0" tabpos="1">
+		<Cursor position="656" topLine="1" />
 	</File>
-	<File name="../renderer/tr_types.h" open="1" top="0" tabpos="5">
+	<File name="../qcommon/sstring.h" open="0" top="0" tabpos="0">
+		<Cursor position="2193" topLine="81" />
+	</File>
+	<File name="../renderer/tr_types.h" open="0" top="0" tabpos="5">
 		<Cursor position="64" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>

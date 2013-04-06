@@ -13,6 +13,16 @@
 
 //==================================================================
 
+#ifdef __linux__
+#include <sys/time.h>
+unsigned int timeGetTime()
+{
+  struct timeval now;
+  gettimeofday(&now, NULL);
+  return now.tv_usec/1000;
+}
+#endif
+
 // the "gameversion" client command will print this plus compile date
 #define	GAMEVERSION	"base"
 

@@ -7,7 +7,7 @@
 #include "cg_media.h"
 #include "FxScheduler.h"
 
-#include "..\game\anims.h"
+#include "../game/anims.h"
 
 #ifdef _IMMERSION
 #include "../ff/ff.h"

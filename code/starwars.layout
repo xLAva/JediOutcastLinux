@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Win32 Release" />
+	<File name="client/cl_cgame.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="421" topLine="5" />
+	</File>
 </CodeBlocks_layout_file>

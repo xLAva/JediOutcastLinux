@@ -480,7 +480,7 @@ int CSequence::Load( void )
 			(m_owner->GetInterface())->I_ReadSaveData( 'BSIZ', &bSize, sizeof( bSize ) );
 
 			//Get the member's data
-			if ( ( bData = ICARUS_Malloc( bSize ) ) == NULL )
+			if ( ( bData = malloc( bSize ) ) == NULL )
 				return false;
 
 			//Get the actual raw data
@@ -538,7 +538,7 @@ int CSequence::Load( void )
 			}
 			
 			//Get rid of the temp memory
-			ICARUS_Free( bData );
+			free( bData );
 		}
 
 		//Save the block

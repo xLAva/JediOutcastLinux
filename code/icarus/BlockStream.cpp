@@ -42,7 +42,7 @@ void CBlockMember::Free( void )
 {
 	if ( m_data != NULL )
 	{
-		ICARUS_Free ( m_data );
+		free ( m_data );
 		m_data = NULL;
 
 		m_id = m_size = -1;
@@ -81,9 +81,9 @@ void CBlockMember::SetData( vector_t data )
 void CBlockMember::SetData( void *data, int size )
 {
 	if ( m_data )
-		ICARUS_Free( m_data );
+		free( m_data );
 
-	m_data = ICARUS_Malloc( size );
+	m_data = malloc( size );
 	memcpy( m_data, data, size );
 	m_size = size;
 }
@@ -105,7 +105,7 @@ int CBlockMember::ReadMember( char **stream, long *streamPos )
 	{//special case, need to initialize this member's data to Q3_INFINITE so we can randomize the number only the first time random is checked when inside a wait
 		m_size = sizeof( float );
 		*streamPos += sizeof( long );
-		m_data = ICARUS_Malloc( m_size );
+		m_data = malloc( m_size );
 		float infinite = Q3_INFINITE;
 		memcpy( m_data, &infinite, m_size );
 	}
@@ -113,7 +113,7 @@ int CBlockMember::ReadMember( char **stream, long *streamPos )
 	{
 		m_size = *(long *) (*stream + *streamPos);
 		*streamPos += sizeof( long );
-		m_data = ICARUS_Malloc( m_size );
+		m_data = malloc( m_size );
 		memcpy( m_data, (*stream + *streamPos), m_size );
 	}
 	*streamPos += m_size;

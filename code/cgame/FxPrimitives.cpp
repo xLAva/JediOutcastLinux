@@ -7,6 +7,14 @@
 
 #include "cg_media.h"
 
+#ifdef __linux__
+static long myftol (float f)
+{
+  static int tmp;
+  __asm__ __volatile__ ("fld %1; fistp %0;" : "=m" (tmp) : "m" (f));
+  return tmp;
+}
+#else
 #pragma warning(disable: 4035)
 static long myftol( float f ) 
 {
@@ -16,6 +24,7 @@ static long myftol( float f )
 	__asm mov eax, tmp
 }
 #pragma warning(default: 4035)
+#endif
 
 extern int drawnFx;
 extern int mParticles;

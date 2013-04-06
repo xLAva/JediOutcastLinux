@@ -11,7 +11,7 @@
 //#endif
 
 #if !defined(TEAMS_H_INC)
-	#include "../game/Teams.h"
+	#include "../game/teams.h"
 #endif
 
 //#if !defined(IGINTERFACE_H_INC)

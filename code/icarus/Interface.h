@@ -60,7 +60,7 @@ typedef struct interface_export_s
 	//Save / Load functions
 
 	int				(*I_WriteSaveData)( unsigned long chid, void *data, int length );
-	int				(*I_ReadSaveData)( unsigned long chid, void *address, int length, void **addressptr = NULL );
+	int				(*I_ReadSaveData)( unsigned long chid, void *address, int length, void **addressptr );
 	int				(*I_LinkEntity)( int entID, CSequencer *sequencer, CTaskManager *taskManager );
 
 } interface_export_t;
