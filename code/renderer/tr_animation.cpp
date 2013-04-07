@@ -4,7 +4,7 @@
 
 
 #include "tr_local.h"
-#include "MatComp.h"
+#include "matcomp.h"
 extern int R_ComputeLOD( trRefEntity_t *ent );
 
 /*

@@ -304,7 +304,7 @@
 	<File name="g_weaponLoad.cpp" open="0" top="0" tabpos="4">
 		<Cursor position="32030" topLine="1298" />
 	</File>
-	<File name="ghoul2_shared.h" open="0" top="0" tabpos="9">
+	<File name="ghoul2_shared.h" open="1" top="0" tabpos="9">
 		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="npc_headers.h" open="0" top="0" tabpos="14">
@@ -313,7 +313,7 @@
 	<File name="q_shared.cpp" open="0" top="0" tabpos="13">
 		<Cursor position="485" topLine="0" />
 	</File>
-	<File name="q_shared.h" open="0" top="0" tabpos="12">
+	<File name="q_shared.h" open="1" top="0" tabpos="12">
 		<Cursor position="12762" topLine="498" />
 	</File>
 	<File name="wp_saber.cpp" open="0" top="0" tabpos="0">
@@ -357,6 +357,9 @@
 	</File>
 	<File name="../qcommon/sstring.h" open="0" top="0" tabpos="0">
 		<Cursor position="2193" topLine="81" />
+	</File>
+	<File name="../qcommon/stripPublic.h" open="1" top="0" tabpos="0">
+		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="../qcommon/tri_coll_test.cpp" open="0" top="0" tabpos="9">
 		<Cursor position="554" topLine="0" />

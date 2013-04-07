@@ -1707,7 +1707,7 @@ static void PlayCinematic(const char *arg, const char *s, qboolean qbInGame)
 		//
 		extern cvar_t *s_language;
 		qboolean	bIsForeign	= s_language && stricmp(s_language->string,"english") && stricmp(s_language->string,"");
-		LPCSTR		psAudioFile	= NULL;
+		const char*		psAudioFile	= NULL;
 		qhandle_t	hCrawl = 0;
 		if (!stricmp(arg,"video/jk0101_sw.roq"))
 		{
@@ -1851,9 +1851,9 @@ void SCR_RunCinematic (void)
 	CL_CheckPendingCinematic();
 
 	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES) {
-		e_status Status = CIN_RunCinematic(CL_handle);
+		e_status status = CIN_RunCinematic(CL_handle);
 		
-		if (CL_IsRunningInGameCinematic() && Status == FMV_IDLE  && !cinTable[CL_handle].holdAtEnd)
+		if (CL_IsRunningInGameCinematic() && status == FMV_IDLE  && !cinTable[CL_handle].holdAtEnd)
 		{
 			SCR_StopCinematic();	// change ROQ from FMV_IDLE to FMV_EOF, and clear some other vars
 		}

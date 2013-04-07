@@ -146,7 +146,10 @@ public:
 	// return maximum number of elements that can be allocated
 	size_type max_size () const
 	{
-	   return mMaxSize;
+     //LAvaPort - WHAT?
+	   //return mMaxSize;
+	   
+	   return -1;
 	}
 	
 	// allocate but don't initialize num elements of type T

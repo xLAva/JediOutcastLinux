@@ -16,8 +16,8 @@
 #endif
 // (end) Optional system features
 
-#include "..\game\q_shared.h"	// includes ff_public.h
-#include "..\qcommon\qcommon.h"
+#include "../game/q_shared.h"	// includes ff_public.h
+#include "../qcommon/qcommon.h"
 
 #define FF_MAX_PATH		MAX_QPATH
 

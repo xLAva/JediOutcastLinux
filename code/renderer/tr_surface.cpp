@@ -95,7 +95,7 @@ void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte *color, flo
 
 
 	// constant normal all the way around
-	VectorSubtract( vec3_origin, backEnd.viewParms.or.axis[0], normal );
+	VectorSubtract( vec3_origin, backEnd.viewParms.orLava.axis[0], normal );
 
 	tess.normal[ndx][0] = tess.normal[ndx+1][0] = tess.normal[ndx+2][0] = tess.normal[ndx+3][0] = normal[0];
 	tess.normal[ndx][1] = tess.normal[ndx+1][1] = tess.normal[ndx+2][1] = tess.normal[ndx+3][1] = normal[1];
@@ -147,8 +147,8 @@ static void RB_SurfaceSprite( void ) {
 	// calculate the xyz locations for the four corners
 	radius = backEnd.currentEntity->e.radius;
 	if ( backEnd.currentEntity->e.rotation == 0 ) {
-		VectorScale( backEnd.viewParms.or.axis[1], radius, left );
-		VectorScale( backEnd.viewParms.or.axis[2], radius, up );
+		VectorScale( backEnd.viewParms.orLava.axis[1], radius, left );
+		VectorScale( backEnd.viewParms.orLava.axis[2], radius, up );
 	} else {
 		float	s, c;
 		float	ang;
@@ -157,11 +157,11 @@ static void RB_SurfaceSprite( void ) {
 		s = sin( ang );
 		c = cos( ang );
 
-		VectorScale( backEnd.viewParms.or.axis[1], c * radius, left );
-		VectorMA( left, -s * radius, backEnd.viewParms.or.axis[2], left );
+		VectorScale( backEnd.viewParms.orLava.axis[1], c * radius, left );
+		VectorMA( left, -s * radius, backEnd.viewParms.orLava.axis[2], left );
 
-		VectorScale( backEnd.viewParms.or.axis[2], c * radius, up );
-		VectorMA( up, s * radius, backEnd.viewParms.or.axis[1], up );
+		VectorScale( backEnd.viewParms.orLava.axis[2], c * radius, up );
+		VectorMA( up, s * radius, backEnd.viewParms.orLava.axis[1], up );
 	}
 	if ( backEnd.viewParms.isMirror ) {
 		VectorSubtract( vec3_origin, left, left );
@@ -364,8 +364,8 @@ void RB_SurfaceLine( void )
 	VectorCopy( e->origin, start );
 
 	// compute side vector
-	VectorSubtract( start, backEnd.viewParms.or.origin, v1 );
-	VectorSubtract( end, backEnd.viewParms.or.origin, v2 );
+	VectorSubtract( start, backEnd.viewParms.orLava.origin, v1 );
+	VectorSubtract( end, backEnd.viewParms.orLava.origin, v2 );
 	CrossProduct( v1, v2, right );
 	VectorNormalize( right );
 
@@ -404,7 +404,7 @@ static void RB_SurfaceCone( void )
 	VectorAdd( e->origin, e->oldorigin, midpoint );
 	VectorScale(midpoint, 0.5, midpoint);		// Average start and end
 
-	VectorSubtract( midpoint, backEnd.viewParms.or.origin, midpoint );
+	VectorSubtract( midpoint, backEnd.viewParms.orLava.origin, midpoint );
 	length = VectorNormalize( midpoint );
 
 	// this doesn't need to be perfect....just a rough compensation for zoom level is enough
@@ -536,7 +536,7 @@ static void RB_SurfaceCylinder( void )
 	VectorAdd( e->origin, e->oldorigin, midpoint );
 	VectorScale(midpoint, 0.5, midpoint);		// Average start and end
 
-	VectorSubtract( midpoint, backEnd.viewParms.or.origin, midpoint );
+	VectorSubtract( midpoint, backEnd.viewParms.orLava.origin, midpoint );
 	length = VectorNormalize( midpoint );
 
 	// this doesn't need to be perfect....just a rough compensation for zoom level is enough
@@ -639,7 +639,7 @@ static void RB_SurfaceCylinder( void )
 }
 
 static vec3_t sh1, sh2;
-static f_count;
+static int f_count;
 
 // Up front, we create a random "shape", then apply that to each line segment...and then again to each of those segments...kind of like a fractal
 //----------------------------------------------------------------------------
@@ -835,8 +835,8 @@ static void RB_SurfaceElectricity()
 	VectorCopy( e->oldorigin, end );
 
 	// compute side vector
-	VectorSubtract( start, backEnd.viewParms.or.origin, v1 );
-	VectorSubtract( end, backEnd.viewParms.or.origin, v2 );
+	VectorSubtract( start, backEnd.viewParms.orLava.origin, v1 );
+	VectorSubtract( end, backEnd.viewParms.orLava.origin, v2 );
 	CrossProduct( v1, v2, right );
 	VectorNormalize( right );
 
@@ -1116,11 +1116,11 @@ static void DoSprite( vec3_t origin, float radius, float rotation )
 	s = sin( ang );
 	c = cos( ang );
 
-	VectorScale( backEnd.viewParms.or.axis[1], c * radius, left );
-	VectorMA( left, -s * radius, backEnd.viewParms.or.axis[2], left );
+	VectorScale( backEnd.viewParms.orLava.axis[1], c * radius, left );
+	VectorMA( left, -s * radius, backEnd.viewParms.orLava.axis[2], left );
 
-	VectorScale( backEnd.viewParms.or.axis[2], c * radius, up );
-	VectorMA( up, s * radius, backEnd.viewParms.or.axis[1], up );
+	VectorScale( backEnd.viewParms.orLava.axis[2], c * radius, up );
+	VectorMA( up, s * radius, backEnd.viewParms.orLava.axis[1], up );
 
 	if ( backEnd.viewParms.isMirror ) 
 	{
@@ -1374,15 +1374,15 @@ static float	LodErrorForVolume( vec3_t local, float radius ) {
 	vec3_t		world;
 	float		d;
 
-	world[0] = local[0] * backEnd.or.axis[0][0] + local[1] * backEnd.or.axis[1][0] + 
-		local[2] * backEnd.or.axis[2][0] + backEnd.or.origin[0];
-	world[1] = local[0] * backEnd.or.axis[0][1] + local[1] * backEnd.or.axis[1][1] + 
-		local[2] * backEnd.or.axis[2][1] + backEnd.or.origin[1];
-	world[2] = local[0] * backEnd.or.axis[0][2] + local[1] * backEnd.or.axis[1][2] + 
-		local[2] * backEnd.or.axis[2][2] + backEnd.or.origin[2];
+	world[0] = local[0] * backEnd.orLava.axis[0][0] + local[1] * backEnd.orLava.axis[1][0] + 
+		local[2] * backEnd.orLava.axis[2][0] + backEnd.orLava.origin[0];
+	world[1] = local[0] * backEnd.orLava.axis[0][1] + local[1] * backEnd.orLava.axis[1][1] + 
+		local[2] * backEnd.orLava.axis[2][1] + backEnd.orLava.origin[1];
+	world[2] = local[0] * backEnd.orLava.axis[0][2] + local[1] * backEnd.orLava.axis[1][2] + 
+		local[2] * backEnd.orLava.axis[2][2] + backEnd.orLava.origin[2];
 
-	VectorSubtract( world, backEnd.viewParms.or.origin, world );
-	d = DotProduct( world, backEnd.viewParms.or.axis[0] );
+	VectorSubtract( world, backEnd.viewParms.orLava.origin, world );
+	d = DotProduct( world, backEnd.viewParms.orLava.axis[0] );
 
 	if ( d < 0 ) {
 		d = -d;
@@ -1983,7 +1983,7 @@ qboolean RB_TestZFlare( vec3_t point, vec3_t color, vec3_t normal) {
 
 	// if the point is off the screen, don't bother adding it
 	// calculate screen coordinates and depth
-	R_TransformModelToClip( point, backEnd.or.modelMatrix, 
+	R_TransformModelToClip( point, backEnd.orLava.modelMatrix, 
 		backEnd.viewParms.projectionMatrix, eye, clip );
 
 	// check to see if the point is completely off screen
@@ -2038,15 +2038,15 @@ void RB_SurfaceFlare( srfFlare_t *surf ) {
 
 	// calculate the xyz locations for the four corners
 	radius = r_flareSize->value;
-	VectorScale( backEnd.viewParms.or.axis[1], radius, left );
-	VectorScale( backEnd.viewParms.or.axis[2], radius, up );
+	VectorScale( backEnd.viewParms.orLava.axis[1], radius, left );
+	VectorScale( backEnd.viewParms.orLava.axis[2], radius, up );
 	if ( backEnd.viewParms.isMirror ) {
 		VectorSubtract( vec3_origin, left, left );
 	}
 
 	VectorMA( surf->origin, 3, surf->normal, origin );
 
-	VectorSubtract( origin, backEnd.viewParms.or.origin, dir );
+	VectorSubtract( origin, backEnd.viewParms.orLava.origin, dir );
 	VectorNormalize( dir );
 
 	d = -DotProduct( dir, surf->normal );

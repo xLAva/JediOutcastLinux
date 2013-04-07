@@ -24,6 +24,7 @@
 					<Add option="-D_JK2EXE" />
 					<Add option="-D_IMMERSION" />
 					<Add option="-D_FF" />
+					<Add option="-D_M_IX86" />
 					<Add directory="ff/ifc" />
 				</Compiler>
 				<Linker>
@@ -266,33 +267,93 @@
 		<Unit filename="ff/IFC/ImmRamp.h" />
 		<Unit filename="ff/IFC/ImmSpring.h" />
 		<Unit filename="ff/IFC/ImmTexture.h" />
-		<Unit filename="ff/cl_ff.cpp" />
+		<Unit filename="ff/cl_ff.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/cl_ff.h" />
 		<Unit filename="ff/common_headers.h" />
-		<Unit filename="ff/ff.cpp" />
+		<Unit filename="ff/ff.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/ff.h" />
 		<Unit filename="ff/ff_ChannelCompound.h" />
-		<Unit filename="ff/ff_ChannelSet.cpp" />
+		<Unit filename="ff/ff_ChannelSet.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/ff_ChannelSet.h" />
-		<Unit filename="ff/ff_ConfigParser.cpp" />
+		<Unit filename="ff/ff_ConfigParser.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/ff_ConfigParser.h" />
-		<Unit filename="ff/ff_HandleTable.cpp" />
+		<Unit filename="ff/ff_HandleTable.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/ff_HandleTable.h" />
-		<Unit filename="ff/ff_MultiCompound.cpp" />
+		<Unit filename="ff/ff_MultiCompound.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/ff_MultiCompound.h" />
-		<Unit filename="ff/ff_MultiEffect.cpp" />
+		<Unit filename="ff/ff_MultiEffect.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/ff_MultiEffect.h" />
-		<Unit filename="ff/ff_MultiSet.cpp" />
+		<Unit filename="ff/ff_MultiSet.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/ff_MultiSet.h" />
-		<Unit filename="ff/ff_ffset.cpp" />
+		<Unit filename="ff/ff_ffset.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/ff_ffset.h" />
 		<Unit filename="ff/ff_local.h" />
 		<Unit filename="ff/ff_public.h" />
-		<Unit filename="ff/ff_snd.cpp" />
+		<Unit filename="ff/ff_snd.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/ff_snd.h" />
-		<Unit filename="ff/ff_system.cpp" />
+		<Unit filename="ff/ff_system.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/ff_system.h" />
-		<Unit filename="ff/ff_utils.cpp" />
+		<Unit filename="ff/ff_utils.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="ff/ff_utils.h" />
 		<Unit filename="game/anims.h" />
 		<Unit filename="game/b_public.h" />
@@ -564,6 +625,55 @@
 		<Unit filename="ui/ui_shared.cpp" />
 		<Unit filename="ui/ui_shared.h" />
 		<Unit filename="ui/ui_syscalls.cpp" />
+		<Unit filename="unix/Makefile">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/linux_glimp.c">
+			<Option compilerVar="CC" />
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/linux_qgl.c">
+			<Option compilerVar="CC" />
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/linux_snd.c">
+			<Option compilerVar="CC" />
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/matha.s">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/q3test.spec.sh">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/qasm.h">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/snd_mixa.s">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/sys_dosa.s">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/ui_video.c">
+			<Option compilerVar="CC" />
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/unix_glw.h">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/unix_main.c">
+			<Option compilerVar="CC" />
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/unix_net.c">
+			<Option compilerVar="CC" />
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="unix/unix_shared.c">
+			<Option compilerVar="CC" />
+			<Option target="Linux Release" />
+		</Unit>
 		<Unit filename="win32/FeelIt/FEELitIFR.h" />
 		<Unit filename="win32/FeelIt/FFC.h" />
 		<Unit filename="win32/FeelIt/FFC10.dll" />
@@ -592,25 +702,85 @@
 		<Unit filename="win32/FeelIt/FeelSpring.h" />
 		<Unit filename="win32/FeelIt/FeelTexture.h" />
 		<Unit filename="win32/FeelIt/FeelitAPI.h" />
-		<Unit filename="win32/FeelIt/fffx.cpp" />
-		<Unit filename="win32/FeelIt/fffx_feel.cpp" />
+		<Unit filename="win32/FeelIt/fffx.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="win32/FeelIt/fffx_feel.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="win32/FeelIt/fffx_feel.h" />
 		<Unit filename="win32/background.bmp" />
 		<Unit filename="win32/clear.bmp" />
 		<Unit filename="win32/glw_win.h" />
 		<Unit filename="win32/resource.h" />
 		<Unit filename="win32/starwars.ico" />
-		<Unit filename="win32/win_gamma.cpp" />
-		<Unit filename="win32/win_glimp.cpp" />
-		<Unit filename="win32/win_input.cpp" />
+		<Unit filename="win32/win_gamma.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="win32/win_glimp.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="win32/win_input.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="win32/win_local.h" />
-		<Unit filename="win32/win_main.cpp" />
-		<Unit filename="win32/win_qgl.cpp" />
-		<Unit filename="win32/win_shared.cpp" />
-		<Unit filename="win32/win_snd.cpp" />
-		<Unit filename="win32/win_syscon.cpp" />
-		<Unit filename="win32/win_video.cpp" />
-		<Unit filename="win32/win_wndproc.cpp" />
+		<Unit filename="win32/win_main.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="win32/win_qgl.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="win32/win_shared.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="win32/win_snd.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="win32/win_syscon.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="win32/win_video.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="win32/win_wndproc.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Unit filename="win32/winquake.rc" />
 		<Extensions>
 			<code_completion />

@@ -141,6 +141,7 @@ void Sys_PumpEvents( void );
 #define stricmp strcasecmp
 #define strcmpi strcasecmp
 #define strnicmp strncasecmp
+#define _strnicmp strncasecmp
 #include <assert.h>
 #include <ctype.h>
 
@@ -940,7 +941,7 @@ inline int	Q_strncmp (const char *s1, const char *s2, int n) { return strncmp(s1
 inline int	Q_stricmpn (const char *s1, const char *s2, int n) { return strnicmp(s1, s2, n); }
 inline char	*Q_strlwr( char *s1 ) { return strlwr(s1); }
 inline char	*Q_strupr( char *s1 ) { return strupr(s1); }
-inline char	*Q_strrchr( const char* str, int c ) { return strrchr(str, c); }
+inline char	*Q_strrchr( char* str, int c ) { return strrchr(str, c); }
 
 
 // buffer size safe library replacements

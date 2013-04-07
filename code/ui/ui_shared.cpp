@@ -32,7 +32,7 @@ void		Menus_ShowItems(const char *menuName);
 qboolean	ParseRect(const char **p, rectDef_t *r);
 const char	*String_Alloc(const char *p);
 void		ToWindowCoords(float *x, float *y, windowDef_t *window);
-void		Window_Paint(Window *w, float fadeAmount, float fadeClamp, float fadeCycle);
+void		Window_Paint(WindowLava *w, float fadeAmount, float fadeClamp, float fadeCycle);
 int			Item_ListBox_ThumbDrawPosition(itemDef_t *item);
 int			Item_ListBox_ThumbPosition(itemDef_t *item);
 qboolean Rect_ContainsPoint(rectDef_t *rect, float x, float y) ;
@@ -167,7 +167,7 @@ Initializes a window structure ( windowDef_t ) with defaults
  
 ==================
 */
-void Window_Init(Window *w) 
+void Window_Init(WindowLava *w) 
 {
 	memset(w, 0, sizeof(windowDef_t));
 	w->borderSize = 1;
@@ -2127,7 +2127,7 @@ qboolean Script_FFPlay(itemDef_t *item, const char **args)
 	const char *val;
 	if (String_Parse(args, &val)) 
 	{
-		DC->startForce(DC->registerForce(val));
+		DC->startForce(DC->registerForce(val, FF_CHANNEL_MENU));
 	}
 	return qtrue;
 }
@@ -2329,7 +2329,7 @@ qboolean ItemParse_focusForce( itemDef_t *item)
 //#endif
 		return qfalse;
 	}
-	item->focusForce = DC->registerForce(temp);
+	item->focusForce = DC->registerForce(temp, FF_CHANNEL_MENU);
 	return qtrue;
 }
 #endif // _IMMERSION
@@ -6166,7 +6166,7 @@ void GradientBar_Paint(rectDef_t *rect, vec4_t color)
 Window_Paint
 =================
 */
-void Window_Paint(Window *w, float fadeAmount, float fadeClamp, float fadeCycle) 
+void Window_Paint(WindowLava *w, float fadeAmount, float fadeClamp, float fadeCycle) 
 {
   //float bordersize = 0;
   vec4_t color;

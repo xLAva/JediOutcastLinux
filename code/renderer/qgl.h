@@ -515,12 +515,12 @@ extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 #if defined( __linux__ )
 
 //FX Mesa Functions
-extern fxMesaContext (*qfxMesaCreateContext)(GLuint win, GrScreenResolution_t, GrScreenRefresh_t, const GLint attribList[]);
-extern fxMesaContext (*qfxMesaCreateBestContext)(GLuint win, GLint width, GLint height, const GLint attribList[]);
-extern void (*qfxMesaDestroyContext)(fxMesaContext ctx);
-extern void (*qfxMesaMakeCurrent)(fxMesaContext ctx);
-extern fxMesaContext (*qfxMesaGetCurrentContext)(void);
-extern void (*qfxMesaSwapBuffers)(void);
+//extern fxMesaContext (*qfxMesaCreateContext)(GLuint win, GrScreenResolution_t, GrScreenRefresh_t, const GLint attribList[]);
+//extern fxMesaContext (*qfxMesaCreateBestContext)(GLuint win, GLint width, GLint height, const GLint attribList[]);
+//extern void (*qfxMesaDestroyContext)(fxMesaContext ctx);
+//extern void (*qfxMesaMakeCurrent)(fxMesaContext ctx);
+//extern fxMesaContext (*qfxMesaGetCurrentContext)(void);
+//extern void (*qfxMesaSwapBuffers)(void);
 
 //GLX Functions
 extern XVisualInfo * (*qglXChooseVisual)( Display *dpy, int screen, int *attribList );

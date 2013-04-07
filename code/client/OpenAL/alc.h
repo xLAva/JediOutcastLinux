@@ -15,9 +15,6 @@ extern "C" {
   #define ALCAPI __declspec(dllimport)
  #endif
 
- typedef struct ALCdevice_struct ALCdevice;
- typedef struct ALCcontext_struct ALCcontext;
-
  #define ALCAPIENTRY __cdecl
 #else
  #ifdef TARGET_OS_MAC
@@ -30,6 +27,8 @@ extern "C" {
 #endif
 
 
+ typedef struct ALCdevice_struct ALCdevice;
+ typedef struct ALCcontext_struct ALCcontext;
 
 #ifndef ALC_NO_PROTOTYPES
 
@@ -42,7 +41,7 @@ ALCAPI ALCvoid    ALCAPIENTRY alcCloseDevice(ALCdevice *device);
 ALCAPI ALCcontext*ALCAPIENTRY alcCreateContext(ALCdevice *device,ALCint *attrList);
 ALCAPI ALCboolean ALCAPIENTRY alcMakeContextCurrent(ALCcontext *context);
 ALCAPI ALCvoid	  ALCAPIENTRY alcProcessContext(ALCcontext *context);
-ALCAPI ALCcontext*ALCAPIENTRY alcGetCurrentContext(ALCvoid);
+ALCAPI ALCcontext*ALCAPIENTRY alcGetCurrentContext();
 ALCAPI ALCdevice* ALCAPIENTRY alcGetContextsDevice(ALCcontext *context);
 ALCAPI ALCvoid	  ALCAPIENTRY alcSuspendContext(ALCcontext *context);
 ALCAPI ALCvoid    ALCAPIENTRY alcDestroyContext(ALCcontext *context);

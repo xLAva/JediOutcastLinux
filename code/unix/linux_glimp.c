@@ -12,6 +12,8 @@
 **
 */
 
+#include "../server/exe_headers.h"
+
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -22,9 +24,10 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-//#include "../qcommon/qcommon.h"
-//#include "../client/keys.h"
 #include "../renderer/tr_local.h"
+#include "../qcommon/qcommon.h"
+//#include "../client/keys.h"
+
 #include "../client/client.h"
 
 #include "unix_glw.h"

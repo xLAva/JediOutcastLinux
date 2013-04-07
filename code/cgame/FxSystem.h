@@ -60,7 +60,7 @@ struct SFxHelper
 
 #ifdef _IMMERSION
 	void	PlayForce( int entityNum, ffHandle_t ff );
-	ffHandle_t RegisterForce( const char *force, int channel );
+	ffHandle_t RegisterForce( const char *force, int channel=FF_CHANNEL_MENU );
 #endif // _IMMERSION
 	// Physics/collision
 	void	Trace( trace_t *tr, vec3_t start, vec3_t min, vec3_t max, vec3_t end, int skipEntNum, int flags );

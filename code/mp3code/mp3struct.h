@@ -10,6 +10,10 @@
 
 #include "small_header.h"	// for SAMPLE and IN_OUT
 
+#ifdef LINUX
+typedef unsigned char byte;
+#endif
+
 typedef void (*SBT_FUNCTION) (float *sample, short *pcm, int n);
 typedef void (*XFORM_FUNCTION) (void *pcm, int igr);
 typedef IN_OUT(*DECODE_FUNCTION) (unsigned char *bs, unsigned char *pcm);

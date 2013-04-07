@@ -1,4 +1,6 @@
+#ifdef _WINDOWS
 #include <windows.h>
+#endif
 #include "cm_local.h"
 #include "hstring.h"
 

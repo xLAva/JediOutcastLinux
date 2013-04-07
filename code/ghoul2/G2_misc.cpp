@@ -12,7 +12,7 @@
 	#include "../renderer/tr_local.h"
 #endif
 
-#include "../renderer/MatComp.h"
+#include "../renderer/matcomp.h"
 
 #if !defined(G2_H_INC)
 	#include "G2.h"

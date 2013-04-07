@@ -19,6 +19,7 @@
 #include "jpeglib.h"
 
 
+
 /* Private subobject */
 
 typedef struct {

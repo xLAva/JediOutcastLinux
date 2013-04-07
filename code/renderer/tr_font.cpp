@@ -58,7 +58,7 @@ static int Korean_CollapseKSC5601HangulCode(unsigned int uiCode)
 	return 0;
 }
 
-static int Korean_InitFields(int &iGlyphTPs, LPCSTR &psLang)
+static int Korean_InitFields(int &iGlyphTPs, const char* &psLang)
 {
 	psLang		= "kor";
 	iGlyphTPs	= GLYPH_MAX_KOREAN_SHADERS;
@@ -139,7 +139,7 @@ static int Taiwanese_CollapseBig5Code( unsigned int uiCode )
 	return 0;
 }
 
-static int Taiwanese_InitFields(int &iGlyphTPs, LPCSTR &psLang)
+static int Taiwanese_InitFields(int &iGlyphTPs, const char* &psLang)
 {
 	psLang		= "tai";
 	iGlyphTPs	= GLYPH_MAX_TAIWANESE_SHADERS;
@@ -233,7 +233,7 @@ static int Japanese_CollapseShiftJISCode( unsigned int uiCode )
 }
 
 
-static int Japanese_InitFields(int &iGlyphTPs, LPCSTR &psLang)
+static int Japanese_InitFields(int &iGlyphTPs, const char* &psLang)
 {
 	psLang		= "jap";
 	iGlyphTPs	= GLYPH_MAX_JAPANESE_SHADERS;

@@ -132,6 +132,31 @@ LExit:
 }
 
 #endif
+#else
+void S_WriteLinearBlastStereo16 (void)
+{
+	int		i;
+	int		val;
+
+	for (i=0 ; i<snd_linear_count ; i+=2)
+	{
+		val = snd_p[i]>>8;
+		if (val > 0x7fff)
+			snd_out[i] = 0x7fff;
+		else if (val < (short)0x8000)
+			snd_out[i] = (short)0x8000;
+		else
+			snd_out[i] = val;
+
+		val = snd_p[i+1]>>8;
+		if (val > 0x7fff)
+			snd_out[i+1] = 0x7fff;
+		else if (val < (short)0x8000)
+			snd_out[i+1] = (short)0x8000;
+		else
+			snd_out[i+1] = val;
+	}
+}
 #endif
 
 

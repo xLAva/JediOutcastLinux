@@ -211,6 +211,9 @@ void UpdateLoopingSounds();
 void AL_UpdateRawSamples();
 void S_SetLipSyncs();
 
+//LAvaPort
+#define LPEAXMANAGER int
+#define HINSTANCE int
 // EAX Related
 ALboolean				s_bEAX;				// Is EAX 3.0 support is available
 bool					s_bEALFileLoaded;	// Has an .eal file been loaded for the current level
@@ -278,8 +281,8 @@ static void DynamicMusicInfoPrint(void)
 	{
 		// horribly lazy... ;-)
 		//
-		LPCSTR psRequestMusicState	= Music_BaseStateToString( eMusic_StateRequest );
-		LPCSTR psActualMusicState	= Music_BaseStateToString( eMusic_StateActual, qtrue );
+		const char* psRequestMusicState	= Music_BaseStateToString( eMusic_StateRequest );
+		const char* psActualMusicState	= Music_BaseStateToString( eMusic_StateActual, qtrue );
 		if (psRequestMusicState == NULL)
 		{
 			psRequestMusicState = "<unknown>";
@@ -471,7 +474,7 @@ void S_Init( void ) {
 			for (j = 0; j < NUM_STREAMING_BUFFERS; j++)
 			{
 				alGenBuffers(1, &(ch->buffers[j].BufferID));
-				ch->buffers[j].Status = UNQUEUED;
+				ch->buffers[j].StatusLava = UNQUEUED;
 				ch->buffers[j].Data = (char *)Z_Malloc(STREAMING_BUFFER_SIZE, TAG_SND_RAWDATA, qfalse);
 			}
 		}
@@ -591,7 +594,7 @@ void S_Shutdown( void )
 			{
 				alDeleteBuffers(1, &(ch->buffers[j].BufferID));
 				ch->buffers[j].BufferID = 0;
-				ch->buffers[j].Status = UNQUEUED;
+				ch->buffers[j].StatusLava = UNQUEUED;
 				if (ch->buffers[j].Data)
 				{
 					Z_Free(ch->buffers[j].Data);
@@ -2677,7 +2680,7 @@ void S_Update_(void) {
 
 				// Reset streaming buffers status's
 				for (i = 0; i < NUM_STREAMING_BUFFERS; i++)
-					ch->buffers[i].Status = UNQUEUED;
+					ch->buffers[i].StatusLava = UNQUEUED;
 
 				// Decode (STREAMING_BUFFER_SIZE / 1152) MP3 frames for each of the NUM_STREAMING_BUFFERS AL Buffers
 				for (i = 0; i < NUM_STREAMING_BUFFERS; i++)
@@ -2730,7 +2733,7 @@ void S_Update_(void) {
 					alSourceQueueBuffers(s_channels[source].alSource, 1, &(ch->buffers[i].BufferID));
 					if (alGetError() == AL_NO_ERROR)
 					{
-						ch->buffers[i].Status = QUEUED;
+						ch->buffers[i].StatusLava = QUEUED;
 					}
 				}
 
@@ -2896,7 +2899,7 @@ void UpdateSingleShotSounds()
 						{
 							if (ch->buffers[j].BufferID == buffer)
 							{
-								ch->buffers[j].Status = UNQUEUED;
+								ch->buffers[j].StatusLava = UNQUEUED;
 								break;
 							}
 						}
@@ -2907,7 +2910,7 @@ void UpdateSingleShotSounds()
 
 					for (j = 0; j < NUM_STREAMING_BUFFERS; j++)
 					{
-						if ((ch->buffers[j].Status == UNQUEUED) & (ch->MP3StreamHeader.iSourceBytesRemaining > 0))
+						if ((ch->buffers[j].StatusLava == UNQUEUED) & (ch->MP3StreamHeader.iSourceBytesRemaining > 0))
 						{
 							nTotalBytesDecoded = 0;
 		
@@ -2956,7 +2959,7 @@ void UpdateSingleShotSounds()
 								alSourceQueueBuffers(ch->alSource, 1, &(ch->buffers[j].BufferID));
 
 								// Update status of Buffer
-								ch->buffers[j].Status = QUEUED;
+								ch->buffers[j].StatusLava = QUEUED;
 
 								break;
 							}
@@ -2969,7 +2972,7 @@ void UpdateSingleShotSounds()
 								alSourceQueueBuffers(ch->alSource, 1, &(ch->buffers[j].BufferID));
 								
 								// Update status of Buffer
-								ch->buffers[j].Status = QUEUED;
+								ch->buffers[j].StatusLava = QUEUED;
 							}
 						}
 					}
@@ -3214,7 +3217,7 @@ void AL_UpdateRawSamples()
 		size = (s_rawend - s_paintedtime)<<2;
 		if (size > (MAX_RAW_SAMPLES<<2))
 		{
-			OutputDebugString("UpdateRawSamples :- Raw Sample buffer has overflowed !!!\n");
+			//OutputDebugString("UpdateRawSamples :- Raw Sample buffer has overflowed !!!\n"); //LAvaPort -> do some other output
 			size = MAX_RAW_SAMPLES<<2;
 			s_paintedtime = s_rawend - MAX_RAW_SAMPLES;
 		}
@@ -4041,7 +4044,7 @@ static void S_SwitchDynamicTracks( MusicState_e eOldState, MusicState_e eNewStat
 
 	if (s_debugdynamic->integer)
 	{
-		LPCSTR	psNewStateString = Music_BaseStateToString( eNewState, qtrue );
+		const char*	psNewStateString = Music_BaseStateToString( eNewState, qtrue );
 				psNewStateString = psNewStateString?psNewStateString:"<unknown>";
 
 		Com_Printf( S_COLOR_MAGENTA "S_SwitchDynamicTracks( \"%s\" )\n", psNewStateString );
@@ -4061,7 +4064,7 @@ static void S_SetDynamicMusicState( MusicState_e eNewState )
 
 		if (s_debugdynamic->integer)
 		{
-			LPCSTR	psNewStateString = Music_BaseStateToString( eNewState, qtrue );
+			const char*	psNewStateString = Music_BaseStateToString( eNewState, qtrue );
 					psNewStateString = psNewStateString?psNewStateString:"<unknown>";
 
 			Com_Printf( S_COLOR_MAGENTA "S_SetDynamicMusicState( Request: \"%s\" )\n", psNewStateString );
@@ -4271,7 +4274,7 @@ void S_StartBackgroundTrack( const char *intro, const char *loop, qboolean bCall
 	//
 	if (!s_allowDynamicMusic->integer && Music_DynamicDataAvailable(intro))	// "intro", NOT "sName" (i.e. don't use version with ".mp3" extension)
 	{
-		LPCSTR psMusicName = Music_GetFileNameForState( eBGRNDTRACK_DATABEGIN );
+		const char* psMusicName = Music_GetFileNameForState( eBGRNDTRACK_DATABEGIN );
 		if (psMusicName && S_FileExists( psMusicName ))
 		{
 			Q_strncpyz(sName,psMusicName,sizeof(sName));
@@ -4294,7 +4297,7 @@ void S_StartBackgroundTrack( const char *intro, const char *loop, qboolean bCall
 			for (int i = eBGRNDTRACK_DATABEGIN; i != eBGRNDTRACK_DATAEND; i++)
 			{
 				qboolean bOk = qfalse;
-				LPCSTR psMusicName = Music_GetFileNameForState( (MusicState_e) i);
+				const char* psMusicName = Music_GetFileNameForState( (MusicState_e) i);
 				if (psMusicName && (!Q_stricmp(tMusic_Info[i].sLoadedDataName, psMusicName) || S_FileExists( psMusicName )) )
 				{
 					bOk = S_StartBackgroundTrack_Actual( &tMusic_Info[i], qtrue, psMusicName, loop );
@@ -4551,12 +4554,12 @@ static qboolean S_UpdateBackgroundTrack_Actual( MusicInfo_t *pMusicInfo, qboolea
 
 // used to be just for dynamic, but now even non-dynamic music has to know whether it should be silent or not...
 //
-static LPCSTR S_Music_GetRequestedState(void)
+static const char* S_Music_GetRequestedState(void)
 {
 	int iStringOffset = cl.gameState.stringOffsets[CS_DYNAMIC_MUSIC_STATE];
 	if (iStringOffset)
 	{
-		LPCSTR psCommand = cl.gameState.stringData+iStringOffset; 
+		const char* psCommand = cl.gameState.stringData+iStringOffset; 
 
 		return psCommand;
 	}
@@ -4572,7 +4575,7 @@ static LPCSTR S_Music_GetRequestedState(void)
 //
 static void S_CheckDynamicMusicState(void)
 {
-	LPCSTR psCommand = S_Music_GetRequestedState();
+	const char* psCommand = S_Music_GetRequestedState();
 
 	if (psCommand)
 	{
@@ -4732,7 +4735,7 @@ static void S_UpdateBackgroundTrack( void )
 	{
 		// standard / non-dynamic one-track music...
 		//
-		LPCSTR psCommand = S_Music_GetRequestedState();	// special check just for "silence" case...
+		const char* psCommand = S_Music_GetRequestedState();	// special check just for "silence" case...
 		qboolean bShouldBeSilent = (psCommand && !stricmp(psCommand,"silence"));
 		float fDesiredVolume = bShouldBeSilent ? 0.0f : s_musicVolume->value;
 		//
@@ -5028,6 +5031,8 @@ qboolean SND_RegisterAudio_LevelLoadEnd(qboolean bDeleteEverythingNotUsedThisLev
 */
 void InitEAXManager()
 {
+  //LAvaPort - disable eax for now
+  #ifdef _WINDOWS
 	LPEAXMANAGERCREATE lpEAXManagerCreateFn;
 	HRESULT hr;
 
@@ -5065,7 +5070,7 @@ void InitEAXManager()
 		FreeLibrary(s_hEAXManInst);
 		s_hEAXManInst = NULL;
 	}
-
+  #endif
 	s_lpEAXManager = NULL;
 	s_bEAX = false;
 
@@ -5078,6 +5083,9 @@ void InitEAXManager()
 void ReleaseEAXManager()
 {
 	s_bEAX = false;
+	
+	//LAvaPort - disabled for now
+	#ifdef _WINDOWS
 	if (s_lpEAXManager)
 	{
 		s_lpEAXManager->Release();
@@ -5088,6 +5096,7 @@ void ReleaseEAXManager()
 		FreeLibrary(s_hEAXManInst);
 		s_hEAXManInst = NULL;
 	}
+	#endif
 }
 
 
@@ -5096,6 +5105,8 @@ void ReleaseEAXManager()
 */
 bool LoadEALFile(char *szEALFilename)
 {
+	//LAvaPort - disabled for now
+	#ifdef _WINDOWS
 	char		*ealData = NULL;
 	int			result;
 	HRESULT		hr;
@@ -5120,7 +5131,7 @@ bool LoadEALFile(char *szEALFilename)
 		if (hr == EM_OK)
 			return true;
 	}
-
+  #endif
 	return false;
 }
 
@@ -5129,6 +5140,9 @@ bool LoadEALFile(char *szEALFilename)
 */
 void UnloadEALFile()
 {
+	//LAvaPort - disabled for now
+	#ifdef _WINDOWS
+  
 	HRESULT hr;
 
 	if ((!s_lpEAXManager) || (!s_bEAX))
@@ -5137,6 +5151,7 @@ void UnloadEALFile()
 	hr = s_lpEAXManager->FreeDataSet(0);
 
 	return;
+	#endif
 }
 
 /*
@@ -5144,6 +5159,9 @@ void UnloadEALFile()
 */
 void UpdateEAXListener(bool bUseDefault, bool bUseMorphing)
 {
+  //LAvaPort - disabled for now
+	#ifdef _WINDOWS
+
 	HRESULT hr;
 	EMPOINT EMPoint;
 	long lID;
@@ -5213,6 +5231,7 @@ void UpdateEAXListener(bool bUseDefault, bool bUseMorphing)
 	}
 
 	return;
+	#endif
 }
 
 
@@ -5221,6 +5240,8 @@ void UpdateEAXListener(bool bUseDefault, bool bUseMorphing)
 */
 void UpdateEAXBuffer(channel_t *ch)
 {
+	//LAvaPort - disabled for now
+	#ifdef _WINDOWS
 	HRESULT hr;
 	EMPOINT EMSourcePoint;
 	EMPOINT EMVirtualSourcePoint;
@@ -5287,6 +5308,7 @@ void UpdateEAXBuffer(channel_t *ch)
 	}
 
 	return;
+	#endif
 }
 
 

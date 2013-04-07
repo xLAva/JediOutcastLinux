@@ -41,7 +41,7 @@
 #pragma warning( pop )
 using namespace std;
 
-#include "ifc.h"
+#include "IFC/IFC.h"
 #include "ff_utils.h"
 #include "ff_system.h"
 

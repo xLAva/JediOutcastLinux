@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "../server/exe_headers.h"
-#include "tr_QuickSprite.h"
+#include "tr_quicksprite.h"
 
 extern void R_BindAnimatedImage( const textureBundle_t *bundle );
 

@@ -1,4 +1,4 @@
-#include "MatComp.h"
+#include "matcomp.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

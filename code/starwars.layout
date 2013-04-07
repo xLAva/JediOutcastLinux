@@ -7,6 +7,15 @@
 	<File name="client/snd_local.h" open="1" top="0" tabpos="3">
 		<Cursor position="323" topLine="0" />
 	</File>
+	<File name="ff/IFC/ImmDevice.h" open="1" top="0" tabpos="4">
+		<Cursor position="1593" topLine="28" />
+	</File>
+	<File name="game/ghoul2_shared.h" open="0" top="0" tabpos="0">
+		<Cursor position="277" topLine="0" />
+	</File>
+	<File name="game/q_shared.h" open="0" top="0" tabpos="0">
+		<Cursor position="22911" topLine="930" />
+	</File>
 	<File name="ghoul2/G2.h" open="0" top="0" tabpos="0">
 		<Cursor position="11361" topLine="143" />
 	</File>
@@ -19,8 +28,17 @@
 	<File name="mp3code/cupl3.c" open="0" top="0" tabpos="3">
 		<Cursor position="1854" topLine="39" />
 	</File>
-	<File name="renderer/qgl.h" open="1" top="1" tabpos="2">
-		<Cursor position="33677" topLine="503" />
+	<File name="mp3code/towave.c" open="1" top="0" tabpos="21">
+		<Cursor position="1534" topLine="19" />
+	</File>
+	<File name="qcommon/cm_patch.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="38186" topLine="1467" />
+	</File>
+	<File name="qcommon/stripPublic.h" open="0" top="0" tabpos="0">
+		<Cursor position="1084" topLine="27" />
+	</File>
+	<File name="renderer/qgl.h" open="1" top="0" tabpos="2">
+		<Cursor position="33656" topLine="491" />
 	</File>
 	<File name="renderer/tr_backend.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="0" topLine="1232" />
@@ -28,10 +46,52 @@
 	<File name="renderer/tr_font.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="0" topLine="54" />
 	</File>
+	<File name="renderer/tr_ghoul2.cpp" open="1" top="0" tabpos="19">
+		<Cursor position="77957" topLine="2439" />
+	</File>
 	<File name="renderer/tr_surfacesprites.cpp" open="0" top="0" tabpos="4">
 		<Cursor position="1145" topLine="0" />
 	</File>
+	<File name="server/exe_headers.h" open="1" top="0" tabpos="9">
+		<Cursor position="217" topLine="0" />
+	</File>
 	<File name="server/sv_game.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="11970" topLine="437" />
+	</File>
+	<File name="unix/linux_glimp.c" open="1" top="1" tabpos="5">
+		<Cursor position="319" topLine="0" />
+	</File>
+	<File name="unix/linux_qgl.c" open="1" top="0" tabpos="10">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="unix/linux_snd.c" open="1" top="0" tabpos="6">
+		<Cursor position="383" topLine="0" />
+	</File>
+	<File name="unix/matha.s" open="1" top="0" tabpos="12">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="unix/snd_mixa.s" open="1" top="0" tabpos="13">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="unix/sys_dosa.s" open="1" top="0" tabpos="14">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="unix/ui_video.c" open="1" top="0" tabpos="15">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="unix/unix_main.c" open="1" top="0" tabpos="17">
+		<Cursor position="0" topLine="183" />
+	</File>
+	<File name="unix/unix_net.c" open="1" top="0" tabpos="16">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="unix/unix_shared.c" open="1" top="0" tabpos="18">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="win32/win_glimp.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="52" topLine="12" />
+	</File>
+	<File name="win32/win_main.cpp" open="1" top="0" tabpos="8">
+		<Cursor position="0" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>

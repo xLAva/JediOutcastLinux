@@ -786,8 +786,10 @@ void R_Images_DeleteLightMaps(void)
 		if (pImage->imgName[0] == '*' && strstr(pImage->imgName,"lightmap"))	// loose check, but should be ok
 		{
 			R_Images_DeleteImageContents(pImage);
-
-			itImage = AllocatedImages.erase(itImage);
+      //LAvaPort - might not work - not tested yet
+      AllocatedImages_t::iterator itImageErase = itImage;
+      itImage++;
+			AllocatedImages.erase(itImageErase);
 			bEraseOccured = qtrue;
 		}
 	}
@@ -885,7 +887,10 @@ qboolean RE_RegisterImages_LevelLoadEnd(void)
 
 				R_Images_DeleteImageContents(pImage);
 
-				itImage = AllocatedImages.erase(itImage);
+        //LAvaPort - might not work - not tested yet
+        AllocatedImages_t::iterator itImageErase = itImage;
+        itImage++;
+				AllocatedImages.erase(itImageErase);
 				bEraseOccured = qtrue;
 			}
 		}
