@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Win32 Release" />
-	<File name="client/cl_cgame.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="421" topLine="5" />
+	<ActiveTarget name="Linux Release" />
+	<File name="client/cl_cgame.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="client/snd_local.h" open="1" top="0" tabpos="3">
+		<Cursor position="323" topLine="0" />
 	</File>
 	<File name="ghoul2/G2.h" open="0" top="0" tabpos="0">
 		<Cursor position="11361" topLine="143" />
@@ -15,6 +18,9 @@
 	</File>
 	<File name="mp3code/cupl3.c" open="0" top="0" tabpos="3">
 		<Cursor position="1854" topLine="39" />
+	</File>
+	<File name="renderer/qgl.h" open="1" top="1" tabpos="2">
+		<Cursor position="33677" topLine="503" />
 	</File>
 	<File name="renderer/tr_backend.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="0" topLine="1232" />
