@@ -8,6 +8,7 @@
 #include "b_local.h"
 #include "b_public.h"
 #include "anims.h"
+#include "../cgame/cg_local.h"
 
 extern qboolean NPCsPrecached;
 extern vec3_t playerMins;

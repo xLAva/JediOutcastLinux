@@ -16,7 +16,11 @@
 
 using namespace std;
 
-//#include <windows.h>
+#ifdef _WINDOWS
+#include <windows.h>
+#else
+#include <string.h>
+#endif
 
 typedef unsigned char byte;
 typedef unsigned short word;

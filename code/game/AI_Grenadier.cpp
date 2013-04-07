@@ -499,7 +499,7 @@ void NPC_BSGrenadier_Attack( void )
 		if ( NPC->client->ps.weapon == WP_THERMAL )
 		{//grenadier
 			trace_t	trace;
-			gi.trace ( &trace, NPC->currentOrigin, NPC->enemy->mins, NPC->enemy->maxs, NPC->enemy->currentOrigin, NPC->s.number, NPC->enemy->clipmask );
+			gi.trace ( &trace, NPC->currentOrigin, NPC->enemy->mins, NPC->enemy->maxs, NPC->enemy->currentOrigin, NPC->s.number, NPC->enemy->clipmask,(EG2_Collision)0,0 );
 			if ( !trace.allsolid && !trace.startsolid && (trace.fraction == 1.0 || trace.entityNum == NPC->enemy->s.number ) )
 			{//I can get right to him
 				//reset fire-timing variables

@@ -3,7 +3,7 @@
 
 	    
 #include "b_local.h"
-
+#include "../cgame/cg_local.h"
 
 #define	MIN_MELEE_RANGE		640
 #define	MIN_MELEE_RANGE_SQR	( MIN_MELEE_RANGE * MIN_MELEE_RANGE )

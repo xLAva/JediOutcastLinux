@@ -17,6 +17,7 @@
 #include "../cgame/cg_local.h"	// yeah I know this is naughty, but we're shipping soon...
 #include "wp_saber.h"
 #include <float.h>
+#include "../game/npc_headers.h"
 
 extern qboolean G_DoDismemberment( gentity_t *self, vec3_t point, int mod, int damage, int hitLoc, qboolean force = qfalse );
 extern qboolean G_EntIsUnlockedDoor( int entityNum );
@@ -799,7 +800,7 @@ static qboolean PM_CheckJump( void )
 
 		AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
 		VectorMA( pm->ps->origin, -8, forward, back );
-		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, back, pm->ps->clientNum, pm->tracemask );
+		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, back, pm->ps->clientNum, pm->tracemask, (EG2_Collision)0, 0 );
 
 		pm->cmd.upmove = 0;
 
@@ -962,7 +963,7 @@ static qboolean PM_CheckJump( void )
 				if ( doTrace )
 				{
 					//FIXME: all these jump ones should check for head clearance
-					pm->trace( &trace, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, contents );
+					pm->trace( &trace, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, contents, (EG2_Collision)0, 0 );
 					VectorSubtract( pm->ps->origin, traceto, idealNormal );
 					VectorNormalize( idealNormal );
 					if ( anim == BOTH_WALL_FLIP_LEFT )
@@ -970,13 +971,13 @@ static qboolean PM_CheckJump( void )
 						trace_t	trace2;
 						vec3_t	start;
 						VectorMA( pm->ps->origin, 128, right, traceto );
-						pm->trace( &trace2, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, contents );
+						pm->trace( &trace2, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, contents, (EG2_Collision)0, 0 );
 						if ( !trace2.allsolid && !trace2.startsolid )
 						{
 							VectorCopy( trace2.endpos, traceto );
 							VectorCopy( traceto, start );
 							traceto[2] -= 384;
-							pm->trace( &trace2, start, mins, maxs, traceto, pm->ps->clientNum, contents );
+							pm->trace( &trace2, start, mins, maxs, traceto, pm->ps->clientNum, contents, (EG2_Collision)0, 0 );
 							if ( !trace2.allsolid && !trace2.startsolid && trace2.fraction >= 1.0f )
 							{//bottomless pit!
 								trace.fraction = 1.0f;//way to stop it from doing the side-flip
@@ -988,13 +989,13 @@ static qboolean PM_CheckJump( void )
 						trace_t	trace2;
 						vec3_t	start;
 						VectorMA( pm->ps->origin, -128, right, traceto );
-						pm->trace( &trace2, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, contents );
+						pm->trace( &trace2, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, contents, (EG2_Collision)0, 0 );
 						if ( !trace2.allsolid && !trace2.startsolid )
 						{
 							VectorCopy( trace2.endpos, traceto );
 							VectorCopy( traceto, start );
 							traceto[2] -= 384;
-							pm->trace( &trace2, start, mins, maxs, traceto, pm->ps->clientNum, contents );
+							pm->trace( &trace2, start, mins, maxs, traceto, pm->ps->clientNum, contents, (EG2_Collision)0, 0 );
 							if ( !trace2.allsolid && !trace2.startsolid && trace2.fraction >= 1.0f )
 							{//bottomless pit!
 								trace.fraction = 1.0f;//way to stop it from doing the side-flip
@@ -1006,13 +1007,13 @@ static qboolean PM_CheckJump( void )
 						trace_t	trace2;
 						vec3_t	start;
 						VectorMA( pm->ps->origin, -128, fwd, traceto );
-						pm->trace( &trace2, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, contents );
+						pm->trace( &trace2, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, contents, (EG2_Collision)0, 0 );
 						if ( !trace2.allsolid && !trace2.startsolid )
 						{
 							VectorCopy( trace2.endpos, traceto );
 							VectorCopy( traceto, start );
 							traceto[2] -= 384;
-							pm->trace( &trace2, start, mins, maxs, traceto, pm->ps->clientNum, contents );
+							pm->trace( &trace2, start, mins, maxs, traceto, pm->ps->clientNum, contents, (EG2_Collision)0, 0 );
 							if ( !trace2.allsolid && !trace2.startsolid && trace2.fraction >= 1.0f )
 							{//bottomless pit!
 								trace.fraction = 1.0f;//way to stop it from doing the side-flip
@@ -1145,7 +1146,7 @@ static qboolean PM_CheckJump( void )
 				}
 				if ( anim != -1 )
 				{
-					pm->trace( &trace, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, CONTENTS_SOLID|CONTENTS_BODY );
+					pm->trace( &trace, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, CONTENTS_SOLID|CONTENTS_BODY, (EG2_Collision)0, 0 );
 					if ( trace.fraction < 1.0f )
 					{//flip off wall
 						if ( anim == BOTH_WALL_RUN_LEFT_FLIP )
@@ -1217,7 +1218,7 @@ static qboolean PM_CheckJump( void )
 					AngleVectors( fwdAngles, fwd, NULL, NULL );
 					VectorMA( pm->ps->origin, 32, fwd, traceto );
 
-					pm->trace( &trace, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, CONTENTS_SOLID );//FIXME: clip brushes too?
+					pm->trace( &trace, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, CONTENTS_SOLID, (EG2_Collision)0, 0 );//FIXME: clip brushes too?
 					VectorSubtract( pm->ps->origin, traceto, idealNormal );
 					VectorNormalize( idealNormal );
 					gentity_t *traceEnt = &g_entities[trace.entityNum];
@@ -2430,13 +2431,13 @@ static qboolean PM_TryRoll( void )
 		}
 		if ( !roll )
 		{
-			pm->trace( &trace, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, clipmask );
+			pm->trace( &trace, pm->ps->origin, mins, maxs, traceto, pm->ps->clientNum, clipmask, (EG2_Collision)0, 0 );
 			if ( trace.fraction >= 1.0f )
 			{//okay, clear, check for a bottomless drop
 				vec3_t	top;
 				VectorCopy( traceto, top );
 				traceto[2] -= 256;
-				pm->trace( &trace, top, mins, maxs, traceto, pm->ps->clientNum, CONTENTS_SOLID );
+				pm->trace( &trace, top, mins, maxs, traceto, pm->ps->clientNum, CONTENTS_SOLID, (EG2_Collision)0, 0 );
 				if ( trace.fraction < 1.0f )
 				{//not a bottomless drop
 					roll = qtrue;
@@ -2887,7 +2888,7 @@ static void PM_GroundTraceMissed( void ) {
 									VectorScale( vel, time, vel );
 									VectorAdd( pm->ps->origin, vel, point );
 
-									pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+									pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask, (EG2_Collision)0, 0 );
 
 									if ( !trace.allsolid && !trace.startsolid && (pm->ps->origin[2] - trace.endpos[2]) >= 128 )//>=128 so we don't die on steps!
 									{
@@ -3014,7 +3015,7 @@ static void PM_GroundTraceMissed( void ) {
 				VectorCopy( pm->ps->origin, point );
 				point[2] -= 64;
 
-				pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
+				pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask, (EG2_Collision)0, 0);
 				if ( trace.fraction == 1.0 ) 
 				{//FIXME: if velocity[2] < 0 and didn't jump, use some falling anim
 					if ( pm->ps->velocity[2] <= 0 && !(pm->ps->pm_flags&PMF_JUMP_HELD))
@@ -3144,7 +3145,7 @@ static void PM_GroundTrace( void ) {
 	point[1] = pm->ps->origin[1];
 	point[2] = pm->ps->origin[2] - 0.25;
 
-	pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
+	pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask, (EG2_Collision)0, 0);
 	pml.groundTrace = trace;
 
 	// do something corrective if the trace starts in a solid...
@@ -3313,7 +3314,7 @@ void PM_SetWaterHeight( void )
 	top[2] += pm->gent->client->standheight;
 	bottom[2] += DEFAULT_MINS_2;
 
-	gi.trace( &trace, top, pm->mins, pm->maxs, bottom, pm->ps->clientNum, (CONTENTS_WATER|CONTENTS_SLIME) );
+	gi.trace( &trace, top, pm->mins, pm->maxs, bottom, pm->ps->clientNum, (CONTENTS_WATER|CONTENTS_SLIME), (EG2_Collision)0, 0 );
 
 	if ( trace.startsolid )
 	{//under water
@@ -3534,7 +3535,7 @@ static void PM_CheckDuck (void)
 			{//unducking whilst in air will try to drop feet
 				pm->maxs[2] = standheight;
 				pm->ps->origin[2] += oldHeight - pm->maxs[2];
-				pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask );
+				pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask, (EG2_Collision)0, 0 );
 				if ( !trace.allsolid )
 				{
 					pm->ps->eFlags ^= EF_TELEPORT_BIT;
@@ -3552,7 +3553,7 @@ static void PM_CheckDuck (void)
 			{
 				// try to stand up
 				pm->maxs[2] = standheight;
-				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask );
+				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask, (EG2_Collision)0, 0 );
 				if ( !trace.allsolid )
 				{
 					pm->ps->pm_flags &= ~PMF_DUCKED;
@@ -3779,7 +3780,7 @@ qboolean PM_GettingUpFromKnockDown( float standheight, float crouchheight )
 				trace_t	trace;
 				// try to stand up
 				pm->maxs[2] = standheight;
-				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask );
+				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask, (EG2_Collision)0, 0 );
 				if ( !trace.allsolid )
 				{//stand up
 					qboolean forceGetUp = qfalse;
@@ -4245,11 +4246,11 @@ void PM_ResetAnkleAngles( void )
 	}
 	if ( pm->gent->footLBone != -1 )
 	{
-		gi.G2API_SetBoneAnglesIndex( &pm->gent->ghoul2[0], pm->gent->footLBone, vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, NEGATIVE_X, NULL ); 
+		gi.G2API_SetBoneAnglesIndex( &pm->gent->ghoul2[0], pm->gent->footLBone, vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, NEGATIVE_X, NULL, 0, 0 ); 
 	}
 	if ( pm->gent->footRBone != -1 )
 	{
-		gi.G2API_SetBoneAnglesIndex( &pm->gent->ghoul2[0], pm->gent->footRBone, vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, NEGATIVE_X, NULL ); 
+		gi.G2API_SetBoneAnglesIndex( &pm->gent->ghoul2[0], pm->gent->footRBone, vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, NEGATIVE_X, NULL, 0, 0 ); 
 	}
 }
 
@@ -4385,11 +4386,11 @@ void PM_FootSlopeTrace( float *pDiff, float *pInterval )
 		VectorSet( footMaxs, 3, 3, 1 );
 	}
 
-	pm->trace( &trace, footLOrg, footMins, footMaxs, footLBot, pm->ps->clientNum, pm->tracemask );
+	pm->trace( &trace, footLOrg, footMins, footMaxs, footLBot, pm->ps->clientNum, pm->tracemask, (EG2_Collision)0, 0 );
 	VectorCopy( trace.endpos, footLBot );
 	VectorCopy( trace.plane.normal, footLSlope );
 
-	pm->trace( &trace, footROrg, footMins, footMaxs, footRBot, pm->ps->clientNum, pm->tracemask );
+	pm->trace( &trace, footROrg, footMins, footMaxs, footRBot, pm->ps->clientNum, pm->tracemask, (EG2_Collision)0, 0 );
 	VectorCopy( trace.endpos, footRBot );
 	VectorCopy( trace.plane.normal, footRSlope );
 
@@ -4403,13 +4404,13 @@ void PM_FootSlopeTrace( float *pDiff, float *pInterval )
 		{//rotate the ATST's left foot pad to match the slope
 			PM_AnglesForSlope( pm->gent->client->renderInfo.legsYaw, footLSlope, footAngles );
 			//Hmm... lerp this?
-			gi.G2API_SetBoneAnglesIndex( &pm->gent->ghoul2[0], pm->gent->footLBone, footAngles, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, NEGATIVE_X, NULL ); 
+			gi.G2API_SetBoneAnglesIndex( &pm->gent->ghoul2[0], pm->gent->footLBone, footAngles, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, NEGATIVE_X, NULL, 0, 0 ); 
 		}
 		if ( !VectorCompare( footRSlope, vec3_origin ) )
 		{//rotate the ATST's right foot pad to match the slope
 			PM_AnglesForSlope( pm->gent->client->renderInfo.legsYaw, footRSlope, footAngles );
 			//Hmm... lerp this?
-			gi.G2API_SetBoneAnglesIndex( &pm->gent->ghoul2[0], pm->gent->footRBone, footAngles, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, NEGATIVE_X, NULL ); 
+			gi.G2API_SetBoneAnglesIndex( &pm->gent->ghoul2[0], pm->gent->footRBone, footAngles, BONE_ANGLES_POSTMULT, POSITIVE_Z, NEGATIVE_Y, NEGATIVE_X, NULL, 0, 0 ); 
 		}
 	}
 
@@ -5434,7 +5435,7 @@ static void PM_WaterEvents( void ) {		// FIXME?
 		start[2] += 10;
 		end[2] -= 40;
 
-		gi.trace( &tr, start, vec3_origin, vec3_origin, end, pm->gent->s.number, CONTENTS_WATER );
+		gi.trace( &tr, start, vec3_origin, vec3_origin, end, pm->gent->s.number, CONTENTS_WATER, (EG2_Collision)0, 0 );
 
 		if ( tr.fraction < 1.0f )
 		{

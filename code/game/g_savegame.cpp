@@ -161,7 +161,7 @@ char *GetStringPtr(int iStrlen, char *psOriginal/*may be NULL*/)
 
 		assert(iStrlen+1<=sizeof(sString));
 		
-		gi.ReadFromSaveGame('STRG', sString, iStrlen);
+		gi.ReadFromSaveGame('STRG', sString, iStrlen, NULL);
 
 		// we can't do string recycling with the new g_alloc pool dumping, so just always alloc here...
 		//
@@ -544,7 +544,7 @@ void EvaluateField(field_t *pField, byte *pbBase, byte *pbOriginalRefData/* may 
 
 
 // copy of function in sv_savegame
-static LPCSTR SG_GetChidText(unsigned long chid)
+static const char* SG_GetChidText(unsigned long chid)
 {
 	static char	chidtext[5];
 
@@ -556,7 +556,7 @@ static LPCSTR SG_GetChidText(unsigned long chid)
 
 void EvaluateFields(field_t *pFields, byte *pbData, byte *pbOriginalRefData, unsigned long ulChid, int iSize, qboolean bOkToSizeMisMatch)
 {	
-	int iReadSize = gi.ReadFromSaveGame(ulChid, pbData, bOkToSizeMisMatch?0:iSize);
+	int iReadSize = gi.ReadFromSaveGame(ulChid, pbData, bOkToSizeMisMatch?0:iSize, NULL);
 
 	if (iReadSize != iSize)
 	{
@@ -718,13 +718,13 @@ void ReadGEntities(qboolean qbAutosave)
 {
 	int		iCount;
 	
-	gi.ReadFromSaveGame('NMED', (void *)&iCount, sizeof(iCount));
+	gi.ReadFromSaveGame('NMED', (void *)&iCount, sizeof(iCount), NULL);
 
 	int iPreviousEntRead = -1;
 	for (int i=0; i<iCount; i++)
 	{
 		int iEntIndex;
-		gi.ReadFromSaveGame('EDNM', (void *)&iEntIndex, sizeof(iEntIndex));
+		gi.ReadFromSaveGame('EDNM', (void *)&iEntIndex, sizeof(iEntIndex), NULL);
 
 		if (iEntIndex >= globals.num_entities)
 		{
@@ -824,7 +824,7 @@ void ReadGEntities(qboolean qbAutosave)
 		{
 			parms_t tempParms;
 			
-			gi.ReadFromSaveGame('PARM', &tempParms, sizeof(tempParms));
+			gi.ReadFromSaveGame('PARM', &tempParms, sizeof(tempParms), NULL);
 
 			// so can we pinch the original's one or do we have to alloc a new one?...
 			//
@@ -851,13 +851,13 @@ void ReadGEntities(qboolean qbAutosave)
 		{
 			char *pGhoul2Data = NULL;
 			int   iGhoul2Size = 0;
-			gi.ReadFromSaveGame('GL2S', &iGhoul2Size, sizeof(iGhoul2Size));
+			gi.ReadFromSaveGame('GL2S', &iGhoul2Size, sizeof(iGhoul2Size), NULL);
 			pGhoul2Data = (char *) gi.Malloc(iGhoul2Size, TAG_TEMP_WORKSPACE, qfalse);
 /*			if (pGhoul2Data == 0)
 			{
 				G_Error("ReadGEntities(): ent %d/%d (targetname: '%s'), failed to alloc %d bytes for Ghoul2 load",i,iCount,pEnt->targetname,iGhoul2Size);
 			}
-*/			gi.ReadFromSaveGame('GHL2', pGhoul2Data, iGhoul2Size);
+*/			gi.ReadFromSaveGame('GHL2', pGhoul2Data, iGhoul2Size, NULL);
 			gi.G2API_LoadGhoul2Models(pEnt->ghoul2, pGhoul2Data);	// if it's going to crash anywhere...   <g>
 			gi.Free(pGhoul2Data);
 		}
@@ -918,7 +918,7 @@ void ReadGEntities(qboolean qbAutosave)
 		// check that Icarus has loaded everything it saved out by having a marker chunk after it...
 		//
 		static int iBlah = 1234;
-		gi.ReadFromSaveGame('ICOK', &iBlah, sizeof(iBlah));
+		gi.ReadFromSaveGame('ICOK', &iBlah, sizeof(iBlah), NULL);
 	}
 	if (!qbAutosave)
 	{
@@ -978,7 +978,7 @@ void ReadLevel(qboolean qbAutosave, qboolean qbLoadTransition)
 
 		//Read & throw away objective info
 		objectives_t	junkObj[MAX_MISSION_OBJ];
-		gi.ReadFromSaveGame('OBJT', (void *) &junkObj, 0);
+		gi.ReadFromSaveGame('OBJT', (void *) &junkObj, 0, NULL);
 
 		ReadLevelLocals();	// level_locals_t level	
 	}
@@ -1011,7 +1011,7 @@ void ReadLevel(qboolean qbAutosave, qboolean qbLoadTransition)
 	// check that the whole file content was loaded by specifically requesting an end-marker...
 	//
 	static int iDONE = 1234;
-	gi.ReadFromSaveGame('DONE', &iDONE, sizeof(iDONE));
+	gi.ReadFromSaveGame('DONE', &iDONE, sizeof(iDONE), NULL);
 }
 
 extern int killPlayerTimer;

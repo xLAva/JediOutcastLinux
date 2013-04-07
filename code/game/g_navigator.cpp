@@ -264,7 +264,7 @@ GetEdgeFlags
 -------------------------
 */
 
-BYTE CNode::GetEdgeFlags( int edgeNum )
+unsigned char CNode::GetEdgeFlags( int edgeNum )
 {
 	if ( edgeNum > m_numEdges )
 		return 0;
@@ -705,7 +705,7 @@ int	CNavigator::GetEdgeCost( CNode *first, CNode *second )
 	first->GetPosition( start );
 	second->GetPosition( end );
 
-	gi.trace( &trace, start, mins, maxs, end, ENTITYNUM_NONE, MASK_SOLID );
+	gi.trace( &trace, start, mins, maxs, end, ENTITYNUM_NONE, MASK_SOLID, (EG2_Collision)0, 0 );
 
 	if ( trace.fraction < 1.0f || trace.allsolid || trace.startsolid )
 		return Q3_INFINITE; // return -1;
@@ -776,10 +776,10 @@ void CNavigator::CalculatePath( CNode *node )
 	int	curRank = 0;
 
 	CPriorityQueue	*pathList = new CPriorityQueue();
-	BYTE			*checked;
+	unsigned char			*checked;
 
 	//Init the completion table
-	checked = new BYTE[ m_nodes.size() ];
+	checked = new unsigned char[ m_nodes.size() ];
 	memset( checked, 0, m_nodes.size() );
 
 	//Mark this node as checked
@@ -962,7 +962,7 @@ void CNavigator::ShowEdges( void )
 			if ( drawMap[(*ni)->GetID()].find( id ) != drawMap[(*ni)->GetID()].end() )
 				continue;
 
-			BYTE flags = (*ni)->GetEdgeFlags( i );
+			unsigned char flags = (*ni)->GetEdgeFlags( i );
 
 			CNode	*node = m_nodes[id];
 
@@ -1027,7 +1027,7 @@ void CNavigator::CheckBlockedEdges( void )
 				end->GetPosition( p2 );
 
 				//FIXME: can't we just store the trace.entityNum from the HardConnect trace?  So we don't have to do another trace here...
-				gi.trace( &trace, p1, wpMins, wpMaxs, p2, ENTITYNUM_NONE, MASK_SOLID|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP );
+				gi.trace( &trace, p1, wpMins, wpMaxs, p2, ENTITYNUM_NONE, MASK_SOLID|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP, (EG2_Collision)0, 0 );
 
 				if ( trace.entityNum < ENTITYNUM_WORLD && (trace.fraction < 1.0f || trace.startsolid == qtrue || trace.allsolid == qtrue) )
 				{//could be assumed, since failed before
@@ -1091,7 +1091,7 @@ void CNavigator::HardConnect( int first, int second )
 	
 	int		flags = EFLAG_NONE;
 
-	gi.trace( &trace, p1, wpMins, wpMaxs, p2, ENTITYNUM_NONE, MASK_SOLID|CONTENTS_BOTCLIP|CONTENTS_MONSTERCLIP );
+	gi.trace( &trace, p1, wpMins, wpMaxs, p2, ENTITYNUM_NONE, MASK_SOLID|CONTENTS_BOTCLIP|CONTENTS_MONSTERCLIP, (EG2_Collision)0, 0 );
 
 	int cost = Distance( p1, p2 );
 
@@ -2063,7 +2063,7 @@ qboolean CNavigator::CheckFailedEdge( failedEdge_t *failedEdge )
 				return qfalse;
 			}
 
-			gi.trace( &trace, start, mins, maxs, end, ignore, clipmask|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP );//NOTE: should we really always include monsterclip (physically blocks NPCs) and botclip (do not enter)?
+			gi.trace( &trace, start, mins, maxs, end, ignore, clipmask|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP, (EG2_Collision)0, 0 );//NOTE: should we really always include monsterclip (physically blocks NPCs) and botclip (do not enter)?
 
 			if( trace.startsolid == qtrue || trace.allsolid == qtrue )
 			{

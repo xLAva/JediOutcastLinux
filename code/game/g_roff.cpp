@@ -5,6 +5,7 @@
 #include "g_local.h"
 #include "g_roff.h"
 #include "g_icarus.h"
+#include "../cgame/cg_local.h"
 // The list of precached ROFFs
 roff_list_t	roffs[MAX_ROFFS];
 int			num_roffs = 0;
@@ -609,13 +610,13 @@ void G_LoadCachedRoffs()
 	char	buffer[MAX_QPATH];
 
 	// Get the count of goodies we need to revive
-	gi.ReadFromSaveGame( 'ROFF', (void *)&count, sizeof(count) );
+	gi.ReadFromSaveGame( 'ROFF', (void *)&count, sizeof(count), NULL );
 
 	// Now bring 'em back to life
 	for ( i = 0; i < count; i++ )
 	{
-		gi.ReadFromSaveGame( 'SLEN', (void *)&len, sizeof(len) );
-		gi.ReadFromSaveGame( 'RSTR', (void *)(buffer), len );
+		gi.ReadFromSaveGame( 'SLEN', (void *)&len, sizeof(len), NULL );
+		gi.ReadFromSaveGame( 'RSTR', (void *)(buffer), len, NULL );
 		G_LoadRoff( buffer );
 	}
 }

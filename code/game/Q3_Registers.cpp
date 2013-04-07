@@ -342,19 +342,19 @@ void Q3_VariableLoadFloats( varFloat_m &fmap )
 	int		numFloats;
 	char	tempBuffer[1024];
 
-	gi.ReadFromSaveGame( 'FVAR', &numFloats, sizeof( numFloats ) );
+	gi.ReadFromSaveGame( 'FVAR', &numFloats, sizeof( numFloats ), NULL );
 
 	for ( int i = 0; i < numFloats; i++ )
 	{
 		int idSize;
 		
-		gi.ReadFromSaveGame( 'FIDL', &idSize, sizeof( idSize ) );
-		gi.ReadFromSaveGame( 'FIDS', &tempBuffer, idSize );
+		gi.ReadFromSaveGame( 'FIDL', &idSize, sizeof( idSize ), NULL );
+		gi.ReadFromSaveGame( 'FIDS', &tempBuffer, idSize, NULL );
 		tempBuffer[ idSize ] = 0;
 
 		float	val;
 
-		gi.ReadFromSaveGame( 'FVAL', &val, sizeof( float ) );
+		gi.ReadFromSaveGame( 'FVAL', &val, sizeof( float ), NULL );
 
 		Q3_DeclareVariable( TK_FLOAT, (const char *) &tempBuffer );
 		Q3_SetFloatVariable( (const char *) &tempBuffer, val );
@@ -373,18 +373,18 @@ void Q3_VariableLoadStrings( int type, varString_m &fmap )
 	char	tempBuffer[1024];
 	char	tempBuffer2[1024];
 
-	gi.ReadFromSaveGame( 'SVAR', &numFloats, sizeof( numFloats ) );
+	gi.ReadFromSaveGame( 'SVAR', &numFloats, sizeof( numFloats ), NULL );
 
 	for ( int i = 0; i < numFloats; i++ )
 	{
 		int idSize;
 		
-		gi.ReadFromSaveGame( 'SIDL', &idSize, sizeof( idSize ) );
-		gi.ReadFromSaveGame( 'SIDS', &tempBuffer, idSize );
+		gi.ReadFromSaveGame( 'SIDL', &idSize, sizeof( idSize ), NULL );
+		gi.ReadFromSaveGame( 'SIDS', &tempBuffer, idSize, NULL );
 		tempBuffer[ idSize ] = 0;
 
-		gi.ReadFromSaveGame( 'SVSZ', &idSize, sizeof( idSize ) );
-		gi.ReadFromSaveGame( 'SVAL', &tempBuffer2, idSize );
+		gi.ReadFromSaveGame( 'SVSZ', &idSize, sizeof( idSize), NULL );
+		gi.ReadFromSaveGame( 'SVAL', &tempBuffer2, idSize, NULL );
 		tempBuffer2[ idSize ] = 0;
 
 		switch ( type )

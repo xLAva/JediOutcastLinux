@@ -2,109 +2,343 @@
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Linux Release" />
 	<File name="../base/ext_data/NPCs.cfg" open="0" top="0" tabpos="0">
-		<Cursor position="10804" topLine="519" />
+		<Cursor position="1061" topLine="0" />
 	</File>
 	<File name="../cgame/FX_ATSTMain.cpp" open="0" top="0" tabpos="1">
-		<Cursor position="189" topLine="0" />
+		<Cursor position="285" topLine="0" />
 	</File>
-	<File name="../cgame/FxPrimitives.cpp" open="0" top="0" tabpos="0">
+	<File name="../cgame/FxParsing.h" open="0" top="0" tabpos="0">
+		<Cursor position="14" topLine="0" />
+	</File>
+	<File name="../cgame/FxPrimitives.cpp" open="1" top="1" tabpos="13">
 		<Cursor position="3288" topLine="155" />
 	</File>
+	<File name="../cgame/FxPrimitives.h" open="0" top="0" tabpos="9">
+		<Cursor position="14230" topLine="498" />
+	</File>
 	<File name="../cgame/FxScheduler.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="2902" topLine="117" />
+		<Cursor position="354" topLine="0" />
 	</File>
 	<File name="../cgame/FxScheduler.h" open="0" top="0" tabpos="0">
 		<Cursor position="12138" topLine="383" />
 	</File>
+	<File name="../cgame/FxSystem.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="197" topLine="0" />
+	</File>
+	<File name="../cgame/animtable.h" open="0" top="0" tabpos="15">
+		<Cursor position="0" topLine="0" />
+	</File>
 	<File name="../cgame/cg_camera.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="33003" topLine="1243" />
+		<Cursor position="278" topLine="0" />
 	</File>
-	<File name="../cgame/cg_credits.cpp" open="1" top="0" tabpos="3">
-		<Cursor position="2419" topLine="114" />
+	<File name="../cgame/cg_camera.h" open="0" top="0" tabpos="0">
+		<Cursor position="2467" topLine="0" />
 	</File>
-	<File name="../cgame/cg_draw.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="14037" topLine="593" />
+	<File name="../cgame/cg_credits.cpp" open="0" top="0" tabpos="3">
+		<Cursor position="14113" topLine="571" />
 	</File>
-	<File name="../cgame/cg_event.cpp" open="1" top="1" tabpos="2">
-		<Cursor position="184" topLine="0" />
+	<File name="../cgame/cg_draw.cpp" open="0" top="0" tabpos="10">
+		<Cursor position="42942" topLine="1665" />
 	</File>
-	<File name="../cgame/cg_headers.h" open="0" top="0" tabpos="0">
-		<Cursor position="66" topLine="0" />
+	<File name="../cgame/cg_ents.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="161" topLine="0" />
 	</File>
-	<File name="../cgame/cg_local.h" open="1" top="0" tabpos="1">
-		<Cursor position="68" topLine="0" />
+	<File name="../cgame/cg_event.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="4474" topLine="176" />
+	</File>
+	<File name="../cgame/cg_headers.h" open="0" top="0" tabpos="23">
+		<Cursor position="50" topLine="0" />
+	</File>
+	<File name="../cgame/cg_info.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="156" topLine="0" />
+	</File>
+	<File name="../cgame/cg_local.h" open="0" top="0" tabpos="21">
+		<Cursor position="859" topLine="0" />
+	</File>
+	<File name="../cgame/cg_main.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="4898" topLine="186" />
+	</File>
+	<File name="../cgame/cg_players.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="343" topLine="0" />
+	</File>
+	<File name="../cgame/cg_predict.cpp" open="0" top="0" tabpos="16">
+		<Cursor position="350" topLine="0" />
+	</File>
+	<File name="../cgame/cg_scoreboard.cpp" open="0" top="0" tabpos="12">
+		<Cursor position="189" topLine="0" />
+	</File>
+	<File name="../cgame/cg_text.cpp" open="0" top="0" tabpos="18">
+		<Cursor position="11289" topLine="375" />
+	</File>
+	<File name="../cgame/cg_view.cpp" open="0" top="0" tabpos="19">
+		<Cursor position="41993" topLine="1375" />
+	</File>
+	<File name="../cgame/cg_weapons.cpp" open="0" top="0" tabpos="22">
+		<Cursor position="253" topLine="0" />
 	</File>
 	<File name="../cgame/common_headers.h" open="0" top="0" tabpos="0">
 		<Cursor position="78" topLine="0" />
 	</File>
+	<File name="AI_Atst.cpp" open="0" top="0" tabpos="26">
+		<Cursor position="3807" topLine="102" />
+	</File>
+	<File name="AI_Default.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="5410" topLine="188" />
+	</File>
+	<File name="AI_Droid.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="1019" topLine="0" />
+	</File>
+	<File name="AI_GalakMech.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="188" topLine="0" />
+	</File>
+	<File name="AI_Grenadier.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="13928" topLine="0" />
+	</File>
+	<File name="AI_Howler.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="2147" topLine="88" />
+	</File>
+	<File name="AI_ImperialProbe.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="2861" topLine="105" />
+	</File>
+	<File name="AI_Interrogator.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="6182" topLine="232" />
+	</File>
+	<File name="AI_Jedi.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="134440" topLine="4229" />
+	</File>
+	<File name="AI_Mark1.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="361" topLine="0" />
+	</File>
+	<File name="AI_Mark2.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="175" topLine="0" />
+	</File>
+	<File name="AI_MineMonster.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="2554" topLine="100" />
+	</File>
+	<File name="AI_Remote.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="3561" topLine="139" />
+	</File>
+	<File name="AI_Seeker.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="175" topLine="0" />
+	</File>
+	<File name="AI_Sentry.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="209" topLine="0" />
+	</File>
+	<File name="AI_Sniper.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="19784" topLine="663" />
+	</File>
+	<File name="AI_Stormtrooper.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="42032" topLine="1408" />
+	</File>
+	<File name="G_Timer.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="2297" topLine="86" />
+	</File>
+	<File name="NPC.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="51011" topLine="2001" />
+	</File>
+	<File name="NPC_behavior.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="3160" topLine="80" />
+	</File>
+	<File name="NPC_combat.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="70690" topLine="2699" />
+	</File>
+	<File name="NPC_reactions.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="9754" topLine="338" />
+	</File>
+	<File name="NPC_senses.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="21475" topLine="742" />
+	</File>
 	<File name="NPC_spawn.cpp" open="0" top="0" tabpos="4">
-		<Cursor position="196" topLine="0" />
+		<Cursor position="79111" topLine="2801" />
+	</File>
+	<File name="NPC_stats.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="205" topLine="0" />
+	</File>
+	<File name="NPC_utils.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="4571" topLine="143" />
 	</File>
 	<File name="Q3_Interface.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="209759" topLine="9220" />
+		<Cursor position="131669" topLine="6143" />
+	</File>
+	<File name="Q3_Registers.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="7696" topLine="368" />
+	</File>
+	<File name="b_local.h" open="0" top="0" tabpos="5">
+		<Cursor position="6962" topLine="173" />
+	</File>
+	<File name="b_public.h" open="0" top="0" tabpos="13">
+		<Cursor position="7275" topLine="174" />
 	</File>
 	<File name="bg_lib.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="15191" topLine="502" />
 	</File>
-	<File name="bg_public.h" open="0" top="0" tabpos="6">
-		<Cursor position="4633" topLine="116" />
+	<File name="bg_pangles.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="711" topLine="4" />
 	</File>
-	<File name="fields.h" open="0" top="0" tabpos="0">
-		<Cursor position="241" topLine="0" />
+	<File name="bg_panimate.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="19813" topLine="269" />
+	</File>
+	<File name="bg_pmove.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="409" topLine="0" />
+	</File>
+	<File name="bg_public.h" open="0" top="0" tabpos="6">
+		<Cursor position="4369" topLine="104" />
+	</File>
+	<File name="bg_slidemove.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="9420" topLine="323" />
+	</File>
+	<File name="fields.h" open="0" top="0" tabpos="11">
+		<Cursor position="387" topLine="0" />
 	</File>
 	<File name="g_active.cpp" open="0" top="0" tabpos="7">
-		<Cursor position="217" topLine="0" />
+		<Cursor position="86516" topLine="2978" />
+	</File>
+	<File name="g_breakable.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="22839" topLine="759" />
+	</File>
+	<File name="g_camera.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="220" topLine="0" />
+	</File>
+	<File name="g_client.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="48404" topLine="1395" />
+	</File>
+	<File name="g_cmds.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="191" topLine="0" />
 	</File>
 	<File name="g_combat.cpp" open="0" top="0" tabpos="6">
-		<Cursor position="255" topLine="0" />
+		<Cursor position="1127" topLine="22" />
+	</File>
+	<File name="g_functions.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="6500" topLine="203" />
+	</File>
+	<File name="g_functions.h" open="0" top="0" tabpos="20">
+		<Cursor position="27824" topLine="559" />
+	</File>
+	<File name="g_fx.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="145" topLine="0" />
 	</File>
 	<File name="g_headers.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="71" topLine="0" />
+		<Cursor position="107" topLine="0" />
 	</File>
-	<File name="g_local.h" open="0" top="0" tabpos="0">
-		<Cursor position="1775" topLine="0" />
+	<File name="g_headers.h" open="0" top="0" tabpos="3">
+		<Cursor position="126" topLine="0" />
 	</File>
-	<File name="g_public.h" open="0" top="0" tabpos="7">
-		<Cursor position="3158" topLine="43" />
+	<File name="g_items.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="664" topLine="3" />
+	</File>
+	<File name="g_local.h" open="1" top="0" tabpos="3">
+		<Cursor position="765" topLine="0" />
+	</File>
+	<File name="g_main.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="321" topLine="0" />
+	</File>
+	<File name="g_misc.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="80940" topLine="2697" />
+	</File>
+	<File name="g_misc_model.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="4549" topLine="151" />
+	</File>
+	<File name="g_missile.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="27701" topLine="837" />
+	</File>
+	<File name="g_mover.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="56265" topLine="2087" />
+	</File>
+	<File name="g_nav.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="34106" topLine="1178" />
+	</File>
+	<File name="g_nav.h" open="0" top="0" tabpos="0">
+		<Cursor position="44" topLine="0" />
+	</File>
+	<File name="g_navigator.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="46038" topLine="2048" />
+	</File>
+	<File name="g_navigator.h" open="0" top="0" tabpos="4">
+		<Cursor position="1597" topLine="67" />
+	</File>
+	<File name="g_navnew.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="15965" topLine="543" />
+	</File>
+	<File name="g_object.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="3630" topLine="88" />
+	</File>
+	<File name="g_objectives.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="1355" topLine="51" />
+	</File>
+	<File name="g_public.h" open="0" top="0" tabpos="6">
+		<Cursor position="2906" topLine="28" />
+	</File>
+	<File name="g_roff.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="15336" topLine="588" />
 	</File>
 	<File name="g_savegame.cpp" open="0" top="0" tabpos="8">
-		<Cursor position="224" topLine="0" />
+		<Cursor position="25821" topLine="989" />
 	</File>
-	<File name="g_shared.h" open="0" top="0" tabpos="3">
-		<Cursor position="146" topLine="0" />
+	<File name="g_shared.h" open="0" top="0" tabpos="8">
+		<Cursor position="25955" topLine="834" />
+	</File>
+	<File name="g_svcmds.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="199" topLine="0" />
+	</File>
+	<File name="g_target.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="190" topLine="0" />
+	</File>
+	<File name="g_trigger.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="207" topLine="0" />
+	</File>
+	<File name="g_turret.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="51567" topLine="1760" />
+	</File>
+	<File name="g_utils.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="38057" topLine="1536" />
+	</File>
+	<File name="g_weapon.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="74226" topLine="2487" />
 	</File>
 	<File name="ghoul2_shared.h" open="0" top="0" tabpos="9">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="q_shared.h" open="0" top="0" tabpos="2">
-		<Cursor position="3844" topLine="129" />
+	<File name="npc_headers.h" open="0" top="0" tabpos="14">
+		<Cursor position="126" topLine="0" />
 	</File>
-	<File name="../icarus/BlockStream.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="2234" topLine="89" />
+	<File name="q_shared.h" open="0" top="0" tabpos="24">
+		<Cursor position="404" topLine="0" />
+	</File>
+	<File name="wp_saber.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="253611" topLine="7370" />
+	</File>
+	<File name="../icarus/BlockStream.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="124" topLine="0" />
 	</File>
 	<File name="../icarus/BlockStream.h" open="0" top="0" tabpos="8">
-		<Cursor position="1884" topLine="65" />
+		<Cursor position="277" topLine="0" />
 	</File>
-	<File name="../icarus/Instance.cpp" open="0" top="0" tabpos="11">
-		<Cursor position="1448" topLine="90" />
+	<File name="../icarus/Instance.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="105" topLine="0" />
 	</File>
 	<File name="../icarus/Interface.h" open="0" top="0" tabpos="0">
-		<Cursor position="3012" topLine="30" />
+		<Cursor position="422" topLine="2" />
 	</File>
 	<File name="../icarus/Interpreter.h" open="0" top="0" tabpos="9">
 		<Cursor position="4060" topLine="166" />
 	</File>
-	<File name="../icarus/Sequence.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="9679" topLine="464" />
+	<File name="../icarus/Sequence.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="114" topLine="0" />
 	</File>
-	<File name="../icarus/TaskManager.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="43101" topLine="1822" />
+	<File name="../icarus/Sequencer.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="49648" topLine="2387" />
 	</File>
-	<File name="../icarus/TaskManager.h" open="0" top="0" tabpos="10">
-		<Cursor position="1652" topLine="79" />
+	<File name="../icarus/Sequencer.h" open="1" top="0" tabpos="9">
+		<Cursor position="1936" topLine="54" />
+	</File>
+	<File name="../icarus/TaskManager.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="105" topLine="0" />
+	</File>
+	<File name="../icarus/TaskManager.h" open="1" top="0" tabpos="2">
+		<Cursor position="2198" topLine="103" />
 	</File>
 	<File name="../icarus/Tokenizer.h" open="0" top="0" tabpos="4">
-		<Cursor position="13476" topLine="564" />
+		<Cursor position="498" topLine="0" />
 	</File>
 	<File name="../icarus/icarus.h" open="0" top="0" tabpos="1">
 		<Cursor position="656" topLine="1" />
@@ -112,7 +346,13 @@
 	<File name="../qcommon/sstring.h" open="0" top="0" tabpos="0">
 		<Cursor position="2193" topLine="81" />
 	</File>
+	<File name="../qcommon/tri_coll_test.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="554" topLine="0" />
+	</File>
 	<File name="../renderer/tr_types.h" open="0" top="0" tabpos="5">
 		<Cursor position="64" topLine="0" />
+	</File>
+	<File name="../ui/gameinfo.cpp" open="1" top="0" tabpos="12">
+		<Cursor position="220" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>

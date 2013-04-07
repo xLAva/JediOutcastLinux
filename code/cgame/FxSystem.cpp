@@ -5,6 +5,8 @@
 	#include "FxScheduler.h"
 #endif
 
+#include "../cgame/cg_local.h"
+
 extern vmCvar_t	fx_debug;
 extern vmCvar_t	fx_freeze;
 

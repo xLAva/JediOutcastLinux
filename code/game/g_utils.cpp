@@ -11,7 +11,8 @@
 #include "g_icarus.h"
 #include "b_local.h"
 #include "anims.h"
-#include "..\renderer\mdx_format.h"
+#include "../renderer/mdx_format.h"
+#include "../cgame/cg_local.h"
 
 #define ACT_ACTIVE		qtrue
 #define ACT_INACTIVE	qfalse
@@ -240,7 +241,7 @@ void G_PlayEffect( const char *name,  const int modelIndex, const int boltIndex,
 //===Bypass network for sounds on specific channels====================
 
 extern void cgi_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx );
-#include "..\cgame\cg_media.h"	//access to cgs
+#include "../cgame/cg_media.h"	//access to cgs
 extern void CG_TryPlayCustomSound( vec3_t origin, int entityNum, soundChannel_t channel, const char *soundName, int customSoundSet );
 //NOTE: Do NOT Try to use this before the cgame DLL is valid, it will NOT work!
 void G_SoundOnEnt (gentity_t *ent, soundChannel_t channel, const char *soundPath)
@@ -1155,7 +1156,7 @@ qboolean G_CheckInSolid (gentity_t *self, qboolean fix)
 	VectorCopy(self->mins, mins);
 	mins[2] = 0;
 
-	gi.trace(&trace, self->currentOrigin, mins, self->maxs, end, self->s.number, self->clipmask);
+	gi.trace(&trace, self->currentOrigin, mins, self->maxs, end, self->s.number, self->clipmask, (EG2_Collision)0, 0);
 	if(trace.allsolid || trace.startsolid)
 	{
 		return qtrue;
@@ -1360,7 +1361,7 @@ void TryUse( gentity_t *ent )
 	VectorMA( src, USE_DISTANCE, vf, dest );
 
 	//Trace ahead to find a valid target
-	gi.trace( &trace, src, vec3_origin, vec3_origin, dest, ent->s.number, MASK_OPAQUE|CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_ITEM|CONTENTS_CORPSE );
+	gi.trace( &trace, src, vec3_origin, vec3_origin, dest, ent->s.number, MASK_OPAQUE|CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_ITEM|CONTENTS_CORPSE, (EG2_Collision)0, 0 );
 	
 	if ( trace.fraction == 1.0f || trace.entityNum < 1 )
 	{
@@ -1492,7 +1493,7 @@ qboolean G_ClearTrace( const vec3_t start, const vec3_t mins, const vec3_t maxs,
 {
 	static	trace_t	tr;
 
-	gi.trace( &tr, start, mins, maxs, end, ignore, clipmask );
+	gi.trace( &tr, start, mins, maxs, end, ignore, clipmask, (EG2_Collision)0, 0 );
 
 	if ( tr.allsolid || tr.startsolid || tr.fraction < 1.0 )
 	{
@@ -1528,7 +1529,7 @@ qboolean G_ExpandPointToBBox( vec3_t point, const vec3_t mins, const vec3_t maxs
 	{
 		VectorCopy( start, end );
 		end[i] += mins[i];
-		gi.trace( &tr, start, vec3_origin, vec3_origin, end, ignore, clipmask );
+		gi.trace( &tr, start, vec3_origin, vec3_origin, end, ignore, clipmask, (EG2_Collision)0, 0 );
 		if ( tr.allsolid || tr.startsolid )
 		{
 			return qfalse;
@@ -1537,7 +1538,7 @@ qboolean G_ExpandPointToBBox( vec3_t point, const vec3_t mins, const vec3_t maxs
 		{
 			VectorCopy( start, end );
 			end[i] += maxs[i]-(mins[i]*tr.fraction);
-			gi.trace( &tr, start, vec3_origin, vec3_origin, end, ignore, clipmask );
+			gi.trace( &tr, start, vec3_origin, vec3_origin, end, ignore, clipmask, (EG2_Collision)0, 0 );
 			if ( tr.allsolid || tr.startsolid )
 			{
 				return qfalse;
@@ -1550,7 +1551,7 @@ qboolean G_ExpandPointToBBox( vec3_t point, const vec3_t mins, const vec3_t maxs
 		}
 	}
 	//expanded it, now see if it's all clear
-	gi.trace( &tr, start, mins, maxs, start, ignore, clipmask );
+	gi.trace( &tr, start, mins, maxs, start, ignore, clipmask, (EG2_Collision)0, 0 );
 	if ( tr.allsolid || tr.startsolid )
 	{
 		return qfalse;

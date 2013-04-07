@@ -5,6 +5,7 @@
 #include "g_local.h"
 #include "objectives.h"
 #include "wp_saber.h"
+#include "../cgame/cg_local.h"
 
 extern	bool		in_camera;
 
@@ -601,7 +602,7 @@ Cmd_Where_f
 */
 void Cmd_Where_f( gentity_t *ent ) {
 	const char *s = gi.argv(1);
-	const len = strlen(s);
+	const int len = strlen(s);
 	gentity_t	*check;
 	
 	if ( gi.argc () < 2 ) {
@@ -814,7 +815,7 @@ qboolean PickSeekerSpawnPoint( vec3_t org, vec3_t fwd, vec3_t right, int skip, v
 	VectorMA( org, 48, forward, end );
 	VectorMA( end, -8, right, end );
 
-	gi.trace( &tr, org, mins, maxs, end, skip, MASK_PLAYERSOLID );
+	gi.trace( &tr, org, mins, maxs, end, skip, MASK_PLAYERSOLID, (EG2_Collision)0, 0 );
 
 	if ( !tr.startsolid && !tr.allsolid && tr.fraction >= 1.0f )
 	{
@@ -825,7 +826,7 @@ qboolean PickSeekerSpawnPoint( vec3_t org, vec3_t fwd, vec3_t right, int skip, v
 	// side
 	VectorMA( org, 48, right, end );
 
-	gi.trace( &tr, org, mins, maxs, end, skip, MASK_PLAYERSOLID );
+	gi.trace( &tr, org, mins, maxs, end, skip, MASK_PLAYERSOLID, (EG2_Collision)0, 0 );
 
 	if ( !tr.startsolid && !tr.allsolid && tr.fraction >= 1.0f )
 	{
@@ -836,7 +837,7 @@ qboolean PickSeekerSpawnPoint( vec3_t org, vec3_t fwd, vec3_t right, int skip, v
 	// other side
 	VectorMA( org, -48, right, end );
 
-	gi.trace( &tr, org, mins, maxs, end, skip, MASK_PLAYERSOLID );
+	gi.trace( &tr, org, mins, maxs, end, skip, MASK_PLAYERSOLID, (EG2_Collision)0, 0 );
 
 	if ( !tr.startsolid && !tr.allsolid && tr.fraction >= 1.0f )
 	{
@@ -847,7 +848,7 @@ qboolean PickSeekerSpawnPoint( vec3_t org, vec3_t fwd, vec3_t right, int skip, v
 	// behind
 	VectorMA( org, -48, fwd, end );
 
-	gi.trace( &tr, org, mins, maxs, end, skip, MASK_PLAYERSOLID );
+	gi.trace( &tr, org, mins, maxs, end, skip, MASK_PLAYERSOLID, (EG2_Collision)0, 0 );
 
 	if ( !tr.startsolid && !tr.allsolid && tr.fraction >= 1.0f )
 	{

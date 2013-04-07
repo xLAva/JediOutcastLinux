@@ -359,7 +359,7 @@ static qboolean Jedi_ClearPathToSpot( vec3_t dest, int impactEntNum )
 	//Offset the step height
 	VectorSet( mins, NPC->mins[0], NPC->mins[1], NPC->mins[2] + STEPSIZE );
 	
-	gi.trace( &trace, NPC->currentOrigin, mins, NPC->maxs, dest, NPC->s.number, NPC->clipmask );
+	gi.trace( &trace, NPC->currentOrigin, mins, NPC->maxs, dest, NPC->s.number, NPC->clipmask,(EG2_Collision)0,0 );
 
 	//Do a simple check
 	if ( trace.allsolid || trace.startsolid )
@@ -396,7 +396,7 @@ static qboolean Jedi_ClearPathToSpot( vec3_t dest, int impactEntNum )
 		VectorMA( NPC->currentOrigin, i, dir, start );
 		VectorCopy( start, end );
 		end[2] -= drop;
-		gi.trace( &trace, start, mins, NPC->maxs, end, NPC->s.number, NPC->clipmask );//NPC->mins?
+		gi.trace( &trace, start, mins, NPC->maxs, end, NPC->s.number, NPC->clipmask,(EG2_Collision)0,0 );//NPC->mins?
 		if ( trace.fraction < 1.0f || trace.allsolid || trace.startsolid )
 		{//good to go
 			continue;
@@ -457,7 +457,7 @@ qboolean NPC_MoveDirClear( int forwardmove, int rightmove, qboolean reset )
 	rtDist = ((float)rightmove)/2.0f;
 	VectorMA( NPC->currentOrigin, fwdDist, forward, testPos );
 	VectorMA( testPos, rtDist, right, testPos );
-	gi.trace( &trace, NPC->currentOrigin, mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask|CONTENTS_BOTCLIP );
+	gi.trace( &trace, NPC->currentOrigin, mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask|CONTENTS_BOTCLIP ,(EG2_Collision)0,0);
 	if ( trace.allsolid || trace.startsolid )
 	{//hmm, trace started inside this brush... how do we decide if we should continue?
 		//FIXME: what do we do if we start INSIDE a CONTENTS_BOTCLIP? Try the trace again without that in the clipmask?
@@ -495,7 +495,7 @@ qboolean NPC_MoveDirClear( int forwardmove, int rightmove, qboolean reset )
 	VectorCopy( trace.endpos, testPos );
 	testPos[2] += bottom_max;
 
-	gi.trace( &trace, trace.endpos, mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask );
+	gi.trace( &trace, trace.endpos, mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask ,(EG2_Collision)0,0);
 
 	//FIXME:Should we try to see if we can still get to our goal using the waypoint network from this trace.endpos?
 	//OR: just put NPC clip brushes on these edges (still fall through when die)
@@ -1451,7 +1451,7 @@ evasionType_t Jedi_CheckFlipEvasions( gentity_t *self, float rightdot, float zdi
 		}
 		//trace in the dir that we want to go
 		VectorMA( self->currentOrigin, checkDist, right, traceto );
-		gi.trace( &trace, self->currentOrigin, mins, maxs, traceto, self->s.number, CONTENTS_SOLID|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP );
+		gi.trace( &trace, self->currentOrigin, mins, maxs, traceto, self->s.number, CONTENTS_SOLID|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP,(EG2_Collision)0,0 );
 		if ( trace.fraction >= 1.0f )
 		{//it's clear, let's do it
 			//FIXME: check for drops?
@@ -1492,7 +1492,7 @@ evasionType_t Jedi_CheckFlipEvasions( gentity_t *self, float rightdot, float zdi
 						checkDist *= -1.0f;
 						VectorMA( self->currentOrigin, checkDist, right, traceto );
 						//trace in the dir that we want to go
-						gi.trace( &trace, self->currentOrigin, mins, maxs, traceto, self->s.number, CONTENTS_SOLID|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP );
+						gi.trace( &trace, self->currentOrigin, mins, maxs, traceto, self->s.number, CONTENTS_SOLID|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP,(EG2_Collision)0,0 );
 						if ( trace.fraction >= 1.0f )
 						{//it's clear, let's do it
 							//FIXME: check for drops?
@@ -1539,7 +1539,7 @@ evasionType_t Jedi_CheckFlipEvasions( gentity_t *self, float rightdot, float zdi
 						checkDist *= -1.0f;
 						VectorMA( self->currentOrigin, checkDist, right, traceto );
 						//trace in the dir that we want to go
-						gi.trace( &trace, self->currentOrigin, mins, maxs, traceto, self->s.number, CONTENTS_SOLID|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP );
+						gi.trace( &trace, self->currentOrigin, mins, maxs, traceto, self->s.number, CONTENTS_SOLID|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP,(EG2_Collision)0,0 );
 						if ( (trace.fraction*checkDist) <= 32 )
 						{//wall on this side is close enough
 							bestCheckDist = checkDist;
@@ -2467,7 +2467,7 @@ static qboolean Jedi_SaberBlock( void )
 
 	//get the actual point of impact
 	trace_t	tr;
-	gi.trace( &tr, saberPoint, saberMins, saberMaxs, hitloc, NPC->enemy->s.number, CONTENTS_BODY );//, G2_RETURNONHIT, 10 );
+	gi.trace( &tr, saberPoint, saberMins, saberMaxs, hitloc, NPC->enemy->s.number, CONTENTS_BODY,(EG2_Collision)0,0 );//, G2_RETURNONHIT, 10 );
 	if ( tr.allsolid || tr.startsolid || tr.fraction >= 1.0f )
 	{//estimate
 		vec3_t	dir2Me;
@@ -2917,7 +2917,7 @@ gentity_t *Jedi_FindEnemyInCone( gentity_t *self, gentity_t *fallback, float min
 		}
 
 		//really should have a clear LOS to this thing...
-		gi.trace( &tr, self->currentOrigin, vec3_origin, vec3_origin, check->currentOrigin, self->s.number, MASK_SHOT );
+		gi.trace( &tr, self->currentOrigin, vec3_origin, vec3_origin, check->currentOrigin, self->s.number, MASK_SHOT,(EG2_Collision)0,0 );
 		if ( tr.fraction < 1.0f && tr.entityNum != check->s.number )
 		{//must have clear shot
 			continue;
@@ -3670,11 +3670,11 @@ static qboolean Jedi_Jump( vec3_t dest, int goalEntNum )
 					EvaluateTrajectory( &tr, level.time + elapsedTime, testPos );
 					if ( testPos[2] < lastPos[2] )
 					{//going down, ignore botclip
-						gi.trace( &trace, lastPos, NPC->mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask );
+						gi.trace( &trace, lastPos, NPC->mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask,(EG2_Collision)0,0 );
 					}
 					else
 					{//going up, check for botclip
-						gi.trace( &trace, lastPos, NPC->mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask|CONTENTS_BOTCLIP );
+						gi.trace( &trace, lastPos, NPC->mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask|CONTENTS_BOTCLIP,(EG2_Collision)0,0 );
 					}
 
 					if ( trace.allsolid || trace.startsolid )
@@ -3720,7 +3720,7 @@ static qboolean Jedi_Jump( vec3_t dest, int goalEntNum )
 							//FIXME: do we care how far below ourselves or our dest we'll land?
 							VectorCopy( trace.endpos, bottom );
 							bottom[2] -= 128;
-							gi.trace( &trace, trace.endpos, NPC->mins, NPC->maxs, bottom, NPC->s.number, NPC->clipmask );
+							gi.trace( &trace, trace.endpos, NPC->mins, NPC->maxs, bottom, NPC->s.number, NPC->clipmask,(EG2_Collision)0,0 );
 							if ( trace.fraction >= 1.0f )
 							{//would fall too far
 								blocked = qtrue;
@@ -3917,7 +3917,7 @@ static qboolean Jedi_TryJump( gentity_t *goal )
 									vec3_t	bottom;
 									VectorCopy( dest, bottom );
 									bottom[2] -= 128;
-									gi.trace( &trace, dest, NPC->mins, NPC->maxs, bottom, goal->s.number, NPC->clipmask );
+									gi.trace( &trace, dest, NPC->mins, NPC->maxs, bottom, goal->s.number, NPC->clipmask,(EG2_Collision)0,0 );
 									if ( trace.fraction < 1.0f )
 									{//hit floor, okay to land here
 										break;
@@ -4207,11 +4207,11 @@ static void Jedi_CheckJumps( void )
 		//FIXME: account for PM_AirMove if ucmd.forwardmove and/or ucmd.rightmove is non-zero...
 		if ( testPos[2] < lastPos[2] )
 		{//going down, don't check for BOTCLIP
-			gi.trace( &trace, lastPos, NPC->mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask );//FIXME: include CONTENTS_BOTCLIP?
+			gi.trace( &trace, lastPos, NPC->mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask,(EG2_Collision)0,0 );//FIXME: include CONTENTS_BOTCLIP?
 		}
 		else
 		{//going up, check for BOTCLIP
-			gi.trace( &trace, lastPos, NPC->mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask|CONTENTS_BOTCLIP );
+			gi.trace( &trace, lastPos, NPC->mins, NPC->maxs, testPos, NPC->s.number, NPC->clipmask|CONTENTS_BOTCLIP,(EG2_Collision)0,0 );
 		}
 		if ( trace.allsolid || trace.startsolid )
 		{//WTF?
@@ -4244,7 +4244,7 @@ static void Jedi_CheckJumps( void )
 		return;
 	}
 	bottom[2] -= 128;
-	gi.trace( &trace, trace.endpos, NPC->mins, NPC->maxs, bottom, NPC->s.number, NPC->clipmask );
+	gi.trace( &trace, trace.endpos, NPC->mins, NPC->maxs, bottom, NPC->s.number, NPC->clipmask,(EG2_Collision)0,0 );
 	if ( trace.allsolid || trace.startsolid || trace.fraction < 1.0f )
 	{//hit ground!
 		if ( trace.entityNum < ENTITYNUM_WORLD )

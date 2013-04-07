@@ -3,6 +3,8 @@
 //	-- jweier
 
 // this include must remain at the top of every Icarus CPP file
+#include "../cgame/cg_local.h"
+#include "../game/g_local.h"
 #include "icarus.h"
 
 

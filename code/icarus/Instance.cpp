@@ -3,6 +3,8 @@
 //	-- jweier
 
 // this include must remain at the top of every Icarus CPP file
+#include "../cgame/cg_local.h"
+#include "../game/g_local.h"
 #include "icarus.h"
 
 #include <assert.h>
@@ -42,7 +44,9 @@ ICARUS_Instance *ICARUS_Instance::Create( interface_export_t *ie )
 	ICARUS_Instance *instance = new ICARUS_Instance;
 	instance->m_interface = ie;
 
+#ifdef _WINDOWS
 	OutputDebugString( "ICARUS Instance successfully created\n" );
+#endif
 
 	return instance;
 }
@@ -433,7 +437,7 @@ int ICARUS_Instance::LoadSignals( void )
 {
 	int numSignals;
 
-	m_interface->I_ReadSaveData( 'ISIG', &numSignals, sizeof( numSignals ) );
+	m_interface->I_ReadSaveData( 'ISIG', &numSignals, sizeof( numSignals ), NULL );
 
 	for ( int i = 0; i < numSignals; i++ )
 	{
@@ -441,12 +445,12 @@ int ICARUS_Instance::LoadSignals( void )
 		int		length;
 
 		//Get the size of the string
-		m_interface->I_ReadSaveData( 'SIG#', &length, sizeof( length ) );
+		m_interface->I_ReadSaveData( 'SIG#', &length, sizeof( length ), NULL );
 
 		assert( length < sizeof( buffer ) );
 
 		//Get the string
-		m_interface->I_ReadSaveData( 'SIGN', &buffer, length );
+		m_interface->I_ReadSaveData( 'SIGN', &buffer, length, NULL );
 
 		//Turn it on and add it to the system
 		Signal( (const char *) &buffer );
@@ -487,7 +491,7 @@ int ICARUS_Instance::LoadSequences( void )
 	int			numSequences;
 
 	//Get the number of sequences to read in
-	m_interface->I_ReadSaveData( '#SEQ', &numSequences, sizeof( numSequences ) );
+	m_interface->I_ReadSaveData( '#SEQ', &numSequences, sizeof( numSequences ), NULL );
 
 	int	*idTable = new int[ numSequences ];
 
@@ -495,7 +499,7 @@ int ICARUS_Instance::LoadSequences( void )
 		return false;
 
 	//Load the sequencer ID table
-	m_interface->I_ReadSaveData( 'SQTB', idTable, sizeof( int ) * numSequences );
+	m_interface->I_ReadSaveData( 'SQTB', idTable, sizeof( int ) * numSequences, NULL );
 
 	//First pass, allocate all container sequences and give them their proper IDs
 	if ( AllocateSequences( numSequences, idTable ) == false )
@@ -531,7 +535,7 @@ int ICARUS_Instance::LoadSequencers( void )
 	int			numSequencers;
 
 	//Get the number of sequencers to load
-	m_interface->I_ReadSaveData( '#SQR', &numSequencers, sizeof( &numSequencers ) );
+	m_interface->I_ReadSaveData( '#SQR', &numSequencers, sizeof( &numSequencers ), NULL );
 	
 	//Load all sequencers
 	for ( int i = 0; i < numSequencers; i++ )
@@ -560,7 +564,7 @@ int ICARUS_Instance::Load( void )
 
 	//Check to make sure we're at the ICARUS save block
 	double	version;
-	m_interface->I_ReadSaveData( 'ICAR', &version, sizeof( version ) );
+	m_interface->I_ReadSaveData( 'ICAR', &version, sizeof( version ), NULL );
 
 	//Versions must match!
 	if ( version != ICARUS_VERSION )
@@ -590,7 +594,7 @@ int ICARUS_Instance::Load( void )
 		return false;
 	}
 
-	m_interface->I_ReadSaveData( 'IEND', &version, sizeof( version ) );
+	m_interface->I_ReadSaveData( 'IEND', &version, sizeof( version ), NULL );
 
 	return true;
 }

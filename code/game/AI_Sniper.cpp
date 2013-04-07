@@ -560,7 +560,7 @@ void Sniper_FaceEnemy( void )
 								VectorMA( target, NPC->enemy->mins[2]*Q_flrand(1.5, 4), up, target );
 							}
 						}
-						gi.trace( &trace, muzzle, vec3_origin, vec3_origin, target, NPC->s.number, MASK_SHOT );
+						gi.trace( &trace, muzzle, vec3_origin, vec3_origin, target, NPC->s.number, MASK_SHOT, (EG2_Collision)0, 0 );
 						hit = Sniper_EvaluateShot( trace.entityNum );
 					}
 					NPC->count++;
@@ -678,7 +678,7 @@ void NPC_BSSniper_Attack( void )
 			if ( NPCInfo->scriptFlags & SCF_ALT_FIRE )
 			{//use primary fire
 				trace_t	trace;
-				gi.trace ( &trace, NPC->enemy->currentOrigin, NPC->enemy->mins, NPC->enemy->maxs, NPC->currentOrigin, NPC->enemy->s.number, NPC->enemy->clipmask );
+				gi.trace ( &trace, NPC->enemy->currentOrigin, NPC->enemy->mins, NPC->enemy->maxs, NPC->currentOrigin, NPC->enemy->s.number, NPC->enemy->clipmask, (EG2_Collision)0, 0 );
 				if ( !trace.allsolid && !trace.startsolid && (trace.fraction == 1.0 || trace.entityNum == NPC->s.number ) )
 				{//he can get right to me
 					NPCInfo->scriptFlags &= ~SCF_ALT_FIRE;

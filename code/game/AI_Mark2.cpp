@@ -4,6 +4,7 @@
 
 #include "b_local.h"
 #include "g_nav.h"
+#include "../cgame/cg_local.h"
 
 //#define AMMO_POD_HEALTH				40
 #define AMMO_POD_HEALTH				1

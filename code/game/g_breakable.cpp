@@ -4,7 +4,7 @@
 
 #include "g_local.h"
 #include "g_functions.h"
-#include "..\cgame\cg_media.h"
+#include "../cgame/cg_media.h"
 
 extern team_t TranslateTeamName( const char *name );
 
@@ -774,7 +774,7 @@ void misc_model_breakable_gravity_init( gentity_t *ent, qboolean dropToFloor )
 		top[2] += 1;
 		VectorCopy( ent->currentOrigin, bottom );
 		bottom[2] = MIN_WORLD_COORD;
-		gi.trace( &tr, top, ent->mins, ent->maxs, bottom, ent->s.number, MASK_NPCSOLID );
+		gi.trace( &tr, top, ent->mins, ent->maxs, bottom, ent->s.number, MASK_NPCSOLID, (EG2_Collision)0, 0 );
 		if ( !tr.allsolid && !tr.startsolid && tr.fraction < 1.0 )
 		{
 			G_SetOrigin( ent, tr.endpos );

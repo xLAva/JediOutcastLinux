@@ -2,7 +2,7 @@
 
 #include "g_headers.h"
 #include "icarus.h"
-#include "NPC_Headers.h"
+#include "npc_headers.h"
 #include "../cgame/cg_headers.h"
 
 

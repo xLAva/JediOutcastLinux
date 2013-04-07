@@ -6,6 +6,7 @@
 #include "g_local.h"
 #include "g_functions.h"
 #include "g_icarus.h"
+#include "../cgame/cg_local.h"
 //#include "Q3_Interface.h"
 extern void Q3_DebugPrint( int level, const char *format, ... );
 extern void G_SetEnemy( gentity_t *self, gentity_t *enemy );
@@ -268,7 +269,7 @@ void target_laser_think (gentity_t *self) {
 	// fire forward and see what we hit
 	VectorMA (self->s.origin, 2048, self->movedir, end);
 
-	gi.trace( &tr, self->s.origin, NULL, NULL, end, self->s.number, CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE);
+	gi.trace( &tr, self->s.origin, NULL, NULL, end, self->s.number, CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE, (EG2_Collision)0, 0);
 
 	if ( tr.entityNum ) {
 		// hurt it if we can

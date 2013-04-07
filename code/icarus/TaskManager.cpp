@@ -4,6 +4,8 @@
 
 
 // this include must remain at the top of every Icarus CPP file
+#include "../cgame/cg_local.h"
+#include "../game/g_local.h"
 #include "icarus.h"
 
 
@@ -1792,10 +1794,10 @@ void CTaskManager::Load( void )
 	int				bID, bSize;
 
 	//Get the GUID
-	(m_owner->GetInterface())->I_ReadSaveData( 'TMID', &m_GUID, sizeof( m_GUID ) );
+	(m_owner->GetInterface())->I_ReadSaveData( 'TMID', &m_GUID, sizeof( m_GUID ), NULL );
 
 	//Get the number of tasks to follow
-	(m_owner->GetInterface())->I_ReadSaveData( 'TSK#', &numTasks, sizeof( numTasks ) );
+	(m_owner->GetInterface())->I_ReadSaveData( 'TSK#', &numTasks, sizeof( numTasks ), NULL );
 	
 	//Reload all the tasks
 	for ( int i = 0; i < numTasks; i++ )
@@ -1805,11 +1807,11 @@ void CTaskManager::Load( void )
 		assert( task );
 
 		//Get the GUID
-		(m_owner->GetInterface())->I_ReadSaveData( 'TKID', &id, sizeof( id ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'TKID', &id, sizeof( id ), NULL );
 		task->SetGUID( id );
 
 		//Get the time stamp
-		(m_owner->GetInterface())->I_ReadSaveData( 'TKTS', &timeStamp, sizeof( timeStamp ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'TKTS', &timeStamp, sizeof( timeStamp ), NULL );
 		task->SetTimeStamp( timeStamp );
 
 		//
@@ -1817,25 +1819,25 @@ void CTaskManager::Load( void )
 		//
 
 		//Get the block ID and create a new container
-		(m_owner->GetInterface())->I_ReadSaveData( 'BLID', &id, sizeof( id ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'BLID', &id, sizeof( id ), NULL );
 		block = new CBlock;
 		
 		block->Create( id );
 		
 		//Read the block's flags
-		(m_owner->GetInterface())->I_ReadSaveData( 'BFLG', &flags, sizeof( flags ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'BFLG', &flags, sizeof( flags ), NULL );
 		block->SetFlags( flags );
 
 		//Get the number of block members
-		(m_owner->GetInterface())->I_ReadSaveData( 'BNUM', &numMembers, sizeof( numMembers ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'BNUM', &numMembers, sizeof( numMembers ), NULL );
 		
 		for ( int j = 0; j < numMembers; j++ )
 		{
 			//Get the member ID
-			(m_owner->GetInterface())->I_ReadSaveData( 'BMID', &bID, sizeof( bID ) );
+			(m_owner->GetInterface())->I_ReadSaveData( 'BMID', &bID, sizeof( bID ), NULL );
 			
 			//Get the member size
-			(m_owner->GetInterface())->I_ReadSaveData( 'BSIZ', &bSize, sizeof( bSize ) );
+			(m_owner->GetInterface())->I_ReadSaveData( 'BSIZ', &bSize, sizeof( bSize ), NULL );
 
 			//Get the member's data
 			if ( ( bData = malloc( bSize ) ) == NULL )
@@ -1845,7 +1847,7 @@ void CTaskManager::Load( void )
 			}
 
 			//Get the actual raw data
-			(m_owner->GetInterface())->I_ReadSaveData( 'BMEM', bData, bSize );
+			(m_owner->GetInterface())->I_ReadSaveData( 'BMEM', bData, bSize, NULL );
 
 			//Write out the correct type
 			switch ( bID )
@@ -1896,7 +1898,7 @@ void CTaskManager::Load( void )
 	//Load the task groups
 	int numTaskGroups;
 	
-	(m_owner->GetInterface())->I_ReadSaveData( 'TG#G', &numTaskGroups, sizeof( numTaskGroups ) );
+	(m_owner->GetInterface())->I_ReadSaveData( 'TG#G', &numTaskGroups, sizeof( numTaskGroups ), NULL );
 
 	if ( numTaskGroups == 0 )
 		return;
@@ -1911,7 +1913,7 @@ void CTaskManager::Load( void )
 		assert( taskGroup );
 
 		//Get this task group's ID
-		(m_owner->GetInterface())->I_ReadSaveData( 'TKG#', &taskIDs[i], sizeof( taskIDs[i] ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'TKG#', &taskIDs[i], sizeof( taskIDs[i] ), NULL );
 		taskGroup->m_GUID = taskIDs[i];
 		
 		m_taskGroupIDMap[ taskIDs[i] ] = taskGroup;
@@ -1926,35 +1928,35 @@ void CTaskManager::Load( void )
 		assert( taskGroup );
 
 		//Load the parent ID
-		(m_owner->GetInterface())->I_ReadSaveData( 'TKGP', &id, sizeof( id ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'TKGP', &id, sizeof( id ), NULL );
 		
 		if ( id != -1 )
 			taskGroup->m_parent = ( GetTaskGroup( id ) != NULL ) ? GetTaskGroup( id ) : NULL;
 
 		//Get the number of commands in this group
-		(m_owner->GetInterface())->I_ReadSaveData( 'TGNC', &numMembers, sizeof( numMembers ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'TGNC', &numMembers, sizeof( numMembers ), NULL );
 
 		//Get each command and its completion state
 		for ( int j = 0; j < numMembers; j++ )
 		{
 			//Get the ID
-			(m_owner->GetInterface())->I_ReadSaveData( 'GMID', &id, sizeof( id ) );
+			(m_owner->GetInterface())->I_ReadSaveData( 'GMID', &id, sizeof( id ), NULL );
 
 			//Write out the state of completion
-			(m_owner->GetInterface())->I_ReadSaveData( 'GMDN', &completed, sizeof( completed ) );
+			(m_owner->GetInterface())->I_ReadSaveData( 'GMDN', &completed, sizeof( completed ), NULL );
 
 			//Save it out
 			taskGroup->m_completedTasks[ id ] = completed;
 		}
 
 		//Get the number of completed tasks
-		(m_owner->GetInterface())->I_ReadSaveData( 'TGDN', &taskGroup->m_numCompleted, sizeof( taskGroup->m_numCompleted ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'TGDN', &taskGroup->m_numCompleted, sizeof( taskGroup->m_numCompleted ), NULL );
 	}
 
 	//Reload the currently active group
 	int curGroupID;
 
-	(m_owner->GetInterface())->I_ReadSaveData( 'TGCG', &curGroupID, sizeof( curGroupID ) );
+	(m_owner->GetInterface())->I_ReadSaveData( 'TGCG', &curGroupID, sizeof( curGroupID ), NULL );
 
 	//Reload the map entries
 	for ( i = 0; i < numTaskGroups; i++ )
@@ -1963,13 +1965,13 @@ void CTaskManager::Load( void )
 		int		length;
 		
 		//Get the size of the string
-		(m_owner->GetInterface())->I_ReadSaveData( 'TGNL', &length, sizeof( length ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'TGNL', &length, sizeof( length ), NULL );
 
 		//Get the string
-		(m_owner->GetInterface())->I_ReadSaveData( 'TGNS', &name, length );
+		(m_owner->GetInterface())->I_ReadSaveData( 'TGNS', &name, length, NULL );
 
 		//Get the id
-		(m_owner->GetInterface())->I_ReadSaveData( 'TGNI', &id, sizeof( id ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'TGNI', &id, sizeof( id ), NULL );
 
 		taskGroup = GetTaskGroup( id );
 		assert( taskGroup );

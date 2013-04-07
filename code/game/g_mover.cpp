@@ -6,6 +6,7 @@
 #include "g_local.h"
 #include "g_functions.h"
 #include "objectives.h"
+#include "../cgame/cg_local.h"
 
 #define MOVER_START_ON		1
 #define MOVER_FORCE_ACTIVATE	2
@@ -110,17 +111,17 @@ gentity_t	*G_TestEntityPosition( gentity_t *ent ) {
 	}
 	if ( ent->client ) 
 	{
-		gi.trace( &tr, ent->client->ps.origin, ent->mins, ent->maxs, ent->client->ps.origin, ent->s.number, mask );
+		gi.trace( &tr, ent->client->ps.origin, ent->mins, ent->maxs, ent->client->ps.origin, ent->s.number, mask, (EG2_Collision)0, 0 );
 	} 
 	else 
 	{
 		if ( ent->s.eFlags & EF_MISSILE_STICK )//Arggh, this is dumb...but when it used the bbox, it was pretty much always in solid when it is riding something..which is wrong..so I changed it to basically be a point contents check
 		{
-			gi.trace( &tr, ent->s.pos.trBase, vec3_origin, vec3_origin, ent->s.pos.trBase, ent->s.number, mask );
+			gi.trace( &tr, ent->s.pos.trBase, vec3_origin, vec3_origin, ent->s.pos.trBase, ent->s.number, mask, (EG2_Collision)0, 0 );
 		}
 		else
 		{
-			gi.trace( &tr, ent->s.pos.trBase, ent->mins, ent->maxs, ent->s.pos.trBase, ent->s.number, mask );
+			gi.trace( &tr, ent->s.pos.trBase, ent->mins, ent->maxs, ent->s.pos.trBase, ent->s.number, mask, (EG2_Collision)0, 0 );
 		}
 	}
 	
@@ -1043,7 +1044,7 @@ void InitMover( gentity_t *ent )
 		if ( strstr( ent->model2, ".glm" ))
 		{
 			ent->s.modelindex2 = G_ModelIndex( ent->model2 );
-			ent->playerModel = gi.G2API_InitGhoul2Model( ent->ghoul2, ent->model2, ent->s.modelindex2 );
+			ent->playerModel = gi.G2API_InitGhoul2Model( ent->ghoul2, ent->model2, ent->s.modelindex2, NULL, NULL, 0, 0 );
 			if ( ent->playerModel >= 0 )
 			{
 				ent->rootBone = gi.G2API_GetBoneIndex( &ent->ghoul2[ent->playerModel], "model_root", qtrue );
@@ -2101,7 +2102,7 @@ void SP_func_train (gentity_t *self) {
 	{
 		self->spawnflags &= ~32; // once only
 
-		gi.G2API_SetBoneAnim( &self->ghoul2[self->playerModel], "model_root", self->startFrame, self->endFrame, BONE_ANIM_OVERRIDE_LOOP, 1.0f + crandom() * 0.1f, 0 );
+		gi.G2API_SetBoneAnim( &self->ghoul2[self->playerModel], "model_root", self->startFrame, self->endFrame, BONE_ANIM_OVERRIDE_LOOP, 1.0f + crandom() * 0.1f, 0, -1, -1 );
 		self->endFrame = 0; // don't allow it to do anything with the animation function in G_main
 	}
 }

@@ -393,7 +393,7 @@ void respawn (gentity_t *ent);
 void InitClientPersistant (gclient_t *client);
 void InitClientResp (gclient_t *client);
 qboolean ClientSpawn( gentity_t *ent, SavedGameJustLoaded_e eSavedGameJustLoaded );
-void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod, int dFlags, int hitLoc);
+void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod,int dFlags=0,int hitLoc=HL_NONE);
 void AddScore( gentity_t *ent, int score );
 qboolean SpotWouldTelefrag( gentity_t *spot, team_t checkteam );
 

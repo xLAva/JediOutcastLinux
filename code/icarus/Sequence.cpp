@@ -3,6 +3,8 @@
 //	-- jweier
 
 // this include must remain at the top of every Icarus CPP file
+#include "../cgame/cg_local.h"
+#include "../game/g_local.h"
 #include "icarus.h"
 
 #include <assert.h>
@@ -416,21 +418,21 @@ int CSequence::Load( void )
 	void			*bData;
 
 	//Get the parent sequence
-	(m_owner->GetInterface())->I_ReadSaveData( 'SPID', &id, sizeof( id ) );
+	(m_owner->GetInterface())->I_ReadSaveData( 'SPID', &id, sizeof( id ), NULL );
 	m_parent = ( id != -1 ) ? m_owner->GetSequence( id ) : NULL;
 	
 	//Get the return sequence
-	(m_owner->GetInterface())->I_ReadSaveData( 'SRID', &id, sizeof( id ) );
+	(m_owner->GetInterface())->I_ReadSaveData( 'SRID', &id, sizeof( id ), NULL );
 	m_return = ( id != -1 ) ? m_owner->GetSequence( id ) : NULL;
 
 	//Get the number of children
-	(m_owner->GetInterface())->I_ReadSaveData( 'SNCH', &m_numChildren, sizeof( m_numChildren ) );
+	(m_owner->GetInterface())->I_ReadSaveData( 'SNCH', &m_numChildren, sizeof( m_numChildren ), NULL );
 
 	//Reload all children
 	for ( int i = 0; i < m_numChildren; i++ )
 	{
 		//Get the child sequence ID
-		(m_owner->GetInterface())->I_ReadSaveData( 'SCHD', &id, sizeof( id ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'SCHD', &id, sizeof( id ), NULL );
 
 		//Get the desired sequence
 		if ( ( sequence = m_owner->GetSequence( id ) ) == NULL )
@@ -445,46 +447,46 @@ int CSequence::Load( void )
 
 	
 	//Get the sequence flags
-	(m_owner->GetInterface())->I_ReadSaveData( 'SFLG', &m_flags, sizeof( m_flags ) );
+	(m_owner->GetInterface())->I_ReadSaveData( 'SFLG', &m_flags, sizeof( m_flags ), NULL );
 
 	//Get the number of iterations
-	(m_owner->GetInterface())->I_ReadSaveData( 'SITR', &m_iterations, sizeof( m_iterations ) );
+	(m_owner->GetInterface())->I_ReadSaveData( 'SITR', &m_iterations, sizeof( m_iterations ), NULL );
 
 	int	numCommands;
 
 	//Get the number of commands
-	(m_owner->GetInterface())->I_ReadSaveData( 'SNMC', &numCommands, sizeof( m_numCommands ) );
+	(m_owner->GetInterface())->I_ReadSaveData( 'SNMC', &numCommands, sizeof( m_numCommands ), NULL );
 
 	//Get all the commands
 	for ( i = 0; i < numCommands; i++ )
 	{
 		//Get the block ID and create a new container
-		(m_owner->GetInterface())->I_ReadSaveData( 'BLID', &id, sizeof( id ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'BLID', &id, sizeof( id ), NULL );
 		block = new CBlock;
 		
 		block->Create( id );
 		
 		//Read the block's flags
-		(m_owner->GetInterface())->I_ReadSaveData( 'BFLG', &flags, sizeof( flags ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'BFLG', &flags, sizeof( flags ), NULL );
 		block->SetFlags( flags );
 
 		//Get the number of block members
-		(m_owner->GetInterface())->I_ReadSaveData( 'BNUM', &numMembers, sizeof( numMembers ) );
+		(m_owner->GetInterface())->I_ReadSaveData( 'BNUM', &numMembers, sizeof( numMembers ), NULL );
 		
 		for ( int j = 0; j < numMembers; j++ )
 		{
 			//Get the member ID
-			(m_owner->GetInterface())->I_ReadSaveData( 'BMID', &bID, sizeof( bID ) );
+			(m_owner->GetInterface())->I_ReadSaveData( 'BMID', &bID, sizeof( bID ), NULL );
 			
 			//Get the member size
-			(m_owner->GetInterface())->I_ReadSaveData( 'BSIZ', &bSize, sizeof( bSize ) );
+			(m_owner->GetInterface())->I_ReadSaveData( 'BSIZ', &bSize, sizeof( bSize ), NULL );
 
 			//Get the member's data
 			if ( ( bData = malloc( bSize ) ) == NULL )
 				return false;
 
 			//Get the actual raw data
-			(m_owner->GetInterface())->I_ReadSaveData( 'BMEM', bData, bSize );
+			(m_owner->GetInterface())->I_ReadSaveData( 'BMEM', bData, bSize, NULL );
 
 			//Write out the correct type
 			switch ( bID )

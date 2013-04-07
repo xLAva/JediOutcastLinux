@@ -10,6 +10,8 @@
 #include "g_functions.h"
 #include "anims.h"
 #include "b_local.h"
+#include "../cgame/cg_local.h"
+#include "../game/npc_headers.h"
 
 static	vec3_t	forward, vright, up;
 static	vec3_t	muzzle;
@@ -241,7 +243,7 @@ static void WP_TraceSetStart( const gentity_t *ent, vec3_t start, const vec3_t m
 	VectorCopy( ent->currentOrigin, newstart );
 	newstart[2] = start[2]; // force newstart to be on the same plane as the muzzle ( start )
 
-	gi.trace( &tr, newstart, entMins, entMaxs, start, ent->s.number, MASK_SOLID|CONTENTS_SHOTCLIP );
+	gi.trace( &tr, newstart, entMins, entMaxs, start, ent->s.number, MASK_SOLID|CONTENTS_SHOTCLIP, (EG2_Collision)0, 0 );
 
 	if ( tr.startsolid || tr.allsolid )
 	{
@@ -2112,7 +2114,7 @@ static void WP_DropDetPack( gentity_t *self, vec3_t start, vec3_t dir )
 
 	missile->s.radius = 30;
 	VectorSet( missile->s.modelScale, 1.0f, 1.0f, 1.0f );
-	gi.G2API_InitGhoul2Model( missile->ghoul2, weaponData[WP_DET_PACK].missileMdl, G_ModelIndex( weaponData[WP_DET_PACK].missileMdl ));
+	gi.G2API_InitGhoul2Model( missile->ghoul2, weaponData[WP_DET_PACK].missileMdl, G_ModelIndex( weaponData[WP_DET_PACK].missileMdl ), NULL, NULL, 0, 0);
 
 	AddSoundEvent( NULL, missile->currentOrigin, 128, AEL_MINOR, qtrue );
 	AddSightEvent( NULL, missile->currentOrigin, 128, AEL_SUSPICIOUS, 10 );
@@ -2346,7 +2348,7 @@ void CreateLaserTrap( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
 
 	laserTrap->s.radius = 60;
 	VectorSet( laserTrap->s.modelScale, 1.0f, 1.0f, 1.0f );
-	gi.G2API_InitGhoul2Model( laserTrap->ghoul2, weaponData[WP_TRIP_MINE].missileMdl, G_ModelIndex( weaponData[WP_TRIP_MINE].missileMdl ));
+	gi.G2API_InitGhoul2Model( laserTrap->ghoul2, weaponData[WP_TRIP_MINE].missileMdl, G_ModelIndex( weaponData[WP_TRIP_MINE].missileMdl ), NULL, NULL, 0, 0);
 }
 
 //---------------------------------------------------------
@@ -2562,7 +2564,7 @@ qboolean WP_LobFire( gentity_t *self, vec3_t start, vec3_t target, vec3_t mins, 
 					elapsedTime = floor( travelTime );
 				}
 				EvaluateTrajectory( &tr, level.time + elapsedTime, testPos );
-				gi.trace( &trace, lastPos, mins, maxs, testPos, ignoreEntNum, clipmask );
+				gi.trace( &trace, lastPos, mins, maxs, testPos, ignoreEntNum, clipmask, (EG2_Collision)0, 0 );
 
 				if ( trace.allsolid || trace.startsolid )
 				{
@@ -3041,7 +3043,7 @@ void WP_FireStunBaton( gentity_t *ent, qboolean alt_fire )
 	VectorSet( maxs, 5, 5, 5 );
 	VectorScale( maxs, -1, mins );
 
-	gi.trace ( &tr, start, mins, maxs, end, ent->s.number, CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_SHOTCLIP );
+	gi.trace ( &tr, start, mins, maxs, end, ent->s.number, CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_SHOTCLIP, (EG2_Collision)0, 0 );
 
 	if ( tr.entityNum >= ENTITYNUM_WORLD || tr.entityNum < 0 )
 	{
@@ -3082,7 +3084,7 @@ void WP_Melee( gentity_t *ent )
 	VectorSet( maxs, 6, 6, 6 );
 	VectorScale( maxs, -1, mins );
 
-	gi.trace ( &tr, muzzle, mins, maxs, end, ent->s.number, MASK_SHOT );
+	gi.trace ( &tr, muzzle, mins, maxs, end, ent->s.number, MASK_SHOT, (EG2_Collision)0, 0 );
 
 	if ( tr.entityNum >= ENTITYNUM_WORLD )
 	{
@@ -3892,7 +3894,7 @@ void emplaced_gun_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacke
 	ugly[YAW] = 4;
 	ugly[PITCH] = self->lastAngles[PITCH] * 0.8f + crandom() * 6;
 	ugly[ROLL] = crandom() * 7;
-	gi.G2API_SetBoneAnglesIndex( &self->ghoul2[self->playerModel], self->lowerLumbarBone, ugly, BONE_ANGLES_POSTMULT, POSITIVE_Y, POSITIVE_Z, POSITIVE_X, NULL ); 
+	gi.G2API_SetBoneAnglesIndex( &self->ghoul2[self->playerModel], self->lowerLumbarBone, ugly, BONE_ANGLES_POSTMULT, POSITIVE_Y, POSITIVE_Z, POSITIVE_X, NULL, 0, 0 ); 
 
 	VectorCopy( self->currentOrigin,  org );
 	org[2] += 20;
@@ -3976,7 +3978,7 @@ void SP_emplaced_gun( gentity_t *ent )
 	ent->dflags |= DAMAGE_CUSTOM_HUD; // dumb, but we draw a custom hud
 
 	ent->s.modelindex = G_ModelIndex( name );
-	ent->playerModel = gi.G2API_InitGhoul2Model( ent->ghoul2, name, ent->s.modelindex );
+	ent->playerModel = gi.G2API_InitGhoul2Model( ent->ghoul2, name, ent->s.modelindex, NULL, NULL, 0, 0 );
 
 	// Activate our tags and bones
 	ent->headBolt = gi.G2API_AddBolt( &ent->ghoul2[0], "*seat" );
@@ -3984,7 +3986,7 @@ void SP_emplaced_gun( gentity_t *ent )
 	ent->handRBolt = gi.G2API_AddBolt( &ent->ghoul2[0], "*flash02" );
 	ent->rootBone = gi.G2API_GetBoneIndex( &ent->ghoul2[ent->playerModel], "base_bone", qtrue );
 	ent->lowerLumbarBone = gi.G2API_GetBoneIndex( &ent->ghoul2[0], "swivel_bone", qtrue );
-	gi.G2API_SetBoneAngles( &ent->ghoul2[0], "swivel_bone", vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_Y, POSITIVE_Z, POSITIVE_X, NULL); 
+	gi.G2API_SetBoneAngles( &ent->ghoul2[0], "swivel_bone", vec3_origin, BONE_ANGLES_POSTMULT, POSITIVE_Y, POSITIVE_Z, POSITIVE_X, NULL, 0, 0); 
 
 	RegisterItem( FindItemForWeapon( WP_EMPLACED_GUN ));
 	ent->s.weapon = WP_EMPLACED_GUN;

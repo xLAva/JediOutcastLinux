@@ -232,11 +232,11 @@ qboolean NAV_ClearPathToPoint( gentity_t *self, vec3_t pmins, vec3_t pmaxs, vec3
 	if ( self->svFlags & SVF_NAVGOAL )
 	{
 		//Trace from point to navgoal
-		gi.trace( &trace, point, mins, maxs, self->currentOrigin, self->owner->s.number, (clipmask|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP)&~CONTENTS_BODY );
+		gi.trace( &trace, point, mins, maxs, self->currentOrigin, self->owner->s.number, (clipmask|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP)&~CONTENTS_BODY, (EG2_Collision)0, 0 );
 		if ( trace.startsolid&&(trace.contents&CONTENTS_BOTCLIP) )
 		{//started inside do not enter, so ignore them
 			clipmask &= ~CONTENTS_BOTCLIP;
-			gi.trace( &trace, point, mins, maxs, self->currentOrigin, self->owner->s.number, (clipmask|CONTENTS_MONSTERCLIP)&~CONTENTS_BODY );
+			gi.trace( &trace, point, mins, maxs, self->currentOrigin, self->owner->s.number, (clipmask|CONTENTS_MONSTERCLIP)&~CONTENTS_BODY, (EG2_Collision)0, 0 );
 		}
 		
 		if ( trace.startsolid || trace.allsolid )
@@ -278,11 +278,11 @@ qboolean NAV_ClearPathToPoint( gentity_t *self, vec3_t pmins, vec3_t pmaxs, vec3
 	}
 	else
 	{
-		gi.trace( &trace, self->currentOrigin, mins, maxs, point, self->s.number, clipmask|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP);
+		gi.trace( &trace, self->currentOrigin, mins, maxs, point, self->s.number, clipmask|CONTENTS_MONSTERCLIP|CONTENTS_BOTCLIP, (EG2_Collision)0, 0);
 		if ( trace.startsolid&&(trace.contents&CONTENTS_BOTCLIP) )
 		{//started inside do not enter, so ignore them
 			clipmask &= ~CONTENTS_BOTCLIP;
-			gi.trace( &trace, self->currentOrigin, mins, maxs, point, self->s.number, clipmask|CONTENTS_MONSTERCLIP);
+			gi.trace( &trace, self->currentOrigin, mins, maxs, point, self->s.number, clipmask|CONTENTS_MONSTERCLIP, (EG2_Collision)0, 0);
 		}
 
 		if( ( ( trace.startsolid == qfalse ) && ( trace.allsolid == qfalse ) ) && ( trace.fraction == 1.0f ) )
@@ -466,12 +466,12 @@ qboolean NAV_CheckAhead( gentity_t *self, vec3_t end, trace_t &trace, int clipma
 	//Offset the step height
 	VectorSet( mins, self->mins[0], self->mins[1], self->mins[2] + STEPSIZE );
 	
-	gi.trace( &trace, self->currentOrigin, mins, self->maxs, end, self->s.number, clipmask );
+	gi.trace( &trace, self->currentOrigin, mins, self->maxs, end, self->s.number, clipmask, (EG2_Collision)0, 0 );
 
 	if ( trace.startsolid&&(trace.contents&CONTENTS_BOTCLIP) )
 	{//started inside do not enter, so ignore them
 		clipmask &= ~CONTENTS_BOTCLIP;
-		gi.trace( &trace, self->currentOrigin, mins, self->maxs, end, self->s.number, clipmask );
+		gi.trace( &trace, self->currentOrigin, mins, self->maxs, end, self->s.number, clipmask, (EG2_Collision)0, 0 );
 	}
 	//Do a simple check
 	if ( ( trace.allsolid == qfalse ) && ( trace.startsolid == qfalse ) && ( trace.fraction == 1.0f ) )
@@ -735,11 +735,11 @@ qboolean NAV_StackedCanyon( gentity_t *self, gentity_t *blocker, vec3_t pathDir 
 	VectorMA( blocker->currentOrigin, avoidRadius, cross, test );
 
 	trace_t	tr;
-	gi.trace( &tr, test, self->mins, self->maxs, test, self->s.number, self->clipmask|extraClip );
+	gi.trace( &tr, test, self->mins, self->maxs, test, self->s.number, self->clipmask|extraClip, (EG2_Collision)0, 0 );
 	if ( tr.startsolid&&(tr.contents&CONTENTS_BOTCLIP) )
 	{//started inside do not enter, so ignore them
 		extraClip &= ~CONTENTS_BOTCLIP;
-		gi.trace( &tr, test, self->mins, self->maxs, test, self->s.number, self->clipmask|extraClip );
+		gi.trace( &tr, test, self->mins, self->maxs, test, self->s.number, self->clipmask|extraClip, (EG2_Collision)0, 0 );
 	}
 
 	if ( NAVDEBUG_showCollision )
@@ -757,11 +757,11 @@ qboolean NAV_StackedCanyon( gentity_t *self, gentity_t *blocker, vec3_t pathDir 
 
 	VectorMA( blocker->currentOrigin, -avoidRadius, cross, test );
 
-	gi.trace( &tr, test, self->mins, self->maxs, test, self->s.number, self->clipmask|extraClip );
+	gi.trace( &tr, test, self->mins, self->maxs, test, self->s.number, self->clipmask|extraClip, (EG2_Collision)0, 0 );
 	if ( tr.startsolid&&(tr.contents&CONTENTS_BOTCLIP) )
 	{//started inside do not enter, so ignore them
 		extraClip &= ~CONTENTS_BOTCLIP;
-		gi.trace( &tr, test, self->mins, self->maxs, test, self->s.number, self->clipmask|extraClip );
+		gi.trace( &tr, test, self->mins, self->maxs, test, self->s.number, self->clipmask|extraClip, (EG2_Collision)0, 0 );
 	}
 
 	if ( tr.startsolid == qfalse && tr.allsolid == qfalse )
@@ -941,12 +941,12 @@ int NAV_TestBestNode( gentity_t *self, int startID, int endID, qboolean failEdge
 	//Offset the step height
 	VectorSet( mins, self->mins[0], self->mins[1], self->mins[2] + STEPSIZE );
 	
-	gi.trace( &trace, self->currentOrigin, mins, self->maxs, end, self->s.number, clipmask );
+	gi.trace( &trace, self->currentOrigin, mins, self->maxs, end, self->s.number, clipmask, (EG2_Collision)0, 0 );
 
 	if ( trace.startsolid&&(trace.contents&CONTENTS_BOTCLIP) )
 	{//started inside do not enter, so ignore them
 		clipmask &= ~CONTENTS_BOTCLIP;
-		gi.trace( &trace, self->currentOrigin, mins, self->maxs, end, self->s.number, clipmask );
+		gi.trace( &trace, self->currentOrigin, mins, self->maxs, end, self->s.number, clipmask, (EG2_Collision)0, 0 );
 	}
 	//Do a simple check
 	if ( ( trace.allsolid == qfalse ) && ( trace.startsolid == qfalse ) && ( trace.fraction == 1.0f ) )
@@ -1193,7 +1193,7 @@ unsigned int waypoint_testDirection( vec3_t origin, float yaw, unsigned int minD
 //	VectorMA( origin, MAX_RADIUS_CHECK, trace_dir, test_pos );
 	VectorMA( origin, minDist, trace_dir, test_pos );
 
-	gi.trace( &tr, origin, mins, maxs, test_pos, ENTITYNUM_NONE, ( CONTENTS_SOLID | CONTENTS_MONSTERCLIP | CONTENTS_BOTCLIP ) );
+	gi.trace( &tr, origin, mins, maxs, test_pos, ENTITYNUM_NONE, ( CONTENTS_SOLID | CONTENTS_MONSTERCLIP | CONTENTS_BOTCLIP ), (EG2_Collision)0, 0 );
 
 	//return (unsigned int) ( (float) MAX_RADIUS_CHECK * tr.fraction );
 	return (unsigned int) ( (float) minDist * tr.fraction );

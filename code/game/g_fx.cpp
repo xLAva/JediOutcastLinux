@@ -4,6 +4,7 @@
 
 #include "g_local.h"
 #include "g_functions.h"
+#include "b_local.h"
 
 extern int	G_FindConfigstringIndex( const char *name, int start, int max, qboolean create );
 
@@ -561,7 +562,7 @@ void fx_target_beam_fire( gentity_t *ent )
 	VectorSubtract( org, ent->s.origin, dir );
 	VectorNormalize( dir );
 
-	gi.trace( &trace, ent->s.origin, NULL, NULL, org, ENTITYNUM_NONE, MASK_SHOT );//ignore
+	gi.trace( &trace, ent->s.origin, NULL, NULL, org, ENTITYNUM_NONE, MASK_SHOT, (EG2_Collision)0, 0 );//ignore
 	if ( ent->spawnflags & 2 )
 	{
 		open = qtrue;

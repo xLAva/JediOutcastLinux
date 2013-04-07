@@ -1,6 +1,8 @@
 #include "g_headers.h"
 
 #include "Q3_Interface.h"
+#include "b_local.h"
+#include "g_nav.h"
 
 //#include "anims.h"
 //extern int PM_AnimLength( int index, animNumber_t anim );

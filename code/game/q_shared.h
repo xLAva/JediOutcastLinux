@@ -166,6 +166,9 @@ char* strlwr(char* s)
   return s; 
 }
 
+#include <math.h>
+#define _isnan isnan
+
 #endif
 
 //=============================================================

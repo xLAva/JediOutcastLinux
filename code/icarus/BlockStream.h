@@ -12,6 +12,11 @@
 #include <list>
 #include <vector>
 #pragma warning (pop)
+
+#ifdef __linux__
+#include <stdlib.h>
+#endif
+
 using namespace std;
 
 #define	IBI_EXT			".IBI"	//(I)nterpreted (B)lock (I)nstructions

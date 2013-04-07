@@ -67,7 +67,7 @@ int NAVNEW_ClearPathBetweenPoints(vec3_t start, vec3_t end, vec3_t mins, vec3_t 
 		return ENTITYNUM_WORLD;
 	}
 
-	gi.trace( &trace, start, mins, maxs, end, ignore, clipmask );
+	gi.trace( &trace, start, mins, maxs, end, ignore, clipmask, (EG2_Collision)0, 0 );
 
 	//if( ( ( trace.startsolid == false ) && ( trace.allsolid == false ) ) && ( trace.fraction < 1.0f ) )
 	//{//FIXME: check for drops?
@@ -110,7 +110,7 @@ void NAVNEW_PushBlocker( gentity_t *self, gentity_t *blocker, vec3_t right, qboo
 	moveamt = (self->maxs[1] + blocker->maxs[1]) * 1.2;//yes, magic number
 
 	VectorMA( blocker->currentOrigin, -moveamt, right, end );
-	gi.trace( &tr, blocker->currentOrigin, mins, blocker->maxs, end, blocker->s.number, blocker->clipmask|CONTENTS_BOTCLIP);
+	gi.trace( &tr, blocker->currentOrigin, mins, blocker->maxs, end, blocker->s.number, blocker->clipmask|CONTENTS_BOTCLIP, (EG2_Collision)0, 0);
 	if ( !tr.startsolid && !tr.allsolid )
 	{
 		leftSucc = tr.fraction;
@@ -128,7 +128,7 @@ void NAVNEW_PushBlocker( gentity_t *self, gentity_t *blocker, vec3_t right, qboo
 	else
 	{
 		VectorMA( blocker->currentOrigin, moveamt, right, end );
-		gi.trace( &tr, blocker->currentOrigin, mins, blocker->maxs, end, blocker->s.number, blocker->clipmask|CONTENTS_BOTCLIP );
+		gi.trace( &tr, blocker->currentOrigin, mins, blocker->maxs, end, blocker->s.number, blocker->clipmask|CONTENTS_BOTCLIP, (EG2_Collision)0, 0 );
 		if ( !tr.startsolid && !tr.allsolid )
 		{
 			rightSucc = tr.fraction;
@@ -260,7 +260,7 @@ qboolean NAVNEW_SidestepBlocker( gentity_t *self, gentity_t *blocker, vec3_t blo
 		avoidAngles[YAW] = AngleNormalize360( yaw + arcAngle );
 		AngleVectors( avoidAngles, movedir, NULL, NULL );
 		VectorMA( self->currentOrigin, blocked_dist, movedir, block_pos );
-		gi.trace( &tr, self->currentOrigin, mins, self->maxs, block_pos, self->s.number, self->clipmask|CONTENTS_BOTCLIP );
+		gi.trace( &tr, self->currentOrigin, mins, self->maxs, block_pos, self->s.number, self->clipmask|CONTENTS_BOTCLIP, (EG2_Collision)0, 0 );
 		return (tr.fraction==1.0&&!tr.allsolid&&!tr.startsolid);
 	}
 
@@ -270,7 +270,7 @@ qboolean NAVNEW_SidestepBlocker( gentity_t *self, gentity_t *blocker, vec3_t blo
 
 	VectorMA( self->currentOrigin, blocked_dist, avoidRight_dir, block_pos );
 		
-	gi.trace( &tr, self->currentOrigin, mins, self->maxs, block_pos, self->s.number, self->clipmask|CONTENTS_BOTCLIP );
+	gi.trace( &tr, self->currentOrigin, mins, self->maxs, block_pos, self->s.number, self->clipmask|CONTENTS_BOTCLIP, (EG2_Collision)0, 0 );
 
 	if ( !tr.allsolid && !tr.startsolid )
 	{
@@ -296,7 +296,7 @@ qboolean NAVNEW_SidestepBlocker( gentity_t *self, gentity_t *blocker, vec3_t blo
 
 	VectorMA( self->currentOrigin, blocked_dist, avoidLeft_dir, block_pos );
 		
-	gi.trace( &tr, self->currentOrigin, mins, self->maxs, block_pos, self->s.number, self->clipmask|CONTENTS_BOTCLIP );
+	gi.trace( &tr, self->currentOrigin, mins, self->maxs, block_pos, self->s.number, self->clipmask|CONTENTS_BOTCLIP, (EG2_Collision)0, 0 );
 
 	if ( !tr.allsolid && !tr.startsolid )
 	{
@@ -558,7 +558,7 @@ qboolean NAVNEW_TestNodeConnectionBlocked( int wp1, int wp2, gentity_t *ignoreEn
 		mins[2] = maxs[2];
 	}
 
-	gi.trace( &trace, pos1, mins, maxs, pos2, ignoreEntNum, clipmask );
+	gi.trace( &trace, pos1, mins, maxs, pos2, ignoreEntNum, clipmask, (EG2_Collision)0, 0 );
 	if ( trace.fraction >= 1.0f || trace.entityNum == goalEntNum )
 	{//clear or hit goal
 		return qfalse;

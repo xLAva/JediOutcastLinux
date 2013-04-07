@@ -6,6 +6,8 @@
 #include "g_local.h"
 #include "g_icarus.h"
 #include "wp_saber.h"
+#include "../cgame/cg_local.h"
+#include "npc_headers.h"
 
 extern void Q3_SetViewEntity(int entID, const char *name);
 extern qboolean G_ClearViewEntity( gentity_t *ent );

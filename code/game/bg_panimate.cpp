@@ -14,6 +14,7 @@
 #include "Q3_Interface.h"
 #include "g_local.h"
 #include "wp_saber.h"
+#include "b_local.h"
 
 extern pmove_t	*pm;
 extern pml_t	pml;
@@ -1016,7 +1017,7 @@ qboolean PM_CheckEnemyInBack( float backCheckDist )
 	AngleVectors( fwdAngles, fwd, NULL, NULL );
 	VectorMA( pm->ps->origin, -backCheckDist, fwd, end );
 
-	pm->trace( &trace, pm->ps->origin, vec3_origin, vec3_origin, end, pm->ps->clientNum, CONTENTS_SOLID|CONTENTS_BODY );
+	pm->trace( &trace, pm->ps->origin, vec3_origin, vec3_origin, end, pm->ps->clientNum, CONTENTS_SOLID|CONTENTS_BODY, (EG2_Collision)0, 0 );
 	if ( trace.fraction < 1.0f && trace.entityNum < ENTITYNUM_WORLD )
 	{
 		gentity_t *traceEnt = &g_entities[trace.entityNum];
@@ -2393,12 +2394,12 @@ void PM_SetAnimFinal(int *torsoAnim,int *legsAnim,
 #endif
 							gi.G2API_SetBoneAnimIndex(&gent->ghoul2[gent->playerModel], gent->lowerLumbarBone, //gent->upperLumbarBone
 								firstFrame, lastFrame, animFlags&~BONE_ANIM_BLEND, 
-								animSpeed, cg.time);
+								animSpeed, cg.time, -1, -1);
 							if ( gent->motionBone != -1 )
 							{
 								gi.G2API_SetBoneAnimIndex(&gent->ghoul2[gent->playerModel], gent->motionBone,
 									firstFrame, lastFrame, animFlags&~BONE_ANIM_BLEND, 
-									animSpeed, cg.time);
+									animSpeed, cg.time, -1, -1);
 							}
 						}
 					}
@@ -2615,7 +2616,7 @@ setAnimLegs:
 #endif
 						gi.G2API_SetBoneAnimIndex(&gent->ghoul2[gent->playerModel], gent->rootBone, 
 							firstFrame, lastFrame, animFlags&~BONE_ANIM_BLEND, 
-							animSpeed, cg.time);
+							animSpeed, cg.time, -1, -1);
 					}
 				}
 			}
