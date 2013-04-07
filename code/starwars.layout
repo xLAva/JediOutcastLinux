@@ -7,11 +7,23 @@
 	<File name="ghoul2/G2.h" open="0" top="0" tabpos="0">
 		<Cursor position="11361" topLine="143" />
 	</File>
+	<File name="ghoul2/G2_API.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="570" topLine="9" />
+	</File>
+	<File name="mp3code/cdct.c" open="0" top="0" tabpos="2">
+		<Cursor position="0" topLine="21" />
+	</File>
+	<File name="mp3code/cupl3.c" open="0" top="0" tabpos="3">
+		<Cursor position="1854" topLine="39" />
+	</File>
 	<File name="renderer/tr_backend.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="0" topLine="1232" />
 	</File>
 	<File name="renderer/tr_font.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="0" topLine="54" />
+	</File>
+	<File name="renderer/tr_surfacesprites.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="1145" topLine="0" />
 	</File>
 	<File name="server/sv_game.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="11970" topLine="437" />

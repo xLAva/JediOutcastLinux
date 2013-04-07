@@ -241,7 +241,7 @@
 		<Unit filename="game/anims.h" />
 		<Unit filename="game/b_public.h" />
 		<Unit filename="game/bg_public.h" />
-		<Unit filename="Icarus/BlockStream.h" />
+		<Unit filename="icarus/BlockStream.h" />
 		<Unit filename="game/bset.h" />
 		<Unit filename="game/bstate.h" />
 		<Unit filename="cgame/cg_public.h" />
@@ -263,13 +263,13 @@
 		<Unit filename="game/g_shared.h" />
 		<Unit filename="game/genericparser2.h" />
 		<Unit filename="qcommon/hstring.h" />
-		<Unit filename="Icarus/ICARUS.h" />
-		<Unit filename="Icarus/Instance.h" />
-		<Unit filename="Icarus/interface.h" />
-		<Unit filename="Icarus/Interpreter.h" />
+		<Unit filename="icarus/icarus.h" />
+		<Unit filename="icarus/Instance.h" />
+		<Unit filename="icarus/Interface.h" />
+		<Unit filename="icarus/Interpreter.h" />
 		<Unit filename="client/keys.h" />
-		<Unit filename="Icarus/sequence.h" />
-		<Unit filename="Icarus/Sequencer.h" />
+		<Unit filename="icarus/Sequence.h" />
+		<Unit filename="icarus/Sequencer.h" />
 		<Unit filename="server/server.h" />
 		<Unit filename="client/snd_ambient.h" />
 		<Unit filename="client/snd_local.h" />
@@ -279,9 +279,9 @@
 		<Unit filename="game/statindex.h" />
 		<Unit filename="qcommon/strip.h" />
 		<Unit filename="qcommon/stripPublic.h" />
-		<Unit filename="Icarus/TaskManager.h" />
+		<Unit filename="icarus/TaskManager.h" />
 		<Unit filename="game/teams.h" />
-		<Unit filename="Icarus/Tokenizer.h" />
+		<Unit filename="icarus/Tokenizer.h" />
 		<Unit filename="qcommon/unzip.h" />
 		<Unit filename="client/vmachine.h" />
 		<Unit filename="game/weapons.h" />
@@ -410,7 +410,7 @@
 		<Unit filename="game/ghoul2_shared.h" />
 		<Unit filename="renderer/matcomp.h" />
 		<Unit filename="renderer/mdx_format.h" />
-		<Unit filename="qcommon/MiniHeap.h" />
+		<Unit filename="qcommon/miniheap.h" />
 		<Unit filename="renderer/glext.h" />
 		<Unit filename="win32/glw_win.h" />
 		<Unit filename="renderer/qgl.h" />
@@ -421,8 +421,8 @@
 		<Unit filename="renderer/tr_quicksprite.h" />
 		<Unit filename="renderer/tr_stl.h" />
 		<Unit filename="renderer/tr_types.h" />
-		<Unit filename="renderer/tr_WorldEffects.h" />
-		<Unit filename="renderer/MatComp.c">
+		<Unit filename="renderer/tr_worldeffects.h" />
+		<Unit filename="renderer/matcomp.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="renderer/tr_animation.cpp" />
@@ -453,7 +453,7 @@
 		<Unit filename="renderer/tr_surface.cpp" />
 		<Unit filename="renderer/tr_surfacesprites.cpp" />
 		<Unit filename="renderer/tr_world.cpp" />
-		<Unit filename="renderer/tr_WorldEffects.cpp" />
+		<Unit filename="renderer/tr_worldeffects.cpp" />
 		<Unit filename="win32/win_gamma.cpp" />
 		<Unit filename="win32/win_glimp.cpp" />
 		<Unit filename="win32/win_qgl.cpp" />

@@ -12,7 +12,7 @@
 #include "../game/weapons.h"
 
 
-gameinfo_import_t	gi;
+extern gameinfo_import_t	gi;
 
 weaponData_t weaponData[WP_NUM_WEAPONS];
 ammoData_t ammoData[AMMO_MAX];

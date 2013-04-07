@@ -51,7 +51,7 @@ void SEffectTemplate::operator=(const SEffectTemplate &that)
 
 	for( int i = 0; i < mPrimitiveCount; i++ )
 	{
-		mPrimitives[i] = new CPrimitiveTemplate;
+		mPrimitives[i] = new CPrimitiveTemplate();
 		*(mPrimitives[i]) = *(that.mPrimitives[i]);
 		// Mark use as a copy so that we know that we should be chucked when used up
 		mPrimitives[i]->mCopy = true;
@@ -769,7 +769,7 @@ void CFxScheduler::PlayEffect( const char *file, int clientID )
 			{
 				// We have to create a new scheduled effect so that we can create it at a later point
 				//	you should avoid this because it's much more expensive
-				sfx = new SScheduledEffect;
+				sfx = new SScheduledEffect();
 				sfx->mStartTime = theFxHelper.mTime + delay;
 				sfx->mpTemplate = prim;
 				sfx->mClientID = clientID;
@@ -1077,7 +1077,7 @@ void CFxScheduler::PlayEffect( int id, vec3_t origin, vec3_t axis[3], const int 
 			{
 				// We have to create a new scheduled effect so that we can create it at a later point
 				//	you should avoid this because it's much more expensive
-				sfx = new SScheduledEffect;
+				sfx = new SScheduledEffect();
 				sfx->mStartTime = theFxHelper.mTime + delay;
 				sfx->mpTemplate = prim;
 				sfx->mClientID = -1;

@@ -12,7 +12,7 @@
 	"../game/g_shared.h"
 	"cg_camera.h"
 
-1365329125 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/q_shared.h
+1365336699 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/q_shared.h
 	<assert.h>
 	<math.h>
 	<stdio.h>
@@ -260,7 +260,7 @@
 	"cg_media.h"
 	"FxScheduler.h"
 
-1365259956 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxScheduler.cpp
+1365336935 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxScheduler.cpp
 	"common_headers.h"
 	"FxScheduler.h"
 	"..\game\ghoul2_shared.h"
@@ -312,7 +312,7 @@
 	"../game/objectives.h"
 	"../game/g_local.h"
 
-1365331037 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_local.h
+1365336463 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_local.h
 	"../ui/gameinfo.h"
 	"g_shared.h"
 	"anims.h"
@@ -1011,7 +1011,7 @@
 1365121381 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/q_math.cpp
 	"common_headers.h"
 
-1365121381 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/q_shared.cpp
+1365336279 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/q_shared.cpp
 	"common_headers.h"
 
 1365333263 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/wp_saber.cpp
@@ -1061,7 +1061,10 @@
 	"icarus.h"
 	"assert.h"
 
-1365335458 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/ui/gameinfo.cpp
+1365337423 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/ui/gameinfo.cpp
 	"gameinfo.h"
 	"../game/weapons.h"
+
+1365336452 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_local.cpp
+	"g_local.h"
 

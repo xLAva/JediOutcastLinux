@@ -10,20 +10,23 @@
 	<File name="../cgame/FxParsing.h" open="0" top="0" tabpos="0">
 		<Cursor position="14" topLine="0" />
 	</File>
-	<File name="../cgame/FxPrimitives.cpp" open="1" top="1" tabpos="13">
+	<File name="../cgame/FxPrimitives.cpp" open="0" top="0" tabpos="11">
 		<Cursor position="3288" topLine="155" />
 	</File>
 	<File name="../cgame/FxPrimitives.h" open="0" top="0" tabpos="9">
 		<Cursor position="14230" topLine="498" />
 	</File>
-	<File name="../cgame/FxScheduler.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="354" topLine="0" />
+	<File name="../cgame/FxScheduler.cpp" open="0" top="0" tabpos="16">
+		<Cursor position="19335" topLine="754" />
 	</File>
-	<File name="../cgame/FxScheduler.h" open="0" top="0" tabpos="0">
-		<Cursor position="12138" topLine="383" />
+	<File name="../cgame/FxScheduler.h" open="0" top="0" tabpos="17">
+		<Cursor position="10480" topLine="324" />
 	</File>
 	<File name="../cgame/FxSystem.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="197" topLine="0" />
+	</File>
+	<File name="../cgame/FxTemplate.cpp" open="0" top="0" tabpos="18">
+		<Cursor position="388" topLine="43" />
 	</File>
 	<File name="../cgame/animtable.h" open="0" top="0" tabpos="15">
 		<Cursor position="0" topLine="0" />
@@ -175,7 +178,7 @@
 	<File name="bg_pangles.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="711" topLine="4" />
 	</File>
-	<File name="bg_panimate.cpp" open="0" top="0" tabpos="0">
+	<File name="bg_panimate.cpp" open="0" top="0" tabpos="15">
 		<Cursor position="19813" topLine="269" />
 	</File>
 	<File name="bg_pmove.cpp" open="0" top="0" tabpos="0">
@@ -226,11 +229,14 @@
 	<File name="g_items.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="664" topLine="3" />
 	</File>
-	<File name="g_local.h" open="1" top="0" tabpos="3">
-		<Cursor position="765" topLine="0" />
+	<File name="g_local.cpp" open="0" top="0" tabpos="14">
+		<Cursor position="162" topLine="0" />
 	</File>
-	<File name="g_main.cpp" open="0" top="0" tabpos="2">
-		<Cursor position="321" topLine="0" />
+	<File name="g_local.h" open="0" top="0" tabpos="3">
+		<Cursor position="508" topLine="0" />
+	</File>
+	<File name="g_main.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="571" topLine="7" />
 	</File>
 	<File name="g_misc.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="80940" topLine="2697" />
@@ -295,25 +301,31 @@
 	<File name="g_weapon.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="74226" topLine="2487" />
 	</File>
+	<File name="g_weaponLoad.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="32030" topLine="1298" />
+	</File>
 	<File name="ghoul2_shared.h" open="0" top="0" tabpos="9">
 		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="npc_headers.h" open="0" top="0" tabpos="14">
 		<Cursor position="126" topLine="0" />
 	</File>
-	<File name="q_shared.h" open="0" top="0" tabpos="24">
-		<Cursor position="404" topLine="0" />
+	<File name="q_shared.cpp" open="0" top="0" tabpos="13">
+		<Cursor position="485" topLine="0" />
+	</File>
+	<File name="q_shared.h" open="0" top="0" tabpos="12">
+		<Cursor position="12762" topLine="498" />
 	</File>
 	<File name="wp_saber.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="253611" topLine="7370" />
 	</File>
-	<File name="../icarus/BlockStream.cpp" open="1" top="0" tabpos="4">
+	<File name="../icarus/BlockStream.cpp" open="0" top="0" tabpos="4">
 		<Cursor position="124" topLine="0" />
 	</File>
 	<File name="../icarus/BlockStream.h" open="0" top="0" tabpos="8">
 		<Cursor position="277" topLine="0" />
 	</File>
-	<File name="../icarus/Instance.cpp" open="1" top="0" tabpos="5">
+	<File name="../icarus/Instance.cpp" open="0" top="0" tabpos="5">
 		<Cursor position="105" topLine="0" />
 	</File>
 	<File name="../icarus/Interface.h" open="0" top="0" tabpos="0">
@@ -322,19 +334,19 @@
 	<File name="../icarus/Interpreter.h" open="0" top="0" tabpos="9">
 		<Cursor position="4060" topLine="166" />
 	</File>
-	<File name="../icarus/Sequence.cpp" open="1" top="0" tabpos="6">
+	<File name="../icarus/Sequence.cpp" open="0" top="0" tabpos="6">
 		<Cursor position="114" topLine="0" />
 	</File>
-	<File name="../icarus/Sequencer.cpp" open="1" top="0" tabpos="7">
+	<File name="../icarus/Sequencer.cpp" open="0" top="0" tabpos="7">
 		<Cursor position="49648" topLine="2387" />
 	</File>
-	<File name="../icarus/Sequencer.h" open="1" top="0" tabpos="9">
+	<File name="../icarus/Sequencer.h" open="0" top="0" tabpos="8">
 		<Cursor position="1936" topLine="54" />
 	</File>
-	<File name="../icarus/TaskManager.cpp" open="1" top="0" tabpos="1">
+	<File name="../icarus/TaskManager.cpp" open="0" top="0" tabpos="1">
 		<Cursor position="105" topLine="0" />
 	</File>
-	<File name="../icarus/TaskManager.h" open="1" top="0" tabpos="2">
+	<File name="../icarus/TaskManager.h" open="0" top="0" tabpos="2">
 		<Cursor position="2198" topLine="103" />
 	</File>
 	<File name="../icarus/Tokenizer.h" open="0" top="0" tabpos="4">
@@ -346,13 +358,16 @@
 	<File name="../qcommon/sstring.h" open="0" top="0" tabpos="0">
 		<Cursor position="2193" topLine="81" />
 	</File>
-	<File name="../qcommon/tri_coll_test.cpp" open="1" top="0" tabpos="11">
+	<File name="../qcommon/tri_coll_test.cpp" open="0" top="0" tabpos="9">
 		<Cursor position="554" topLine="0" />
 	</File>
 	<File name="../renderer/tr_types.h" open="0" top="0" tabpos="5">
 		<Cursor position="64" topLine="0" />
 	</File>
-	<File name="../ui/gameinfo.cpp" open="1" top="0" tabpos="12">
-		<Cursor position="220" topLine="0" />
+	<File name="../ui/gameinfo.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="243" topLine="1" />
+	</File>
+	<File name="../ui/gameinfo.h" open="0" top="0" tabpos="3">
+		<Cursor position="0" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>
