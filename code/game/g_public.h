@@ -363,6 +363,12 @@ typedef struct {
 	int			num_entities;		// current number, <= MAX_GENTITIES
 } game_export_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 game_export_t *GetGameApi (game_import_t *import);
+#ifdef __cplusplus
+}
+#endif
 
 #endif//#ifndef __G_PUBLIC_H__

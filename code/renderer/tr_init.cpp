@@ -166,15 +166,15 @@ Ghoul2 Insert End
 */
 
 
-void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
-void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
-void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
-
-void ( APIENTRY * qglLockArraysEXT)( GLint, GLint);
-void ( APIENTRY * qglUnlockArraysEXT) ( void );
-
-void ( APIENTRY * qglPointParameterfEXT)( GLenum, GLfloat);
-void ( APIENTRY * qglPointParameterfvEXT)( GLenum, GLfloat *);
+//void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
+//void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
+//void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
+//
+//void ( APIENTRY * qglLockArraysEXT)( GLint, GLint);
+//void ( APIENTRY * qglUnlockArraysEXT) ( void );
+//
+//void ( APIENTRY * qglPointParameterfEXT)( GLenum, GLfloat);
+//void ( APIENTRY * qglPointParameterfvEXT)( GLenum, GLfloat *);
 
 #ifdef _NPATCH
 void ( APIENTRY * qglPNTrianglesiATI )( GLenum pname, GLint param );
@@ -755,7 +755,7 @@ void GfxInfo_f( void )
 	ri.Printf( PRINT_ALL, "\nGL_VENDOR: %s\n", glConfig.vendor_string );
 	ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
 	ri.Printf( PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
-	ri.Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
+	//ri.Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
 	ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
 	ri.Printf( PRINT_ALL, "GL_MAX_ACTIVE_TEXTURES_ARB: %d\n", glConfig.maxActiveTextures );
 	ri.Printf( PRINT_ALL, "\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits );

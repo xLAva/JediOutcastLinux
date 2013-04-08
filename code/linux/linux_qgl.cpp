@@ -10,20 +10,22 @@
 */
 #include <float.h>
 #include "../renderer/tr_local.h"
-#include "unix_glw.h"
+#include "linux_glw.h"
+ #include <unistd.h>
+#include <sys/types.h>
 
-#include <GL/fxmesa.h>
+//#include <GL/fxmesa.h>
 #include <GL/glx.h>
 
 #include <dlfcn.h>
 
 //FX Mesa Functions
-fxMesaContext (*qfxMesaCreateContext)(GLuint win, GrScreenResolution_t, GrScreenRefresh_t, const GLint attribList[]);
-fxMesaContext (*qfxMesaCreateBestContext)(GLuint win, GLint width, GLint height, const GLint attribList[]);
-void (*qfxMesaDestroyContext)(fxMesaContext ctx);
-void (*qfxMesaMakeCurrent)(fxMesaContext ctx);
-fxMesaContext (*qfxMesaGetCurrentContext)(void);
-void (*qfxMesaSwapBuffers)(void);
+//fxMesaContext (*qfxMesaCreateContext)(GLuint win, GrScreenResolution_t, GrScreenRefresh_t, const GLint attribList[]);
+//fxMesaContext (*qfxMesaCreateBestContext)(GLuint win, GLint width, GLint height, const GLint attribList[]);
+//void (*qfxMesaDestroyContext)(fxMesaContext ctx);
+//void (*qfxMesaMakeCurrent)(fxMesaContext ctx);
+//fxMesaContext (*qfxMesaGetCurrentContext)(void);
+//void (*qfxMesaSwapBuffers)(void);
 
 //GLX Functions
 XVisualInfo * (*qglXChooseVisual)( Display *dpy, int screen, int *attribList );
@@ -378,7 +380,7 @@ void ( APIENTRY * qglLockArraysEXT)( int, int);
 void ( APIENTRY * qglUnlockArraysEXT) ( void );
 
 void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
-void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
+void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, GLfloat *value );
 void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
 void ( APIENTRY * qgl3DfxSetPaletteEXT)( GLuint * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
@@ -2960,12 +2962,12 @@ void QGL_Shutdown( void )
 	qglVertexPointer             = NULL;
 	qglViewport                  = NULL;
 
-	qfxMesaCreateContext         = NULL;
-	qfxMesaCreateBestContext     = NULL;
-	qfxMesaDestroyContext        = NULL;
-	qfxMesaMakeCurrent           = NULL;
-	qfxMesaGetCurrentContext     = NULL;
-	qfxMesaSwapBuffers           = NULL;
+//	qfxMesaCreateContext         = NULL;
+//	qfxMesaCreateBestContext     = NULL;
+//	qfxMesaDestroyContext        = NULL;
+//	qfxMesaMakeCurrent           = NULL;
+//	qfxMesaGetCurrentContext     = NULL;
+//	qfxMesaSwapBuffers           = NULL;
 
 	qglXChooseVisual             = NULL;
 	qglXCreateContext            = NULL;
@@ -3011,7 +3013,7 @@ qboolean QGL_Init( const char *dllname )
 	}
 #endif
 
-	if ( ( glw_state.OpenGLLib = dlopen( dllname, RTLD_LAZY ) ) == 0 )
+	//if ( ( glw_state.OpenGLLib = dlopen( dllname, RTLD_LAZY ) ) == 0 )
 	{
 		char	fn[1024];
 		FILE *fp;
@@ -3372,12 +3374,12 @@ qboolean QGL_Init( const char *dllname )
 	qglVertexPointer             = 	dllVertexPointer             = GPA( "glVertexPointer" );
 	qglViewport                  = 	dllViewport                  = GPA( "glViewport" );
 
-	qfxMesaCreateContext         =  GPA("fxMesaCreateContext");
-	qfxMesaCreateBestContext     =  GPA("fxMesaCreateBestContext");
-	qfxMesaDestroyContext        =  GPA("fxMesaDestroyContext");
-	qfxMesaMakeCurrent           =  GPA("fxMesaMakeCurrent");
-	qfxMesaGetCurrentContext     =  GPA("fxMesaGetCurrentContext");
-	qfxMesaSwapBuffers           =  GPA("fxMesaSwapBuffers");
+//	qfxMesaCreateContext         =  GPA("fxMesaCreateContext");
+//	qfxMesaCreateBestContext     =  GPA("fxMesaCreateBestContext");
+//	qfxMesaDestroyContext        =  GPA("fxMesaDestroyContext");
+//	qfxMesaMakeCurrent           =  GPA("fxMesaMakeCurrent");
+//	qfxMesaGetCurrentContext     =  GPA("fxMesaGetCurrentContext");
+//	qfxMesaSwapBuffers           =  GPA("fxMesaSwapBuffers");
 
 	qglXChooseVisual             =  GPA("glXChooseVisual");
 	qglXCreateContext            =  GPA("glXCreateContext");

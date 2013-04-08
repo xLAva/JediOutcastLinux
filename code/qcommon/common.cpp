@@ -1885,7 +1885,7 @@ void Com_Init( char *commandLine ) {
 		
 		s = va("%s %s %s", Q3_VERSION, CPUSTRING, __DATE__ );
 		com_version = Cvar_Get ("version", s, CVAR_ROM | CVAR_SERVERINFO );
-
+    com_cl_running->integer = 1;
 		SP_Init();	// Initialize StripEd
 	
 		Sys_Init();	// this also detects CPU type, so I can now do this CPU check below...
@@ -2093,7 +2093,7 @@ try
 
 	// if "viewlog" has been modified, show or hide the log console
 	if ( com_viewlog->modified ) {
-		Sys_ShowConsole( com_viewlog->integer, qfalse );
+		//Sys_ShowConsole( com_viewlog->integer, qfalse );
 		com_viewlog->modified = qfalse;
 	}
 
@@ -2105,6 +2105,7 @@ try
 	}
 
 	// we may want to spin here if things are going too fast
+	/*
 	if ( com_maxfps->integer > 0 ) {
 		minMsec = 1000 / com_maxfps->integer;
 	} else {
@@ -2117,6 +2118,7 @@ try
 		}
 		msec = com_frameTime - lastTime;
 	} while ( msec < minMsec );
+	*/
 	Cbuf_Execute ();
 
 	lastTime = com_frameTime;

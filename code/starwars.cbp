@@ -8,6 +8,7 @@
 		<Build>
 			<Target title="Linux Release">
 				<Option output="./Release/jk2sp" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="./Release" />
 				<Option object_output="./Release/exe" />
 				<Option type="0" />
 				<Option compiler="gcc" />
@@ -22,13 +23,19 @@
 					<Add option="-DLINUX" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_JK2EXE" />
-					<Add option="-D_IMMERSION" />
-					<Add option="-D_FF" />
+					<Add option="-D_IMMERSION_DISABLE" />
+					<Add option="-D_FF_DISABLE" />
 					<Add option="-D_M_IX86" />
 					<Add directory="ff/ifc" />
 				</Compiler>
 				<Linker>
 					<Add option="-m32" />
+					<Add library="dl" />
+					<Add library="libopenal" />
+					<Add library="GL" />
+					<Add library="X11" />
+					<Add library="libXxf86vm" />
+					<Add library="libXxf86dga" />
 				</Linker>
 			</Target>
 			<Target title="Win32 Release">
@@ -440,6 +447,36 @@
 		<Unit filename="jpeg-6/jpeglib.h" />
 		<Unit filename="jpeg-6/jutils.cpp" />
 		<Unit filename="jpeg-6/jversion.h" />
+		<Unit filename="linux/linux_console.cpp">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="linux/linux_event.cpp">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="linux/linux_glimp.cpp">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="linux/linux_glw.h">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="linux/linux_local.h">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="linux/linux_main.cpp">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="linux/linux_net.cpp">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="linux/linux_qgl.cpp">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="linux/linux_snddma.cpp">
+			<Option target="Linux Release" />
+		</Unit>
+		<Unit filename="linux/linuxprefix.h">
+			<Option target="Linux Release" />
+		</Unit>
 		<Unit filename="mp3code/L3.h" />
 		<Unit filename="mp3code/cdct.c">
 			<Option compilerVar="CC" />
@@ -628,20 +665,18 @@
 		<Unit filename="unix/Makefile">
 			<Option target="Linux Release" />
 		</Unit>
-		<Unit filename="unix/linux_glimp.c">
-			<Option compilerVar="CC" />
-			<Option target="Linux Release" />
+		<Unit filename="unix/linux_glimp.cpp">
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="unix/linux_qgl.c">
-			<Option compilerVar="CC" />
-			<Option target="Linux Release" />
+		<Unit filename="unix/linux_qgl.cpp">
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="unix/linux_snd.c">
+		<Unit filename="unix/linux_snd.cpp">
 			<Option compilerVar="CC" />
-			<Option target="Linux Release" />
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="unix/matha.s">
-			<Option target="Linux Release" />
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="unix/q3test.spec.sh">
 			<Option target="Linux Release" />
@@ -650,29 +685,25 @@
 			<Option target="Linux Release" />
 		</Unit>
 		<Unit filename="unix/snd_mixa.s">
-			<Option target="Linux Release" />
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="unix/sys_dosa.s">
-			<Option target="Linux Release" />
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="unix/ui_video.c">
-			<Option compilerVar="CC" />
-			<Option target="Linux Release" />
+		<Unit filename="unix/ui_video.cpp">
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="unix/unix_glw.h">
 			<Option target="Linux Release" />
 		</Unit>
-		<Unit filename="unix/unix_main.c">
-			<Option compilerVar="CC" />
-			<Option target="Linux Release" />
+		<Unit filename="unix/unix_main.cpp">
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="unix/unix_net.c">
-			<Option compilerVar="CC" />
-			<Option target="Linux Release" />
+		<Unit filename="unix/unix_net.cpp">
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="unix/unix_shared.c">
-			<Option compilerVar="CC" />
-			<Option target="Linux Release" />
+		<Unit filename="unix/unix_shared.cpp">
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="win32/FeelIt/FEELitIFR.h" />
 		<Unit filename="win32/FeelIt/FFC.h" />
@@ -781,7 +812,12 @@
 			<Option target="Win32 FinalBuild" />
 			<Option target="Win32 SHDebug" />
 		</Unit>
-		<Unit filename="win32/winquake.rc" />
+		<Unit filename="win32/winquake.rc">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win32 FinalBuild" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />

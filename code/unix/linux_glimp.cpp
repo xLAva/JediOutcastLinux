@@ -12,7 +12,10 @@
 **
 */
 
-#include "../server/exe_headers.h"
+#include "../game/g_headers.h"
+
+#include "../game/b_local.h"
+#include "../game/q_shared.h"
 
 #include <termios.h>
 #include <sys/ioctl.h>
@@ -25,7 +28,9 @@
 #include <semaphore.h>
 
 #include "../renderer/tr_local.h"
-#include "../qcommon/qcommon.h"
+
+
+//#include "../qcommon/qcommon.h"
 //#include "../client/keys.h"
 
 #include "../client/client.h"
@@ -89,7 +94,7 @@ static int mouse_threshold;
 /*****************************************************************************/
 /* KEYBOARD                                                                  */
 /*****************************************************************************/
-
+/*
 static unsigned int	keyshift[256];		// key to map to if shift held down in console
 static qboolean shift_down=qfalse;
 
@@ -211,7 +216,7 @@ static char *XLateKey(XKeyEvent *ev, int *key)
 
 	return buf;
 }
-
+*/
 // ========================================================================
 // makes a null cursor
 // ========================================================================
@@ -410,7 +415,7 @@ static void HandleEvents(void)
 	}
 
 	if (dowarp) {
-		/* move the mouse to the window center again */
+		// move the mouse to the window center again 
 		XWarpPointer(dpy,None,win,0,0,0,0, 
 				(glConfig.vidWidth/2),(glConfig.vidHeight/2));
 	}
@@ -455,13 +460,13 @@ static void signal_handler(int sig)
 {
 	if (signalcaught) {
 		printf("DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n", sig);
-		_exit(1);
+		exit(1);
 	}
 
 	signalcaught = qtrue;
 	printf("Received signal %d, exiting...\n", sig);
 	GLimp_Shutdown();
-	_exit(1);
+	exit(1);
 }
 
 static void InitSig(void)
@@ -675,8 +680,9 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 	else
 		colorbits = r_colorbits->value;
 
-	if ( !Q_stricmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )
-		colorbits = 16;
+  //LAvaPort
+	//if ( !Q_stricmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )
+	//	colorbits = 16;
 
 	if (!r_depthbits->value)
 		depthbits = 24;
@@ -1376,15 +1382,5 @@ void IN_Activate(void)
 {
 }
 
-void Sys_SendKeyEvents (void)
-{
-	XEvent event;
 
-	if (!dpy)
-		return;
-
-	HandleEvents();
-//	while (XCheckMaskEvent(dpy,KEY_MASK|MOUSE_MASK,&event))
-//		HandleEvent(&event);
-}
 

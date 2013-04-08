@@ -1,3 +1,6 @@
+#ifndef CG_PUBLIC_H
+#define CG_PUBLIC_H
+
 #define NUM_EXPLOSION_SHADERS	8
 #define NUM_EXPLOSION_FRAMES	3
 
@@ -189,3 +192,4 @@ Ghoul2 Insert End
 } cgameImport_t;
 
 //----------------------------------------------
+#endif

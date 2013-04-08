@@ -21,6 +21,8 @@
 					<Add option="-fexceptions" />
 					<Add option="-fpermissive" />
 					<Add option="-m32" />
+					<Add option="-fpic" />
+					<Add option="-shared" />
 					<Add option="-DLINUX" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_IMMERSION" />

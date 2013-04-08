@@ -23,6 +23,7 @@ Ghoul2 Insert End
 */
 
 //prototypes
+
 extern void	Sys_UnloadGame( void );
 extern void	*Sys_GetGameAPI( void *parms);
 extern void Com_WriteCam ( const char *text );
