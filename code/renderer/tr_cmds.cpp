@@ -342,7 +342,7 @@ void RE_LAGoggles( void )
 	fog_t		*fog = &tr.world->fogs[tr.world->numfogs];
 
 	fog->parms.color[0] = 0.75f;
-	fog->parms.color[1] = 0.42f + random() * 0.025f;
+	fog->parms.color[1] = 0.42f + randomLava() * 0.025f;
 	fog->parms.color[2] = 0.07f;
 	fog->parms.color[3] = 1.0f;
 	fog->parms.depthForOpaque = 10000;

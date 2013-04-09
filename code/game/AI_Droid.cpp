@@ -277,7 +277,7 @@ void NPC_Droid_Pain( gentity_t *self, gentity_t *inflictor, gentity_t *other, ve
 		pain_chance = NPC_GetPainChance( self, damage );
 
 		// Put it in pain
-		if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || random() < pain_chance )	// Spin around in pain? Demp2 always does this
+		if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || randomLava() < pain_chance )	// Spin around in pain? Demp2 always does this
 		{
 			// Health is between 0-30 or was hit by a DEMP2 so pop his head
 			if ( self->health < 30 || mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT )
@@ -343,7 +343,7 @@ void NPC_Droid_Pain( gentity_t *self, gentity_t *inflictor, gentity_t *other, ve
 
 		pain_chance = NPC_GetPainChance( self, damage );
 
-		if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || random() < pain_chance )	// Spin around in pain? Demp2 always does this
+		if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || randomLava() < pain_chance )	// Spin around in pain? Demp2 always does this
 		{
 			anim = self->client->ps.legsAnim;
 

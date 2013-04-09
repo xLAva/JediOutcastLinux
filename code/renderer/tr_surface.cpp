@@ -1145,14 +1145,14 @@ static void RB_SurfaceSaberGlow()
 	{
 		VectorMA( e->origin, i, e->axis[0], end );
 
-		DoSprite( end, e->radius, 0.0f );//random() * 360.0f );
+		DoSprite( end, e->radius, 0.0f );//randomLava() * 360.0f );
 		e->radius += 0.017f;
 	}
 
 	// Big hilt sprite
 	// Please don't kill me Pat...I liked the hilt glow blob, but wanted a subtle pulse.:)  Feel free to ditch it if you don't like it.  --Jeff
 	// Please don't kill me Jeff...  The pulse is good, but now I want the halo bigger if the saber is shorter...  --Pat
-	DoSprite( e->origin, 5.5f + random() * 0.25f, 0.0f );//random() * 360.0f );
+	DoSprite( e->origin, 5.5f + randomLava() * 0.25f, 0.0f );//randomLava() * 360.0f );
 }
 
 /*

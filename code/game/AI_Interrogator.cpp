@@ -272,7 +272,7 @@ void Interrogator_Strafe( void )
 
 		// Set the strafe start time 
 		NPC->fx_time = level.time;
-		NPCInfo->standTime = level.time + 3000 + random() * 500;
+		NPCInfo->standTime = level.time + 3000 + randomLava() * 500;
 	}
 }
 

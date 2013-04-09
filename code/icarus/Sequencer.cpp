@@ -1155,7 +1155,7 @@ int CSequencer::EvaluateConditional( CBlock *block )
 	case ID_RANDOM:
 		{
 			float	min, max;
-			//FIXME: This will not account for nested random() statements
+			//FIXME: This will not account for nested randomLava() statements
 
 			min	= *(float *) block->GetMemberData( memberNum++ );
 			max	= *(float *) block->GetMemberData( memberNum++ );
@@ -1326,7 +1326,7 @@ int CSequencer::EvaluateConditional( CBlock *block )
 		
 		{
 			float	min, max;
-			//FIXME: This will not account for nested random() statements
+			//FIXME: This will not account for nested randomLava() statements
 
 			min	= *(float *) block->GetMemberData( memberNum++ );
 			max	= *(float *) block->GetMemberData( memberNum++ );

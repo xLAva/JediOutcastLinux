@@ -1088,7 +1088,7 @@ void G_RunItem( gentity_t *ent ) {
 			ent->s.pos.trTime = level.time;
 			ent->s.pos.trDelta[0] += crandom() * 40.0f; // I dunno, just do this??
 			ent->s.pos.trDelta[1] += crandom() * 40.0f;
-			ent->s.pos.trDelta[2] += random() * 20.0f;
+			ent->s.pos.trDelta[2] += randomLava() * 20.0f;
 		}
 		return;
 	}

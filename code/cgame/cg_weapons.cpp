@@ -1242,9 +1242,9 @@ void CG_AddViewWeapon( playerState_t *ps )
 			CGCam_Shake( val * val * 0.3f, 100 );
 		}
 
-		val += random() * 0.5f;
+		val += randomLava() * 0.5f;
 
-		FX_AddSprite( flash.origin, NULL, NULL, 3.0f * val * scale, 0.0f, 0.7f, 0.7f, WHITE, WHITE, random() * 360, 0.0f, 1.0f, shader, FX_USE_ALPHA | FX_DEPTH_HACK );
+		FX_AddSprite( flash.origin, NULL, NULL, 3.0f * val * scale, 0.0f, 0.7f, 0.7f, WHITE, WHITE, randomLava() * 360, 0.0f, 1.0f, shader, FX_USE_ALPHA | FX_DEPTH_HACK );
 	}
 
 	// Check if the heavy repeater is finishing up a sustained burst
@@ -2119,7 +2119,7 @@ extern qboolean Q3_TaskIDPending( gentity_t *ent, taskID_t taskType );
 			{//not waiting on a scripted sound to finish
 				if( !jumping )
 				{
-					if( random() > 0.5 )
+					if( randomLava() > 0.5 )
 					{
 						G_SoundOnEnt( player, CHAN_VOICE, va( "sound/chars/kyle/09kyk015.wav" ));
 					}

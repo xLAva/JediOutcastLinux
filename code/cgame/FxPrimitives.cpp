@@ -392,7 +392,7 @@ void CParticle::UpdateSize()
 	if (( mFlags & FX_SIZE_RAND ))
 	{ 
 		// Random simply modulates the existing value
-		perc1 = random() * perc1;
+		perc1 = randomLava() * perc1;
 	}
 
 	mRefEnt.radius = (mSizeStart * perc1) + (mSizeEnd * (1.0f - perc1));
@@ -469,7 +469,7 @@ void CParticle::UpdateRGB()
 	if (( mFlags & FX_RGB_RAND ))
 	{ 
 		// Random simply modulates the existing value
-		perc1 = random() * perc1;
+		perc1 = randomLava() * perc1;
 	}
 
 	// Now get the correct color 
@@ -560,7 +560,7 @@ void CParticle::UpdateAlpha()
 	if ( (mFlags & FX_ALPHA_RAND) )
 	{ 
 		// Random simply modulates the existing value
-		perc1 = random() * perc1;
+		perc1 = randomLava() * perc1;
 	}
 
 	if ( mFlags & FX_USE_ALPHA )
@@ -742,7 +742,7 @@ bool CLine::Update()
 //----------------------------
 void CElectricity::Initialize()
 {
-	mRefEnt.frame = random() * 1265536;
+	mRefEnt.frame = randomLava() * 1265536;
 	mRefEnt.endTime = cg.time + (mTimeEnd - mTimeStart);
 
 	if ( mFlags & FX_DEPTH_HACK )
@@ -984,7 +984,7 @@ void CTail::UpdateLength()
 	if ( mFlags & FX_LENGTH_RAND )
 	{ 
 		// Random simply modulates the existing value
-		perc1 = random() * perc1;
+		perc1 = randomLava() * perc1;
 	}
 
 	mLength = (mLengthStart * perc1) + (mLengthEnd * (1.0f - perc1));
@@ -1096,7 +1096,7 @@ void CCylinder::UpdateSize2()
 	if ( mFlags & FX_SIZE2_RAND )
 	{ 
 		// Random simply modulates the existing value
-		perc1 = random() * perc1;
+		perc1 = randomLava() * perc1;
 	}
 
 	mRefEnt.backlerp = (mSize2Start * perc1) + (mSize2End * (1.0f - perc1));
@@ -1379,7 +1379,7 @@ void CLight::UpdateSize()
 	if ( mFlags & FX_SIZE_RAND )
 	{ 
 		// Random simply modulates the existing value
-		perc1 = random() * perc1;
+		perc1 = randomLava() * perc1;
 	}
 
 	mRefEnt.radius = (mSizeStart * perc1) + (mSizeEnd * (1.0f - perc1));
@@ -1456,7 +1456,7 @@ void CLight::UpdateRGB()
 	if ( mFlags & FX_RGB_RAND )
 	{ 
 		// Random simply modulates the existing value
-		perc1 = random() * perc1;
+		perc1 = randomLava() * perc1;
 	}
 
 	// Now get the correct color 

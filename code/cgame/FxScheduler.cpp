@@ -814,7 +814,7 @@ void CFxScheduler::CreateEffect( CPrimitiveTemplate *fx, int clientID, int delay
 	// handle RGB color
 	if ( fx->mSpawnFlags & FX_RGB_COMPONENT_INTERP )
 	{
-		float perc = random();
+		float perc = randomLava();
 
 		VectorSet( sRGB, fx->mRedStart.GetVal( perc ), fx->mGreenStart.GetVal( perc ), fx->mBlueStart.GetVal( perc ) );
 		VectorSet( eRGB, fx->mRedEnd.GetVal( perc ), fx->mGreenEnd.GetVal( perc ), fx->mBlueEnd.GetVal( perc ) );
@@ -1402,8 +1402,8 @@ void CFxScheduler::CreateEffect( CPrimitiveTemplate *fx, vec3_t origin, vec3_t a
 		float x, y;
 		float width, height;
 		
-		x = DEG2RAD( random() * 360.0f );
-		y = DEG2RAD( random() * 180.0f );
+		x = DEG2RAD( randomLava() * 360.0f );
+		y = DEG2RAD( randomLava() * 180.0f );
 
 		width = fx->mRadius.GetVal();
 		height = fx->mHeight.GetVal();
@@ -1426,7 +1426,7 @@ void CFxScheduler::CreateEffect( CPrimitiveTemplate *fx, vec3_t origin, vec3_t a
 		// set up our point, then rotate around the current direction to.  Make unrotated cylinder centered around 0,0,0
 		VectorScale( ax[1], fx->mRadius.GetVal(), pt );
 		VectorMA( pt, crandom() * 0.5f * fx->mHeight.GetVal(), ax[0], pt );
-		RotatePointAroundVector( temp, ax[0], pt, random() * 360.0f );
+		RotatePointAroundVector( temp, ax[0], pt, randomLava() * 360.0f );
 
 		VectorAdd( org, temp, org );
 
@@ -1570,7 +1570,7 @@ void CFxScheduler::CreateEffect( CPrimitiveTemplate *fx, vec3_t origin, vec3_t a
 	{
 		if ( fx->mSpawnFlags & FX_RGB_COMPONENT_INTERP )
 		{
-			float perc = random();
+			float perc = randomLava();
 
 			VectorSet( sRGB, fx->mRedStart.GetVal( perc ), fx->mGreenStart.GetVal( perc ), fx->mBlueStart.GetVal( perc ) );
 			VectorSet( eRGB, fx->mRedEnd.GetVal( perc ), fx->mGreenEnd.GetVal( perc ), fx->mBlueEnd.GetVal( perc ) );

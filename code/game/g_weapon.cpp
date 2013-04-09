@@ -1742,7 +1742,7 @@ void WP_flechette_alt_blow( gentity_t *ent )
 static void WP_CreateFlechetteBouncyThing( vec3_t start, vec3_t fwd, gentity_t *self )
 //------------------------------------------------------------------------------
 {
-	gentity_t	*missile = CreateMissile( start, fwd, 950 + random() * 700, 1500 + random() * 2000, self, qtrue );
+	gentity_t	*missile = CreateMissile( start, fwd, 950 + randomLava() * 700, 1500 + randomLava() * 2000, self, qtrue );
 	
 	missile->e_ThinkFunc = thinkF_WP_flechette_alt_blow;
 
@@ -1789,7 +1789,7 @@ static void WP_FlechetteAltFire( gentity_t *self )
 	{
 		VectorCopy( angs, dir );
 
-		dir[PITCH] -= random() * 4 + 8; // make it fly upwards
+		dir[PITCH] -= randomLava() * 4 + 8; // make it fly upwards
 		dir[YAW] += crandom() * 2;
 		AngleVectors( dir, fwd, NULL, NULL );
 
@@ -1991,7 +1991,7 @@ static void WP_FireRocket( gentity_t *ent, qboolean alt_fire )
 			// if we are fully locked, always take on the enemy.  
 			//	Also give a slight advantage to higher, but not quite full charges.  
 			//	Finally, just give any amount of charge a very slight random chance of locking.
-			if ( dif == 8 || random() * dif > 2 || random() > 0.97f )
+			if ( dif == 8 || randomLava() * dif > 2 || randomLava() > 0.97f )
 			{
 				missile->enemy = &g_entities[lockEntNum];
 
@@ -2142,7 +2142,7 @@ static void WP_FireDetPack( gentity_t *ent, qboolean alt_fire )
 				{
 					VectorCopy( found->currentOrigin, found->s.origin );
 					found->e_ThinkFunc = thinkF_WP_Explode;
-					found->nextthink = level.time + 100 + random() * 100;
+					found->nextthink = level.time + 100 + randomLava() * 100;
 					G_Sound( found, G_SoundIndex( "sound/weapons/detpack/warning.wav" ));
 
 					// would be nice if this actually worked?

@@ -134,18 +134,18 @@ void MineMonster_Attack( void )
 	if ( !TIMER_Exists( NPC, "attacking" ))
 	{
 		// usually try and play a jump attack if the player somehow got above them....or just really rarely
-		if ( NPC->enemy && ((NPC->enemy->currentOrigin[2] - NPC->currentOrigin[2] > 10 && random() > 0.1f ) 
-						|| random() > 0.8f ))
+		if ( NPC->enemy && ((NPC->enemy->currentOrigin[2] - NPC->currentOrigin[2] > 10 && randomLava() > 0.1f ) 
+						|| randomLava() > 0.8f ))
 		{
 			// Going to do ATTACK4
-			TIMER_Set( NPC, "attacking", 1750 + random() * 200 );
+			TIMER_Set( NPC, "attacking", 1750 + randomLava() * 200 );
 			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK4, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
 
 			TIMER_Set( NPC, "attack2_dmg", 950 ); // level two damage
 		}
-		else if ( random() > 0.5f )
+		else if ( randomLava() > 0.5f )
 		{
-			if ( random() > 0.8f )
+			if ( randomLava() > 0.8f )
 			{
 				// Going to do ATTACK3, (rare)
 				TIMER_Set( NPC, "attacking", 850 );

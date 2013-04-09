@@ -117,7 +117,7 @@ void Howler_Attack( void )
 	if ( !TIMER_Exists( NPC, "attacking" ))
 	{
 		// Going to do ATTACK1
-		TIMER_Set( NPC, "attacking", 1700 + random() * 200 );
+		TIMER_Set( NPC, "attacking", 1700 + randomLava() * 200 );
 		NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
 
 		TIMER_Set( NPC, "attack_dmg", 200 ); // level two damage

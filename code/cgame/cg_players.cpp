@@ -3036,10 +3036,10 @@ void _PlayerSplash( const vec3_t origin, const vec3_t velocity, const float radi
 	float alpha = ( t / 8192.0f ) * 0.6f + 0.2f;
 
 	FX_AddOrientedParticle( end, trace.plane.normal, NULL, NULL, 
-								6.0f, radius + random() * 48.0f, 0, 
+								6.0f, radius + randomLava() * 48.0f, 0, 
 								alpha, 0.0f, 0.0f,
 								WHITE, WHITE, 0.0f, 
-								random() * 360, crandom() * 6.0f, NULL, NULL, 0.0f, 0 ,0, 1200, 
+								randomLava() * 360, crandom() * 6.0f, NULL, NULL, 0.0f, 0 ,0, 1200, 
 								cgs.media.wakeMarkShader, FX_ALPHA_LINEAR | FX_SIZE_LINEAR );
 }
 
@@ -3093,7 +3093,7 @@ void CG_PlayerSplash( centity_t *cent )
 				_PlayerSplash( cent->lerpOrigin, cl->ps.velocity, 36, cl->renderInfo.eyePoint[2] - cent->lerpOrigin[2] + 5 );	
 			}
 
-			cent->gent->disconnectDebounceTime = cg.time + 125 + random() * 50.0f;
+			cent->gent->disconnectDebounceTime = cg.time + 125 + randomLava() * 50.0f;
 		}
 	}
 }
@@ -3149,7 +3149,7 @@ void CG_LightningBolt( centity_t *cent, vec3_t origin )
 	if ( cent->gent->fx_time < cg.time && !(trace.surfaceFlags & SURF_NOIMPACT ))
 	{
 		spark = qtrue;
-		cent->gent->fx_time = cg.time + random() * 100 + 100;
+		cent->gent->fx_time = cg.time + randomLava() * 100 + 100;
 	}
 
 	// Don't draw certain kinds of impacts when it hits a player and such..or when we hit a surface with a NOIMPACT flag
@@ -3359,7 +3359,7 @@ static void CG_ForceElectrocution( centity_t *cent, const vec3_t origin, vec3_t 
 	if ( found )
 	{
 		gi.G2API_GiveMeVectorFromMatrix( boltMatrix, ORIGIN, fxOrg );
-		if ( random() > 0.5f )
+		if ( randomLava() > 0.5f )
 		{
 			gi.G2API_GiveMeVectorFromMatrix( boltMatrix, NEGATIVE_X, dir );
 		}
@@ -3395,19 +3395,19 @@ static void CG_ForceElectrocution( centity_t *cent, const vec3_t origin, vec3_t 
 		}
 	}
 
-	VectorMA( fxOrg, random() * 40 + 40, dir, fxOrg2 );
+	VectorMA( fxOrg, randomLava() * 40 + 40, dir, fxOrg2 );
 
 	trace_t	tr;
 
 	CG_Trace( &tr, fxOrg, NULL, NULL, fxOrg2, -1, CONTENTS_SOLID );
 
-	if ( tr.fraction < 1.0f || random() > 0.94f )
+	if ( tr.fraction < 1.0f || randomLava() > 0.94f )
 	{
 		FX_AddElectricity( fxOrg, tr.endpos,
 			1.5f, 4.0f, 0.0f, 
 			1.0f, 0.5f, 0.0f,
 			rgb, rgb, 0.0f,
-			5.5f, random() * 50 + 100, cgs.media.boltShader, FX_ALPHA_LINEAR | FX_SIZE_LINEAR | FX_BRANCH | FX_GROW | FX_TAPER );
+			5.5f, randomLava() * 50 + 100, cgs.media.boltShader, FX_ALPHA_LINEAR | FX_SIZE_LINEAR | FX_BRANCH | FX_GROW | FX_TAPER );
 	}
 }
 /*
@@ -3492,7 +3492,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, centity_t *cen
 			fxOrg[2] += crandom() * 20;
 			theFxScheduler.PlayEffect( "disruptor/death_smoke", fxOrg );
 
-			if ( random() > 0.5f )
+			if ( randomLava() > 0.5f )
 			{
 				theFxScheduler.PlayEffect( "disruptor/death_smoke", fxOrg );
 			}
@@ -3541,7 +3541,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, centity_t *cen
 	{
 		int	dif = gent->client->ps.powerups[PW_SHOCKED] - cg.time;
 
-		if ( dif > 0 && random() > 0.4f )
+		if ( dif > 0 && randomLava() > 0.4f )
 		{
 			// fade out over the last 500 ms
 			int brightness = 255;
@@ -3566,7 +3566,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, centity_t *cen
 
 			cgi_R_AddRefEntityToScene( ent );
 
-			if ( random() > 0.9f )
+			if ( randomLava() > 0.9f )
 				cgi_S_StartSound ( ent->origin, gent->s.number, CHAN_AUTO, cgi_S_RegisterSound( "sound/effects/energy_crackle.wav" ) );
 		}
 	} 
@@ -3706,7 +3706,7 @@ static void CG_G2SetHeadBlink( centity_t *cent, qboolean bStart )
 	if (bStart)
 	{
 		desiredAngles[YAW] = -50;
-		if ( !in_camera && random() > 0.95f )
+		if ( !in_camera && randomLava() > 0.95f )
 		{
 			bWink = qtrue;
 			blendTime /=3;
@@ -4423,8 +4423,8 @@ void CG_CreateSaberMarks( vec3_t start, vec3_t end, vec3_t normal )
 			VectorScale( mid, 0.5f, mid );
 			VectorSubtract( v->xyz, mid, delta );
 
-			v->st[0] = 0.5 + DotProduct( delta, axis[1] ) * (0.05f + random() * 0.03f);
-			v->st[1] = 0.5 + DotProduct( delta, axis[2] ) * (0.15f + random() * 0.05f);
+			v->st[0] = 0.5 + DotProduct( delta, axis[1] ) * (0.05f + randomLava() * 0.03f);
+			v->st[1] = 0.5 + DotProduct( delta, axis[2] ) * (0.15f + randomLava() * 0.05f);
 		}
 
 		// save it persistantly, do burn first
@@ -4443,8 +4443,8 @@ void CG_CreateSaberMarks( vec3_t start, vec3_t end, vec3_t normal )
 		mark->alphaFade = qfalse;
 		mark->markShader = cgi_R_RegisterShader("gfx/effects/saberDamageGlow" );
 		mark->poly.numVerts = mf->numPoints;
-		mark->color[0] = 215 + random() * 40.0f;
-		mark->color[1] = 96 + random() * 32.0f;
+		mark->color[0] = 215 + randomLava() * 40.0f;
+		mark->color[1] = 96 + randomLava() * 32.0f;
 		mark->color[2] = mark->color[3] = random()*15.0f;
 		memcpy( mark->verts, verts, mf->numPoints * sizeof( verts[0] ) );
 	}
@@ -6111,9 +6111,9 @@ Ghoul2 Insert End
 				CGCam_Shake( val * val * 0.3f, 100 );
 			}
 
-			val += random() * 0.5f;
+			val += randomLava() * 0.5f;
 
-			FX_AddSprite( cent->gent->client->renderInfo.muzzlePoint, NULL, NULL, 3.0f * val * scale, 0.0f, 0.7f, 0.7f, WHITE, WHITE, random() * 360, 0.0f, 1.0f, shader, FX_USE_ALPHA );
+			FX_AddSprite( cent->gent->client->renderInfo.muzzlePoint, NULL, NULL, 3.0f * val * scale, 0.0f, 0.7f, 0.7f, WHITE, WHITE, randomLava() * 360, 0.0f, 1.0f, shader, FX_USE_ALPHA );
 		}
 	}
 }

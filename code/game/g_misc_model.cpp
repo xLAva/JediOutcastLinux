@@ -626,9 +626,9 @@ void spawn_rack_goods( gentity_t *ent )
 		{
 			// since we may have to put up a health pack on the shelf, we should know where we randomly put
 			//	the gun so we don't put the pack on the same spot..so pick either the left or right side
-			pos = ( random() > .5 ) ? -1 : 1;
+			pos = ( randomLava() > .5 ) ? -1 : 1;
 
-			GunRackAddItem( it, ent->s.origin, ent->s.angles, crandom() * 2, ( random() * 6 + 4 ) * pos, v_off );
+			GunRackAddItem( it, ent->s.origin, ent->s.angles, crandom() * 2, ( randomLava() * 6 + 4 ) * pos, v_off );
 		}
 	}
 
@@ -638,7 +638,7 @@ void spawn_rack_goods( gentity_t *ent )
 		if ( !pos )
 		{
 			// we haven't picked a side already...
-			pos = ( random() > .5 ) ? -1 : 1;
+			pos = ( randomLava() > .5 ) ? -1 : 1;
 		}
 		else
 		{
@@ -646,7 +646,7 @@ void spawn_rack_goods( gentity_t *ent )
 			pos *= -1;
 		}
 
-		GunRackAddItem( health, ent->s.origin, ent->s.angles, crandom() * 0.5f, ( random() * 4 + 4 ) * pos, 24 );
+		GunRackAddItem( health, ent->s.origin, ent->s.angles, crandom() * 0.5f, ( randomLava() * 4 + 4 ) * pos, 24 );
 	}
 
 	ent->s.modelindex = G_ModelIndex( "models/map_objects/kejim/weaponsrung.md3" );

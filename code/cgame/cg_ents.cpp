@@ -791,7 +791,7 @@ Ghoul2 Insert End
 				// Only display when we have damage
 				if ( t >= 0.0f && t <= 1.0f ) 
 				{
-					t *= random();
+					t *= randomLava();
 
 					ent.shaderRGBA[0] = ent.shaderRGBA[1] = ent.shaderRGBA[2] = 255.0f * t;
 					ent.shaderRGBA[3] = 255;

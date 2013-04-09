@@ -68,7 +68,7 @@ void NPC_Blocked( gentity_t *self, gentity_t *blocker )
 		//G_AddVoiceEvent( self, Q_irand(EV_BLOCKED1, EV_BLOCKED3), 0 );
 	}
 
-	self->NPC->blockedSpeechDebounceTime = level.time + MIN_BLOCKED_SPEECH_TIME + ( random() * 4000 );
+	self->NPC->blockedSpeechDebounceTime = level.time + MIN_BLOCKED_SPEECH_TIME + ( randomLava() * 4000 );
 	self->NPC->blockingEntNum = blocker->s.number;
 }
 

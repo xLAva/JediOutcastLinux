@@ -375,7 +375,7 @@ qboolean NPC_UpdateAngles ( qboolean doPitch, qboolean doYaw )
 					//Snap to
 					if(fabs(error) > 10)
 					{
-						if(random() > 0.6)
+						if(randomLava() > 0.6)
 						{
 							doSound = qtrue;
 						}
@@ -449,7 +449,7 @@ qboolean NPC_UpdateAngles ( qboolean doPitch, qboolean doYaw )
 					//Snap to
 					if(fabs(error) > 10)
 					{
-						if(random() > 0.6)
+						if(randomLava() > 0.6)
 						{
 							doSound = qtrue;
 						}

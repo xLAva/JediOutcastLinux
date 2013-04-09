@@ -992,7 +992,7 @@ static void CG_DrawZoomMask( void )
 			CG_DrawPic( 307, 40, 26, 30, cgs.media.binocularTri );
 		}
 
-		if ( random() > 0.98f && ( cg.time & 1024 ))
+		if ( randomLava() > 0.98f && ( cg.time & 1024 ))
 		{
 			flip = !flip;
 		}

@@ -206,7 +206,7 @@ void ImperialProbe_Strafe( void )
 
 		// Set the strafe start time so we can do a controlled roll
 		NPC->fx_time = level.time;
-		NPCInfo->standTime = level.time + 3000 + random() * 500;
+		NPCInfo->standTime = level.time + 3000 + randomLava() * 500;
 	}
 }
 
@@ -479,7 +479,7 @@ void NPC_Probe_Pain( gentity_t *self, gentity_t *inflictor, gentity_t *other, ve
 	{
 		pain_chance = NPC_GetPainChance( self, damage );
 
-		if ( random() < pain_chance )	// Spin around in pain?
+		if ( randomLava() < pain_chance )	// Spin around in pain?
 		{
 			NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE);
 		}	

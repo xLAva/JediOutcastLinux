@@ -133,7 +133,7 @@ enum
 
 static void ST_Speech( gentity_t *self, int speechType, float failChance )
 {
-	if ( random() < failChance )
+	if ( randomLava() < failChance )
 	{
 		return;
 	}

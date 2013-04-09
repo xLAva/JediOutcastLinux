@@ -180,11 +180,11 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 	int				i, numSparks;
 
 	//Sparks
-	numSparks = 16 + (random() * 16.0f);
+	numSparks = 16 + (randomLava() * 16.0f);
 	
 	for ( i = 0; i < numSparks; i++ )
 	{	
-		scale = 0.25f + (random() * 2.0f);
+		scale = 0.25f + (randomLava() * 2.0f);
 		dscale = -scale*0.5;
 
 		particle = FX_AddTrail( origin,
@@ -213,13 +213,13 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 
 	for ( i = 0; i < 4; i++ )
 	{
-		VectorSet( temp_org, new_org[0] + (crandom() * 16.0f), new_org[1] + (crandom() * 16.0f), new_org[2] + (random() * 4.0f) );
+		VectorSet( temp_org, new_org[0] + (crandom() * 16.0f), new_org[1] + (crandom() * 16.0f), new_org[2] + (randomLava() * 4.0f) );
 		VectorSet( temp_vel, velocity[0] + (crandom() * 8.0f), velocity[1] + (crandom() * 8.0f), velocity[2] + (crandom() * 8.0f) );
 
 		FX_AddSprite(	temp_org,
 						temp_vel, 
 						NULL, 
-						64.0f + (random() * 32.0f), 
+						64.0f + (randomLava() * 32.0f), 
 						16.0f, 
 						1.0f, 
 						0.0f,
@@ -236,7 +236,7 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 	VectorNormalize( direction );
 
 	//Tag the last one with a light
-	le = CG_MakeExplosion( origin, direction, cgs.media.explosionModel, 6, cgs.media.surfaceExplosionShader, 500, qfalse, radius * 0.02f + (random() * 0.3f) );
+	le = CG_MakeExplosion( origin, direction, cgs.media.explosionModel, 6, cgs.media.surfaceExplosionShader, 500, qfalse, radius * 0.02f + (randomLava() * 0.3f) );
 	le->light = 150;
 	VectorSet( le->lightColor, 0.9f, 0.8f, 0.5f );
 
@@ -350,7 +350,7 @@ void CG_MiscModelExplosion( vec3_t mins, vec3_t maxs, int size, material_t chunk
 	{
 		for( int j = 0; j < 3; j++ )
 		{
-			r = random() * 0.8f + 0.1f;
+			r = randomLava() * 0.8f + 0.1f;
 			org[j] = ( r * mins[j] + ( 1 - r ) * maxs[j] );
 		}
 
@@ -510,12 +510,12 @@ void CG_Chunks( int owner, vec3_t origin, const vec3_t normal, const vec3_t mins
 
 			re->hModel = chunkModel;
 			le->leType = LE_FRAGMENT;
-			le->endTime = cg.time + 1300 + random() * 900;
+			le->endTime = cg.time + 1300 + randomLava() * 900;
 
 			// spawn chunk roughly in the bbox of the thing...bias towards center in case thing blowing up doesn't complete fill its bbox.
 			for( j = 0; j < 3; j++ )
 			{
-				r = random() * 0.8f + 0.1f;
+				r = randomLava() * 0.8f + 0.1f;
 				re->origin[j] = ( r * mins[j] + ( 1 - r ) * maxs[j] );
 			}
 			VectorCopy( re->origin, le->pos.trBase );
@@ -526,18 +526,18 @@ void CG_Chunks( int owner, vec3_t origin, const vec3_t normal, const vec3_t mins
 			VectorScale( dir, Q_flrand( speed * 0.5f, speed * 1.25f ) * speedMod, le->pos.trDelta );
 
 			// Angular Velocity
-			VectorSet( le->angles.trBase, random() * 360, random() * 360, random() * 360 );
+			VectorSet( le->angles.trBase, randomLava() * 360, randomLava() * 360, randomLava() * 360 );
 
 			le->angles.trDelta[0] = crandom();
 			le->angles.trDelta[1] = crandom();
 			le->angles.trDelta[2] = 0; // don't do roll
 
-			VectorScale( le->angles.trDelta, random() * 600.0f + 200.0f, le->angles.trDelta );
+			VectorScale( le->angles.trDelta, randomLava() * 600.0f + 200.0f, le->angles.trDelta );
 
 			le->pos.trType = TR_GRAVITY;
 			le->angles.trType = TR_LINEAR;
 			le->pos.trTime = le->angles.trTime = cg.time;
-			le->bounceFactor = 0.2f + random() * 0.2f;
+			le->bounceFactor = 0.2f + randomLava() * 0.2f;
 			le->leFlags |= LEF_TUMBLE;
 			le->ownerGentNum = owner;
 			le->leBounceSoundType = bounce; 
@@ -623,12 +623,12 @@ static void CG_DoGlassQuad( vec3_t p[4], vec2_t uv[4], bool stick, int time, vec
 	}
 
 	// Set up acceleration due to gravity, 800 is standard QuakeIII gravity, so let's use something close
-	VectorSet( accel, 0.0f, 0.0f, -(600.0f + random() * 100.0f ) );
+	VectorSet( accel, 0.0f, 0.0f, -(600.0f + randomLava() * 100.0f ) );
 
 	VectorSet( rgb1, 1.0f, 1.0f, 1.0f );
 
 	// Being glass, we don't want to bounce much
-	bounce = random() * 0.2f + 0.15f;
+	bounce = randomLava() * 0.2f + 0.15f;
 
 	// Set up our random rotate, we only do PITCH and YAW, not ROLL.  This is something like degrees per second
 	VectorSet( rotDelta, crandom() * 40.0f, crandom() * 40.0f, 0.0f );
@@ -638,11 +638,11 @@ static void CG_DoGlassQuad( vec3_t p[4], vec2_t uv[4], bool stick, int time, vec
 			0.15f, 0.0f, 85.0f,		// alpha start, alpha end, alpha parm ( begin alpha fade when 85% of life is complete )
 			rgb1, rgb1, 0.0f,		// rgb start, rgb end, rgb parm ( not used )
 			rotDelta, bounce, time,	// rotation amount, bounce, and time to delay motion for ( zero if no delay );
-			3500 + random() * 1000,	// life
+			3500 + randomLava() * 1000,	// life
 			cgi_R_RegisterShader( "gfx/misc/test_crackle" ), 
 			FX_APPLY_PHYSICS | FX_ALPHA_NONLINEAR | FX_USE_ALPHA );
 
-	if ( random() > 0.95f && pol )
+	if ( randomLava() > 0.95f && pol )
 	{
 		pol->AddFlags( FX_IMPACT_RUNS_FX | FX_KILL_ON_IMPACT );
 		pol->SetImpactFxID( theFxScheduler.RegisterEffect( "glass_impact" ));
@@ -881,7 +881,7 @@ void CG_DoGlass( vec3_t verts[4], vec3_t normal, vec3_t dmgPt, vec3_t dmgDir, fl
 
 			CG_CalcBiLerp( verts, subVerts, biPoints );
 			
-			float dif = DistanceSquared( subVerts[0], dmgPt ) * timeDecay - random() * 32;
+			float dif = DistanceSquared( subVerts[0], dmgPt ) * timeDecay - randomLava() * 32;
 			
 			// If we decrease dif, we are increasing the impact area, making it more likely to blow out large holes
 			dif -= dmgRadius * dmgRadius;
@@ -889,7 +889,7 @@ void CG_DoGlass( vec3_t verts[4], vec3_t normal, vec3_t dmgPt, vec3_t dmgDir, fl
 			if ( dif > 1 )
 			{
 				stick = true;
-				time = dif + random() * 200;
+				time = dif + randomLava() * 200;
 			}
 			else
 			{
