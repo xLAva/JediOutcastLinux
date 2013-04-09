@@ -405,7 +405,9 @@ static void	FS_CreatePath (char *OSPath) {
 		return;
 	}
 
+#ifndef __linux__
 	strlwr(OSPath);
+#endif
 
 	for (ofs = OSPath+1 ; *ofs ; ofs++) {
 		if (*ofs == PATH_SEP) {	

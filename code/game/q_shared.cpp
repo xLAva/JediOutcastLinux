@@ -8,23 +8,29 @@
 #ifdef __linux__
 char* strupr(char* s)
 {
+  char* start = s;
   assert(s != (void*)0);
   while(*s)
   {
     *s = toupper((unsigned char)*s);
      s++;
   }
+  
+  s = start;
   return s; 
 }
 
 char* strlwr(char* s)
 {
+  char* start = s;
   assert(s != (void*)0);
   while(*s)
   {
     *s = tolower((unsigned char)*s);
      s++;
   }
+  s = start;
+
   return s; 
 }
 #endif

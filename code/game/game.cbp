@@ -21,16 +21,16 @@
 					<Add option="-fexceptions" />
 					<Add option="-fpermissive" />
 					<Add option="-m32" />
-					<Add option="-fpic" />
-					<Add option="-shared" />
+					<Add option="-fPIC" />
 					<Add option="-DLINUX" />
 					<Add option="-DNDEBUG" />
-					<Add option="-D_IMMERSION" />
+					<Add option="-D_IMMERSION_DISABLED" />
 					<Add directory="../icarus" />
 					<Add directory="./game" />
 				</Compiler>
 				<Linker>
 					<Add option="-m32" />
+					<Add option="-shared" />
 				</Linker>
 			</Target>
 			<Target title="Win32 Release">

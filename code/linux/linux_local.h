@@ -41,8 +41,8 @@ void Sys_InitNetworking( void );
 void Sys_ShutdownNetworking( void );
 
 // linux_input.c
-void Sys_InitInput( void );
-void Sys_ShutdownInput( void );
+void IN_Init(void);
+void IN_Shutdown(void);
 void Sys_Input( void );
 void IN_ActivateMouse( void ) ;
 void IN_DeactivateMouse( void );

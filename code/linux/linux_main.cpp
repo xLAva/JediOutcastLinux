@@ -398,7 +398,7 @@ void *Sys_GetGameAPI (void *parms)
 		}
 	}
 
-	GetGameAPI = (void *(*)(void *))dlsym (game_library, "_Z10GetGameAPIP13game_import_t");
+	GetGameAPI = (void *(*)(void *))dlsym (game_library, "GetGameAPI");
 	if (!GetGameAPI)
 	{
 	  const char* error = dlerror();
@@ -410,9 +410,28 @@ void *Sys_GetGameAPI (void *parms)
 	return GetGameAPI (parms);
 }
 
+
+/*
+=================
+Sys_LoadCgame
+
+Used to hook up a development dll
+=================
+*/
 void * Sys_LoadCgame( int (**entryPoint)(int, ...), int (*systemcalls)(int, ...) ) 
 {
-  return NULL;
+	void	(*dllEntry)( int (*syscallptr)(int, ...) );
+
+	dllEntry = ( void (*)( int (*)( int, ... ) ) )dlsym( game_library, "dllEntry" ); 
+	*entryPoint = (int (*)(int,...))dlsym( game_library, "vmMain" );
+	if ( !*entryPoint || !dllEntry ) {
+		//FreeLibrary( game_library );
+		printf("Sys_LoadCgame failed.");
+		return NULL;
+	}
+
+	dllEntry( systemcalls );
+	return game_library;
 }
 
 /*
@@ -504,6 +523,14 @@ Sys_GetEvent
 
 ================
 */
+
+unsigned int timeGetTime()
+{
+  struct timeval now;
+  gettimeofday(&now, NULL);
+  return now.tv_usec/1000;
+}
+
 sysEvent_t Sys_GetEvent( void ) {
 	sysEvent_t	ev;
 	char		*s;
@@ -518,7 +545,6 @@ sysEvent_t Sys_GetEvent( void ) {
 	// pump the message loop
 	// in vga this calls KBD_Update, under X, it calls GetEvent
   
-  //LAvaPort ... work in progress
 	Sys_SendKeyEvents ();
 
 	// check for console commands
@@ -549,9 +575,8 @@ sysEvent_t Sys_GetEvent( void ) {
 
 	memset( &ev, 0, sizeof( ev ) );
 
-  //LAvaPort ... work in progress
-	//ev.evTime = timeGetTime();
-  ev.evTime = 0;
+	ev.evTime = timeGetTime();
+
   
 	return ev;
 }
@@ -640,7 +665,7 @@ void Sys_Init(void)
   Cvar_Set( "sys_cpustring", "generic" );
 
   //LAvaPort ... work in progress
-	//IN_Init();
+	IN_Init();
 
 }
 

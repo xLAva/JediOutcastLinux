@@ -752,6 +752,9 @@ and global variables
 =================
 */
 extern int PM_ValidateAnimRange( int startFrame, int endFrame, float animSpeed );
+#ifdef __linux__
+extern "C" {
+#endif
 game_export_t *GetGameAPI( game_import_t *import ) {
 	gameinfo_import_t	gameinfo_import;
 
@@ -787,11 +790,27 @@ game_export_t *GetGameAPI( game_import_t *import ) {
 	gameinfo_import.Cvar_Set = gi.cvar_set;
 	gameinfo_import.Cvar_VariableStringBuffer = gi.Cvar_VariableStringBuffer;
 	gameinfo_import.Cvar_Create = G_Cvar_Create;
+	
+	//LAvaPorting
+	gameinfo_import.FS_ReadFile = gi.FS_ReadFile;
+  gameinfo_import.FS_FreeFile = gi.FS_FreeFile;	
+	gameinfo_import.Printf = gi.Printf;
+
+
+//LAvaPorting
+//typedef struct {
+//	int			(*FS_ReadFile)( const char *name, void **buf );
+//	void		(*FS_FreeFile)( void *buf );
+//	void		(*Printf)( const char *fmt, ... );
+//} gameinfo_import_t;
 
 	GI_Init( &gameinfo_import );
 
 	return &globals;
 }
+#ifdef __linux__
+}
+#endif
 
 void QDECL G_Error( const char *fmt, ... ) {
 	va_list		argptr;

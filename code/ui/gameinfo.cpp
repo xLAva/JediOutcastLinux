@@ -29,7 +29,7 @@ GI_Init
 ===============
 */
 void GI_Init( gameinfo_import_t *import ) {
-	gi = *import;
+	//gi = *import; //LAvaPorting
 
 	WP_LoadWeaponParms ();
 }
