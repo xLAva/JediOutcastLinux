@@ -551,6 +551,7 @@ void CNavigator::Free( void )
 	{
 		delete (*ni);
 	}
+	m_nodes.clear();
 }
 
 /*

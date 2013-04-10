@@ -2105,7 +2105,6 @@ try
 	}
 
 	// we may want to spin here if things are going too fast
-	/*
 	if ( com_maxfps->integer > 0 ) {
 		minMsec = 1000 / com_maxfps->integer;
 	} else {
@@ -2118,7 +2117,7 @@ try
 		}
 		msec = com_frameTime - lastTime;
 	} while ( msec < minMsec );
-	*/
+	
 	Cbuf_Execute ();
 
 	lastTime = com_frameTime;

@@ -111,7 +111,7 @@ void Sys_Mkdir( const char *path ) {
 	char	ospath[MAX_OSPATH];
 	int		err;
 	
-	Com_sprintf( ospath, sizeof(ospath), "%s:", path );
+	Com_sprintf( ospath, sizeof(ospath), "%s", path );
 	
 	err = mkdir( ospath, 0777 );
 }
@@ -222,7 +222,6 @@ char **Sys_ListFiles( const char *directory, const char *extension, int *numfile
 	char		**listCopy;
 	char		*list[MAX_FOUND_FILES];
 	int			flag;
-	int			i;
 	struct stat st;
 
 	int			extLen;
@@ -279,9 +278,9 @@ char **Sys_ListFiles( const char *directory, const char *extension, int *numfile
 		return NULL;
 	}
 
-
+  int i;
 	listCopy = (char **) Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ), TAG_LISTFILES, qfalse);
-	for (int i = 0 ; i < nfiles ; i++ ) {
+	for (i = 0 ; i < nfiles ; i++ ) {
 		listCopy[i] = list[i];
 	}
 	listCopy[i] = NULL;
@@ -517,12 +516,6 @@ void Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptr
 	ev->evPtr = ptr;
 }
 
-/*
-================
-Sys_GetEvent
-
-================
-*/
 
 unsigned int timeGetTime()
 {
@@ -530,6 +523,14 @@ unsigned int timeGetTime()
   gettimeofday(&now, NULL);
   return now.tv_usec/1000;
 }
+
+/*
+================
+Sys_GetEvent
+
+================
+*/
+
 
 sysEvent_t Sys_GetEvent( void ) {
 	sysEvent_t	ev;
@@ -561,6 +562,9 @@ sysEvent_t Sys_GetEvent( void ) {
 		strcpy( b, s );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
+
+	// check for other input devices
+	IN_Frame();
 
 	// check for network packets
 	MSG_Init( &netmsg, sys_packetReceived, sizeof( sys_packetReceived ) );

@@ -703,18 +703,29 @@ inline float Q_crandom( int *seed ) {
 
 //  Returns a float min <= x < max (exclusive; will get max - 0.00001; but never max
 inline float Q_flrand(float min, float max) {
-	return ((rand() * (max - min)) / 32768.0F) + min;
+	//LAvaPort
+	//return ((rand() * (max - min)) / 32768.0F) + min;
+	return ((rand() * (max - min)) / ((float)RAND_MAX+41.0f)) + min;
 }
 
 // Returns an integer min <= x <= max (ie inclusive)
 inline int Q_irand(int min, int max) {
+  //LAvaPort (not sure but I think it is possible to get more then max!!
 	max++; //so it can round down
-	return ((rand() * (max - min)) >> 15) + min;
+	//return ((rand() * (max - min)) >> 15) + min;
+	//int r = ((rand() * (max - min)) >> 15) + min;
+	
+	//int r= ((rand() /(RAND_MAX/(max-min)) ))+min;
+	//printf("Q_irand: min=%d, max=%d, r=%d\n", min, max, r);
+	return ((rand() /(RAND_MAX/(max-min)) ))+min;
 }
 
 //returns a float between 0 and 1.0
 inline float randomLava() { //LAvaPort -> change all random calls
-	return (rand() / ((float)0x7fff));
+	//return (rand() / ((float)0x7fff));
+	//float r = (rand() / ((float)RAND_MAX));
+  //printf("randomLava: r=%f\n",r);
+  return (rand() / ((float)RAND_MAX));
 }
 
 //returns a float between -1 and 1.0

@@ -1316,41 +1316,43 @@ static void install_grabs(void)
 // inviso cursor
 	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
 
-	XGrabPointer(dpy, win,
-				 False,
-				 MOUSE_MASK,
-				 GrabModeAsync, GrabModeAsync,
-				 win,
-				 None,
-				 CurrentTime);
+//LAvaPort
+//  XGrabPointer(dpy, win,
+//  				 False,
+//  				 MOUSE_MASK,
+//  				 GrabModeAsync, GrabModeAsync,
+//  				 win,
+//  				 None,
+//  				 CurrentTime);
 
 	XGetPointerControl(dpy, &mouse_accel_numerator, &mouse_accel_denominator,
 		&mouse_threshold);
 
 	XChangePointerControl(dpy, qtrue, qtrue, 2, 1, 0);
+//LAvaPort
+//	if (in_dgamouse->value) {
+//		int MajorVersion, MinorVersion;
+//
+//		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
+//			// unable to query, probalby not supported
+//			ri.Printf( PRINT_ALL, "Failed to detect XF86DGA Mouse\n" );
+//			ri.Cvar_Set( "in_dgamouse", "0" );
+//		} else {
+//			dgamouse = qtrue;
+//			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
+//			XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
+//		}
+//	} else {
+//		XWarpPointer(dpy, None, win,
+//					 0, 0, 0, 0,
+//					 glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+//	}
 
-	if (in_dgamouse->value) {
-		int MajorVersion, MinorVersion;
-
-		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
-			// unable to query, probalby not supported
-			ri.Printf( PRINT_ALL, "Failed to detect XF86DGA Mouse\n" );
-			ri.Cvar_Set( "in_dgamouse", "0" );
-		} else {
-			dgamouse = qtrue;
-			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
-			XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
-		}
-	} else {
-		XWarpPointer(dpy, None, win,
-					 0, 0, 0, 0,
-					 glConfig.vidWidth / 2, glConfig.vidHeight / 2);
-	}
-
-	XGrabKeyboard(dpy, win,
-				  False,
-				  GrabModeAsync, GrabModeAsync,
-				  CurrentTime);
+//LAvaPort
+	//XGrabKeyboard(dpy, win,
+	//			  False,
+	//			  GrabModeAsync, GrabModeAsync,
+	//			  CurrentTime);
 
 //	XSync(dpy, True);
 }

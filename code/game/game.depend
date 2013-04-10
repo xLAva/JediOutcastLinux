@@ -12,7 +12,7 @@
 	"../game/g_shared.h"
 	"cg_camera.h"
 
-1365413320 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/q_shared.h
+1365605294 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/q_shared.h
 	<assert.h>
 	<math.h>
 	<stdio.h>
@@ -158,7 +158,7 @@
 1365121381 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxUtil.h
 	"FxPrimitives.h"
 
-1365121381 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxPrimitives.h
+1365605052 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxPrimitives.h
 	"FxSystem.h"
 
 1365346703 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxSystem.h
@@ -184,7 +184,7 @@
 	"cg_media.h"
 	"FxScheduler.h"
 
-1365121381 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FX_DEMP2.cpp
+1365605052 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FX_DEMP2.cpp
 	"cg_headers.h"
 	"cg_media.h"
 	"FxScheduler.h"
@@ -221,12 +221,12 @@
 1365121381 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/common_headers.h
 	"cg_headers.h"
 
-1365500089 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxPrimitives.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxPrimitives.cpp
 	"common_headers.h"
 	"FxScheduler.h"
 	"cg_media.h"
 
-1365336935 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxScheduler.cpp
+1365605052 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxScheduler.cpp
 	"common_headers.h"
 	"FxScheduler.h"
 	"..\game\ghoul2_shared.h"
@@ -241,11 +241,11 @@
 	"FxScheduler.h"
 	"../cgame/cg_local.h"
 
-1365121381 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxTemplate.cpp
+1365605052 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxTemplate.cpp
 	"common_headers.h"
 	"FxScheduler.h"
 
-1365121381 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxUtil.cpp
+1365605052 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/FxUtil.cpp
 	"common_headers.h"
 	"FxScheduler.h"
 
@@ -265,7 +265,7 @@
 	"cg_headers.h"
 	"cg_media.h"
 
-1365261471 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_draw.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_draw.cpp
 	"cg_headers.h"
 	"cg_media.h"
 	"../game/objectives.h"
@@ -292,12 +292,12 @@
 	"cg_headers.h"
 	"cg_media.h"
 
-1365121381 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_effects.cpp
+1365604958 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_effects.cpp
 	"cg_headers.h"
 	"cg_media.h"
 	"FxScheduler.h"
 
-1365261863 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_ents.cpp
+1365604981 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_ents.cpp
 	"cg_headers.h"
 	"cg_media.h"
 	"../game/g_functions.h"
@@ -338,7 +338,7 @@
 	"cg_headers.h"
 	"cg_media.h"
 
-1365500798 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_main.cpp
+1365604981 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_main.cpp
 	"cg_headers.h"
 	"cg_media.h"
 	"FxScheduler.h"
@@ -357,7 +357,7 @@
 	"cg_headers.h"
 	"cg_media.h"
 
-1365264137 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_players.cpp
+1365604981 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_players.cpp
 	"cg_headers.h"
 	"cg_media.h"
 	"FxScheduler.h"
@@ -423,7 +423,7 @@
 	"cg_headers.h"
 	"cg_media.h"
 
-1365264620 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_view.cpp
+1365605019 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_view.cpp
 	"cg_headers.h"
 	"cg_media.h"
 	"FxScheduler.h"
@@ -432,7 +432,7 @@
 	"../game/g_local.h"
 	"../game/g_functions.h"
 
-1365265123 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_weapons.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/cgame/cg_weapons.cpp
 	"cg_headers.h"
 	"cg_media.h"
 	"FxScheduler.h"
@@ -451,7 +451,7 @@
 	"../game/g_local.h"
 	"../game/teams.h"
 
-1365325586 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Default.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Default.cpp
 	"g_headers.h"
 	"Q3_Interface.h"
 	"b_local.h"
@@ -459,7 +459,7 @@
 
 1365121381 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/Q3_Interface.h
 
-1365325754 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Droid.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Droid.cpp
 	"g_headers.h"
 	"b_local.h"
 
@@ -479,17 +479,17 @@
 	"anims.h"
 	"g_navigator.h"
 
-1365326417 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Howler.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Howler.cpp
 	"g_headers.h"
 	"b_local.h"
 
-1365326492 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_ImperialProbe.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_ImperialProbe.cpp
 	"g_headers.h"
 	"b_local.h"
 	"g_nav.h"
 	"../cgame/cg_local.h"
 
-1365326619 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Interrogator.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Interrogator.cpp
 	"g_headers.h"
 	"b_local.h"
 	"g_nav.h"
@@ -514,22 +514,22 @@
 	"g_nav.h"
 	"../cgame/cg_local.h"
 
-1365326945 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_MineMonster.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_MineMonster.cpp
 	"g_headers.h"
 	"b_local.h"
 
-1365326952 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Remote.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Remote.cpp
 	"g_headers.h"
 	"b_local.h"
 	"g_nav.h"
 
-1365327033 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Seeker.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Seeker.cpp
 	"g_headers.h"
 	"b_local.h"
 	"g_nav.h"
 	"../cgame/cg_local.h"
 
-1365327110 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Sentry.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Sentry.cpp
 	"g_headers.h"
 	"b_local.h"
 	"g_nav.h"
@@ -543,7 +543,7 @@
 	"anims.h"
 	"g_navigator.h"
 
-1365327164 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Stormtrooper.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/AI_Stormtrooper.cpp
 	"g_headers.h"
 	"b_local.h"
 	"g_nav.h"
@@ -568,13 +568,13 @@
 	"say.h"
 	"Q3_Interface.h"
 
-1365327360 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_behavior.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_behavior.cpp
 	"g_headers.h"
 	"g_navigator.h"
 	"Q3_Interface.h"
 	"../game/npc_headers.h"
 
-1365327452 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_combat.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_combat.cpp
 	"g_headers.h"
 	"b_local.h"
 	"g_nav.h"
@@ -597,7 +597,7 @@
 	"g_nav.h"
 	"anims.h"
 
-1365121381 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_reactions.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_reactions.cpp
 	"g_headers.h"
 	"b_local.h"
 	"anims.h"
@@ -616,7 +616,7 @@
 	"b_local.h"
 	"Q3_Interface.h"
 
-1365509972 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_spawn.cpp
+1365517390 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_spawn.cpp
 	"g_headers.h"
 	"b_local.h"
 	"anims.h"
@@ -626,14 +626,14 @@
 
 1365121381 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_icarus.h
 
-1365509326 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_stats.cpp
+1365510165 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_stats.cpp
 	"g_headers.h"
 	"b_local.h"
 	"b_public.h"
 	"anims.h"
 	"../cgame/cg_local.h"
 
-1365327606 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_utils.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/NPC_utils.cpp
 	"g_headers.h"
 	"b_local.h"
 	"g_icarus.h"
@@ -737,7 +737,7 @@
 	"../game/npc_headers.h"
 	<float.h>
 
-1365330725 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_breakable.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_breakable.cpp
 	"g_headers.h"
 	"g_local.h"
 	"g_functions.h"
@@ -787,7 +787,7 @@
 	"../cgame/cg_local.h"
 	"g_functions.h"
 
-1365331513 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_fx.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_fx.cpp
 	"g_headers.h"
 	"g_local.h"
 	"g_functions.h"
@@ -808,7 +808,7 @@
 	"g_local.h"
 	"g_items.h"
 
-1365331658 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_items.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_items.cpp
 	"g_headers.h"
 	"g_local.h"
 	"g_functions.h"
@@ -823,7 +823,7 @@
 	"g_headers.h"
 	"g_local.h"
 
-1365331835 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_misc.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_misc.cpp
 	"g_headers.h"
 	"g_local.h"
 	"g_functions.h"
@@ -832,7 +832,7 @@
 	"b_local.h"
 	"../cgame/cg_local.h"
 
-1365331881 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_misc_model.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_misc_model.cpp
 	"g_headers.h"
 	"g_local.h"
 	"g_functions.h"
@@ -855,13 +855,13 @@
 	"objectives.h"
 	"../cgame/cg_local.h"
 
-1365332076 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_nav.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_nav.cpp
 	"g_headers.h"
 	"b_local.h"
 	"g_nav.h"
 	"g_navigator.h"
 
-1365332134 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_navigator.cpp
+1365615290 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_navigator.cpp
 	"g_headers.h"
 	<algorithm>
 	"b_local.h"
@@ -869,7 +869,7 @@
 	"g_nav.h"
 	<time.h>
 
-1365332166 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_navnew.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_navnew.cpp
 	"g_headers.h"
 	"b_local.h"
 	"g_nav.h"
@@ -945,7 +945,7 @@
 	"anims.h"
 	"../cgame/cg_local.h"
 
-1365332827 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_turret.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_turret.cpp
 	"g_headers.h"
 	"g_local.h"
 	"g_functions.h"
@@ -969,7 +969,7 @@
 	"../cgame/cg_local.h"
 	"../cgame/cg_media.h"
 
-1365333072 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_weapon.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_weapon.cpp
 	"g_headers.h"
 	"g_local.h"
 	"g_functions.h"
@@ -997,7 +997,7 @@
 
 1365121381 /home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/qcommon/qfiles.h
 
-1365450336 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/q_math.cpp
+1365518245 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/q_math.cpp
 	"common_headers.h"
 
 1365509868 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/q_shared.cpp
@@ -1032,13 +1032,13 @@
 	"icarus.h"
 	<assert.h>
 
-1365335383 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/icarus/Sequencer.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/icarus/Sequencer.cpp
 	"../cgame/cg_local.h"
 	"../game/g_local.h"
 	"icarus.h"
 	"assert.h"
 
-1365334309 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/icarus/TaskManager.cpp
+1365517970 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/icarus/TaskManager.cpp
 	"../cgame/cg_local.h"
 	"../game/g_local.h"
 	"icarus.h"
@@ -1050,13 +1050,12 @@
 	"../game/q_shared.h"
 	"../game/g_local.h"
 
-1365503895 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/ui/gameinfo.cpp
+1365517512 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/ui/gameinfo.cpp
 	"gameinfo.h"
 	"../game/weapons.h"
 
-1365503626 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_main.cpp
+1365517538 source:/home/jochen/DocumentsSSD/Coding/jedioutcast/jedioutcast-code/code/game/g_main.cpp
 	"g_headers.h"
-	"g_public.h"
 	"g_local.h"
 	"g_functions.h"
 	"Q3_Interface.h"

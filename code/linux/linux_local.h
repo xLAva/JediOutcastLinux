@@ -46,6 +46,7 @@ void IN_Shutdown(void);
 void Sys_Input( void );
 void IN_ActivateMouse( void ) ;
 void IN_DeactivateMouse( void );
+void IN_Frame (void);
 
 extern	qboolean			inputActive;
 
