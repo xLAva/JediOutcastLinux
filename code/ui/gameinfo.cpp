@@ -12,7 +12,7 @@
 #include "../game/weapons.h"
 
 
-extern gameinfo_import_t	gi;
+gameinfo_import_t	giImport;
 
 weaponData_t weaponData[WP_NUM_WEAPONS];
 ammoData_t ammoData[AMMO_MAX];
@@ -29,7 +29,8 @@ GI_Init
 ===============
 */
 void GI_Init( gameinfo_import_t *import ) {
-	//gi = *import; //LAvaPorting
+	//LAvaPorting this is messed up!
+	giImport = *import;
 
 	WP_LoadWeaponParms ();
 }

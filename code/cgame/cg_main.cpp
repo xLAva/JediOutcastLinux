@@ -9,6 +9,7 @@
 #include "../client/vmachine.h"
 #include "../game/characters.h"
 #include "cg_lights.h"
+#include "../game/g_local.h"
 
 #ifdef _IMMERSION
 #include "../ff/ff.h"
@@ -3905,8 +3906,6 @@ void CG_DrawDataPadForceSelect( void )
 	cgi_SP_GetStringTextString( va("INGAME_%s",forcepowerDesc[cg.DataPadforcepowerSelect]), text, sizeof(text) );
 
 
-
-  /* LAvaPort disable this until I find out where player should come from
 	if (player->client->ps.forcePowerLevel[cg.DataPadforcepowerSelect]==1)
 	{
 		cgi_SP_GetStringTextString( va("INGAME_%s",forcepowerLvl1Desc[cg.DataPadforcepowerSelect]), text2, sizeof(text2) );
@@ -3915,7 +3914,7 @@ void CG_DrawDataPadForceSelect( void )
 	{
 		cgi_SP_GetStringTextString( va("INGAME_%s",forcepowerLvl2Desc[cg.DataPadforcepowerSelect]), text2, sizeof(text2) );
 	}
-	else */
+	else
 	{
 		cgi_SP_GetStringTextString( va("INGAME_%s",forcepowerLvl3Desc[cg.DataPadforcepowerSelect]), text2, sizeof(text2) );
 	}
