@@ -20,6 +20,11 @@
 					<Add option="-fexceptions" />
 					<Add option="-fpermissive" />
 					<Add option="-m32" />
+					<Add option="-pipe" />
+					<Add option="-ffast-math" />
+					<Add option="-malign-loops=2" />
+					<Add option="-malign-jumps=2" />
+					<Add option="-malign-functions=2" />
 					<Add option="-DLINUX" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_JK2EXE" />
