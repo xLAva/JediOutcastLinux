@@ -37,6 +37,7 @@
 					<Add library="X11" />
 					<Add library="libXxf86vm" />
 					<Add library="libXxf86dga" />
+					<Add library="Xrandr" />
 				</Linker>
 			</Target>
 			<Target title="Win32 Release">

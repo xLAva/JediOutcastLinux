@@ -47,6 +47,7 @@
 
 #include <X11/extensions/xf86dga.h>
 #include <X11/extensions/xf86vmode.h>
+#include <X11/extensions/Xrandr.h>
 
 
 typedef enum {
@@ -66,6 +67,14 @@ static int scrnum;
 static Window win = 0;
 static GLXContext ctx = NULL;
 
+int                     num_sizes;
+XRRScreenSize           *xrrs;
+XRRScreenConfiguration  *conf;
+short                   possible_frequencies[64][64];
+short                   original_rate;
+Rotation                original_rotation;
+SizeID                  original_size_id;
+
 static qboolean autorepeaton = qtrue;
 
 #define KEY_MASK (KeyPressMask | KeyReleaseMask)
@@ -82,15 +91,20 @@ static cvar_t	*in_dgamouse;
 
 static cvar_t	*r_fakeFullscreen;
 
+Window root;
 qboolean dgamouse = qfalse;
 qboolean vidmode_ext = qfalse;
 
 static int win_x, win_y;
 
+static bool default_safed = false;
+static XF86VidModeModeLine default_vidmode;
+static XF86VidModeModeInfo default_vidmodeInfo;
 static XF86VidModeModeInfo **vidmodes;
 static int default_dotclock_vidmode;
 static int num_vidmodes;
 static qboolean vidmode_active = qfalse;
+static qboolean vidmode_xrandr = qfalse;
 
 static int mouse_accel_numerator;
 static int mouse_accel_denominator;
@@ -147,14 +161,6 @@ static qboolean GLW_StartDriverAndSetMode( const char *drivername,
 {
 	rserr_t err;
 
-	// don't ever bother going into fullscreen with a voodoo card
-#if 1	// JDC: I reenabled this
-	if ( strstr( drivername, "Voodoo" ) ) {
-		ri.Cvar_Set( "r_fullscreen", "0" );
-		r_fullscreen->modified = qfalse;
-		fullscreen = qfalse;
-	}
-#endif
 
 	err = GLW_SetMode( drivername, mode, fullscreen );
 
@@ -172,7 +178,159 @@ static qboolean GLW_StartDriverAndSetMode( const char *drivername,
 	return qtrue;
 }
 
+// borrowed from SDL (changing to SDL would be good too)
+static int CheckXRandR()
+{
+	int major;
+	int minor;
+	int	r_useXRandr = ri.Cvar_Get( "r_useXRandr", "1", CVAR_ARCHIVE);
+	if (r_useXRandr)
+	{
+    /* Query the extension version */
+    if ( !XRRQueryVersion(dpy, &major, &minor) ) {
+        return 0;
+    }
+		return 1;
+	}
+	return 0;
+}
 
+static XRRScreenResources  *res;
+
+void GLW_SetModeXRandr(int* actualWidth, int* actualHeight, qboolean* fullscreen, bool usePrimaryRes)
+{
+		res = XRRGetScreenResources (dpy, root);
+	
+	RROutput primaryDisplay = XRRGetOutputPrimary(dpy, root);
+	XRROutputInfo *output_info = XRRGetOutputInfo (dpy, res, primaryDisplay);
+
+	//XRRModeInfo* modes = res->modes;
+	//for (int i=0; i<res->nmode; i++)
+	//{
+	//	printf("width %d height %d id %d name %s\n", modes->width, modes->height, modes->id, modes->name);
+	//	modes++;
+	//}
+
+	XRRCrtcInfo* crtcInfo = XRRGetCrtcInfo (dpy, res, output_info->crtc);
+	int primaryWidth = crtcInfo->width;
+	int primaryHeight = crtcInfo->height;
+	
+	//printf("primaryWidth %d primaryHeight %d\n", crtcInfo->width, crtcInfo->height);
+
+
+
+	//saved_size_id = XRRConfigCurrentConfiguration(screen_config, &saved_rotation);
+  //          XRRSetScreenConfig(SDL_Display, screen_config, SDL_Root,
+  //                             saved_size_id, saved_rotation, CurrentTime);
+
+	XRRFreeCrtcInfo(crtcInfo);
+	//printf("")
+
+	XRRFreeOutputInfo(output_info);
+
+
+
+	int best_fit, best_dist, dist, x, y;
+
+	if (!default_safed)
+	{
+		default_safed = true;
+		//
+		//     GET CURRENT RESOLUTION AND FREQUENCY
+		//
+		conf                   = XRRGetScreenInfo(dpy, root);
+		original_rate          = XRRConfigCurrentRate(conf);
+		original_size_id       = XRRConfigCurrentConfiguration(conf, &original_rotation);
+
+//		printf("\n\tCURRENT SIZE ID  : %i\n", original_size_id);
+//		printf("\tCURRENT ROTATION : %i \n", original_rotation);
+//		printf("\tCURRENT RATE     : %i Hz\n\n", original_rate);
+	}
+
+
+	//     GET POSSIBLE SCREEN RESOLUTIONS
+	//
+	xrrs   = XRRSizes(dpy, 0, &num_sizes);
+	//
+	//     LOOP THROUGH ALL POSSIBLE RESOLUTIONS,
+	//     GETTING THE SELECTABLE DISPLAY FREQUENCIES
+	//
+	for(int i = 0; i < num_sizes; i ++) {
+				short   *rates;
+				int     num_rates;
+
+				printf("\n\t%2i : %4i x %4i   (%4imm x%4imm ) ", i, xrrs[i].width, xrrs[i].height, xrrs[i].mwidth, xrrs[i].mheight);
+
+				rates = XRRRates(dpy, 0, i, &num_rates);
+
+				for(int j = 0; j < num_rates; j ++) {
+								possible_frequencies[i][j] = rates[j];
+								printf("%4i ", rates[j]); 
+				} 
+	}
+
+	printf("\n");
+
+	// Are we going fullscreen?  If so, let's change video mode
+	if (fullscreen && !r_fakeFullscreen->integer) {
+		best_dist = 9999999;
+		best_fit = -1;
+
+		if (!usePrimaryRes)
+		{
+			for (int i = 0; i < num_sizes; i++) {
+				//printf("width %d height %d \n",xrrs[i].width, xrrs[i].height);
+				
+				if (glConfig.vidWidth > xrrs[i].width ||
+					glConfig.vidHeight > xrrs[i].height)
+					continue;
+
+				x = glConfig.vidWidth - xrrs[i].width;
+				y = glConfig.vidHeight - xrrs[i].height;
+				dist = (x * x) + (y * y);
+				if (dist < best_dist) {
+					best_dist = dist;
+					best_fit = i;
+					//printf("best width %d height\n",xrrs[i].width, xrrs[i].height);
+
+				}
+			}
+		}
+
+		if (best_fit == -1)
+		{
+			for (int i = 0; i < num_sizes; i++) 
+			{
+				//printf("width %d height %d pwidht %d pheight %d\n",xrrs[i].width, xrrs[i].height, primaryWidth, primaryHeight)
+				
+				if (primaryWidth == xrrs[i].width && primaryHeight == xrrs[i].height)
+				{
+					best_fit = i;
+					glConfig.windowAspect = 1;
+					break;
+				}
+			}			
+		}
+
+		if (best_fit != -1) {
+			(*actualWidth) = xrrs[best_fit].width;
+			(*actualHeight) = xrrs[best_fit].height;
+
+			printf("change res to %dx%d\n", xrrs[best_fit].width, xrrs[best_fit].height);
+
+			// change to the mode
+			XRRSetScreenConfig(dpy, conf, root, best_fit, original_rotation, CurrentTime);
+			vidmode_active = qtrue;
+			vidmode_xrandr = qtrue;
+
+			// Move the viewport to top left
+			//XF86VidModeSetViewPort(dpy, scrnum, 0, 0);
+		} else{
+			(*fullscreen) = 0;
+			
+		}
+	}
+}
 
 /*
 ** GLW_SetMode
@@ -195,7 +353,7 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 #define ATTR_BLUE_IDX 6
 #define ATTR_DEPTH_IDX 9
 #define ATTR_STENCIL_IDX 11
-	Window root;
+
 	XVisualInfo *visinfo;
 	XSetWindowAttributes attr;
 	unsigned long mask;
@@ -205,7 +363,9 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 	int actualWidth, actualHeight;
 	int i;
 
-  fullscreen = qfalse; //LAvaPort - no fullscreen during development
+
+
+  //fullscreen = qfalse; //LAvaPort - no fullscreen during development
 
 	r_fakeFullscreen = ri.Cvar_Get( "r_fakeFullscreen", "0", CVAR_ARCHIVE);
 
@@ -227,57 +387,93 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 
 	scrnum = DefaultScreen(dpy);
 	root = RootWindow(dpy, scrnum);
+	
 
-	actualWidth = glConfig.vidWidth;
-	actualHeight = glConfig.vidHeight;
-
-	// Get video mode list
-	MajorVersion = MinorVersion = 0;
-	if (!XF86VidModeQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
-		vidmode_ext = qfalse;
-	} else {
-		ri.Printf(PRINT_ALL, "Using XFree86-VidModeExtension Version %d.%d\n",
-			MajorVersion, MinorVersion);
-		vidmode_ext = qtrue;
+	vidmode_xrandr = qfalse;
+	if (CheckXRandR())
+	{
+		bool usePrimary = false;
+		if (mode == 10)
+		{
+			printf("use primary resolution\n");
+			usePrimary = true;
+		}
+		GLW_SetModeXRandr(&actualWidth, &actualHeight, &fullscreen, usePrimary);
 	}
+	else
+	{
+		actualWidth = glConfig.vidWidth;
+		actualHeight = glConfig.vidHeight;
 
-	if (vidmode_ext) {
-		int best_fit, best_dist, dist, x, y;
-		
-		XF86VidModeGetAllModeLines(dpy, scrnum, &num_vidmodes, &vidmodes);
+		// Get video mode list
+		MajorVersion = MinorVersion = 0;
+		if (!XF86VidModeQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
+			vidmode_ext = qfalse;
+		} else {
+			ri.Printf(PRINT_ALL, "Using XFree86-VidModeExtension Version %d.%d\n",
+				MajorVersion, MinorVersion);
+			vidmode_ext = qtrue;
+		}
 
-		// Are we going fullscreen?  If so, let's change video mode
-		if (fullscreen && !r_fakeFullscreen->integer) {
-			best_dist = 9999999;
-			best_fit = -1;
+		if (vidmode_ext) {
+			int best_fit, best_dist, dist, x, y;
+			
+			if (!default_safed)
+			{
+				default_safed = true;
+				XF86VidModeGetModeLine(dpy, scrnum, &default_vidmodeInfo.dotclock, (XF86VidModeModeLine*)&default_vidmodeInfo.hdisplay);
+				printf("default:\nwidth %d height %d htotal %d vtotal %d hskew %d flags %d\n",default_vidmodeInfo.hdisplay, default_vidmodeInfo.vdisplay, default_vidmodeInfo.htotal, default_vidmodeInfo.vtotal, default_vidmodeInfo.hskew, default_vidmodeInfo.flags);
 
-			for (i = 0; i < num_vidmodes; i++) {
-				if (glConfig.vidWidth > vidmodes[i]->hdisplay ||
-					glConfig.vidHeight > vidmodes[i]->vdisplay)
-					continue;
-
-				x = glConfig.vidWidth - vidmodes[i]->hdisplay;
-				y = glConfig.vidHeight - vidmodes[i]->vdisplay;
-				dist = (x * x) + (y * y);
-				if (dist < best_dist) {
-					best_dist = dist;
-					best_fit = i;
-				}
 			}
 
-			if (best_fit != -1) {
-				actualWidth = vidmodes[best_fit]->hdisplay;
-				actualHeight = vidmodes[best_fit]->vdisplay;
+			
+			XF86VidModeGetAllModeLines(dpy, scrnum, &num_vidmodes, &vidmodes);
 
-				// change to the mode
-				XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[best_fit]);
-				vidmode_active = qtrue;
+			// Are we going fullscreen?  If so, let's change video mode
+			if (fullscreen && !r_fakeFullscreen->integer) {
+				best_dist = 9999999;
+				best_fit = -1;
 
-				// Move the viewport to top left
-				XF86VidModeSetViewPort(dpy, scrnum, 0, 0);
-			} else
-				fullscreen = 0;
-		}
+				for (i = 0; i < num_vidmodes; i++) {
+					//printf("width %d height %d htotal %d vtotal %d hskew %d flags %d\n",vidmodes[i]->hdisplay, vidmodes[i]->vdisplay, vidmodes[i]->htotal, vidmodes[i]->vtotal, vidmodes[i]->hskew, vidmodes[i]->flags);
+					
+					if (glConfig.vidWidth > vidmodes[i]->hdisplay ||
+						glConfig.vidHeight > vidmodes[i]->vdisplay)
+						continue;
+
+					x = glConfig.vidWidth - vidmodes[i]->hdisplay;
+					y = glConfig.vidHeight - vidmodes[i]->vdisplay;
+					dist = (x * x) + (y * y);
+					if (dist < best_dist) {
+						best_dist = dist;
+						best_fit = i;
+						printf("best width %d height %d htotal %d vtotal %d hskew %d flags %d\n",vidmodes[i]->hdisplay, vidmodes[i]->vdisplay, vidmodes[i]->htotal, vidmodes[i]->vtotal, vidmodes[i]->hskew, vidmodes[i]->flags);
+
+					}
+				}
+
+				if (best_fit != -1) {
+					actualWidth = vidmodes[best_fit]->hdisplay;
+					actualHeight = vidmodes[best_fit]->vdisplay;
+
+					// change to the mode
+					XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[best_fit]);
+					vidmode_active = qtrue;
+
+					// Move the viewport to top left
+					XF86VidModeSetViewPort(dpy, scrnum, 0, 0);
+				} else{
+					fullscreen = 0;
+					actualWidth = default_vidmodeInfo.hdisplay;
+					actualHeight = default_vidmodeInfo.vdisplay;
+
+					// change to the mode
+					//XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[best_fit]);
+					vidmode_active = qtrue;
+					
+				}
+			}
+		}		
 	}
 
 
@@ -385,6 +581,8 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 		glConfig.colorBits = tcolorbits;
 		glConfig.depthBits = tdepthbits;
 		glConfig.stencilBits = tstencilbits;
+		glConfig.vidWidth = actualWidth;
+		glConfig.vidHeight = actualHeight;
 		break;
 	}
 
@@ -793,7 +991,7 @@ static qboolean GLW_LoadOpenGL()
 		fullscreen = r_fullscreen->integer;
 
 		// create the window and set up the context
-		if ( !GLW_StartDriverAndSetMode( buffer, /*r_mode->integer*/ 6, fullscreen ) )
+		if ( !GLW_StartDriverAndSetMode( buffer, r_mode->integer, fullscreen ) )
 		{
 			if (r_mode->integer != 3) {
 				if ( !GLW_StartDriverAndSetMode( buffer, 3, fullscreen ) ) {
@@ -1002,7 +1200,16 @@ void GLimp_Shutdown( void )
 		if (win)
 			XDestroyWindow(dpy, win);
 		if (vidmode_active)
-			XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[0]);
+		{
+			if (!vidmode_xrandr)
+			{
+				XF86VidModeSwitchToMode(dpy, scrnum, &default_vidmodeInfo);
+			}
+			else
+			{
+				XRRSetScreenConfig(dpy, conf, root, original_size_id, original_rotation, CurrentTime);
+			}
+		}
 		XCloseDisplay(dpy);
 	}
 	vidmode_active = qfalse;
@@ -1317,42 +1524,42 @@ static void install_grabs(void)
 	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
 
 //LAvaPort
-//  XGrabPointer(dpy, win,
-//  				 False,
-//  				 MOUSE_MASK,
-//  				 GrabModeAsync, GrabModeAsync,
-//  				 win,
-//  				 None,
-//  				 CurrentTime);
+  XGrabPointer(dpy, win,
+  				 False,
+  				 MOUSE_MASK,
+  				 GrabModeAsync, GrabModeAsync,
+  				 win,
+  				 None,
+  				 CurrentTime);
 
 	XGetPointerControl(dpy, &mouse_accel_numerator, &mouse_accel_denominator,
 		&mouse_threshold);
 
 	XChangePointerControl(dpy, qtrue, qtrue, 2, 1, 0);
 //LAvaPort
-//	if (in_dgamouse->value) {
-//		int MajorVersion, MinorVersion;
-//
-//		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
-//			// unable to query, probalby not supported
-//			ri.Printf( PRINT_ALL, "Failed to detect XF86DGA Mouse\n" );
-//			ri.Cvar_Set( "in_dgamouse", "0" );
-//		} else {
-//			dgamouse = qtrue;
-//			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
-//			XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
-//		}
-//	} else {
-//		XWarpPointer(dpy, None, win,
-//					 0, 0, 0, 0,
-//					 glConfig.vidWidth / 2, glConfig.vidHeight / 2);
-//	}
+	if (in_dgamouse->value) {
+		int MajorVersion, MinorVersion;
+
+		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
+			// unable to query, probalby not supported
+			ri.Printf( PRINT_ALL, "Failed to detect XF86DGA Mouse\n" );
+			ri.Cvar_Set( "in_dgamouse", "0" );
+		} else {
+			dgamouse = qtrue;
+			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
+			XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
+		}
+	} else {
+		XWarpPointer(dpy, None, win,
+					 0, 0, 0, 0,
+					 glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+	}
 
 //LAvaPort
-	//XGrabKeyboard(dpy, win,
-	//			  False,
-	//			  GrabModeAsync, GrabModeAsync,
-	//			  CurrentTime);
+	XGrabKeyboard(dpy, win,
+				  False,
+				  GrabModeAsync, GrabModeAsync,
+				  CurrentTime);
 
 //	XSync(dpy, True);
 }
@@ -1579,11 +1786,11 @@ void IN_Frame (void)
 		// temporarily deactivate if not in the game and
 		// running on the desktop
 		// voodoo always counts as full screen
-		if (Cvar_VariableValue ("r_fullscreen") == 0
-			&& strcmp( Cvar_VariableString("r_glDriver"), _3DFX_DRIVER_NAME ) )	{
-			IN_DeactivateMouse ();
-			return;
-		}
+//		if (Cvar_VariableValue ("r_fullscreen") == 0
+//			&& strcmp( Cvar_VariableString("r_glDriver"), _3DFX_DRIVER_NAME ) )	{
+//			IN_DeactivateMouse ();
+//			return;
+//		}
 		if (dpy && !autorepeaton) {
 			XAutoRepeatOn(dpy);
 			autorepeaton = qtrue;
