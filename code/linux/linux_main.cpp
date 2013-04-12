@@ -128,11 +128,6 @@ char *Sys_Cwd( void ) {
 	getcwd( dir, sizeof( dir ) );
 	dir[MAX_OSPATH-1] = 0;
 	
-	// strip off the last colon
-	//l = strlen( dir );
-	//if ( l > 0 ) {
-	//	dir[ l - 1 ] = 0;
-	//} 
 	return dir;
 }
 
@@ -146,18 +141,32 @@ int curtime;
 int	sys_timeBase;
 int Sys_Milliseconds (void)
 {
-	struct timeval tp;
-	struct timezone tzp;
+	//struct timeval tp;
+	//struct timezone tzp;
 
-	gettimeofday(&tp, &tzp);
+	//gettimeofday(&tp, &tzp);
+	
+	//if (!sys_timeBase)
+	//{
+	//	sys_timeBase = tp.tv_sec;
+	//	return tp.tv_usec/1000;
+	//}
+
+	//curtime = (tp.tv_sec - sys_timeBase)*1000 + tp.tv_usec/1000;
+
+	//LAvaPort
+	//try out higher resolution timer (not sure if we need this)
+	
+	struct timespec tp;
+	clock_gettime(CLOCK_MONOTONIC, &tp);
 	
 	if (!sys_timeBase)
 	{
 		sys_timeBase = tp.tv_sec;
-		return tp.tv_usec/1000;
+		return tp.tv_nsec/1000000;
 	}
 
-	curtime = (tp.tv_sec - sys_timeBase)*1000 + tp.tv_usec/1000;
+	curtime = (tp.tv_sec - sys_timeBase)*1000 + tp.tv_nsec/1000000;
 	
 	return curtime;
 }
@@ -517,13 +526,6 @@ void Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptr
 }
 
 
-unsigned int timeGetTime()
-{
-  struct timeval now;
-  gettimeofday(&now, NULL);
-  return now.tv_usec/1000;
-}
-
 /*
 ================
 Sys_GetEvent
@@ -579,7 +581,7 @@ sysEvent_t Sys_GetEvent( void ) {
 
 	memset( &ev, 0, sizeof( ev ) );
 
-	ev.evTime = timeGetTime();
+	ev.evTime = Sys_Milliseconds();
 
   
 	return ev;
@@ -737,35 +739,3 @@ int main (int argc, char **argv)
         Com_Frame ();
     }
 }
-/*
-void main( void ) {
-	char	*commandLine;
-		
-	InitMacStuff();
-	
-	commandLine = ReadCommandLineParms( );
-	
-    Com_Init ( commandLine );
-
-	sys_profile = Cvar_Get( "sys_profile", "0", 0 );
-	sys_profile->modified = qfalse;
-	
-	sys_waitNextEvent = Cvar_Get( "sys_waitNextEvent", "0", 0 );
-
-    while( 1 ) {
-        // run the frame
-        Com_Frame();
-        
-        if ( sys_profile->modified ) {
-        	sys_profile->modified = qfalse;
-        	if ( sys_profile->integer ) {
-        		Com_Printf( "Beginning profile.\n" );
-				Sys_BeginProfiling() ;
-			} else {
-				Com_Printf( "Ending profile.\n" );
-				Sys_EndProfiling();
-        	}
-        }
-    }
-}
-*/

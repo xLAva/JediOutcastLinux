@@ -809,7 +809,7 @@ sysEvent_t Sys_GetEvent( void ) {
 	// create an empty event to return
 
 	memset( &ev, 0, sizeof( ev ) );
-	ev.evTime = timeGetTime();
+	ev.evTime = Sys_Milliseconds();
 
 	return ev;
 }
