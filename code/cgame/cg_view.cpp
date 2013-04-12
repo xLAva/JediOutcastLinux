@@ -1229,6 +1229,15 @@ qboolean CG_CalcFOVFromX( float fov_x )
 	float	fov_y;
 	qboolean	inwater;
 
+	//LAvaPort
+	//better support for widescreen displays (don't cap top and bottom -> show more left and right)
+	float factor = 640.0f/480.0f;
+	float factorVid = cgs.glconfig.vidWidth / (float)cgs.glconfig.vidHeight;
+	factor = factorVid / factor;
+	
+	fov_x = fov_x*factor;
+
+
 	x = cg.refdef.width / tan( fov_x / 360 * M_PI );
 	fov_y = atan2( cg.refdef.height, x );
 	fov_y = fov_y * 360 / M_PI;
