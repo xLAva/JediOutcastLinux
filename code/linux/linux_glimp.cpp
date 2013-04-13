@@ -469,13 +469,15 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 
 					// change to the mode
 					//XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[best_fit]);
-					vidmode_active = qtrue;
+					//vidmode_active = qtrue;
 					
 				}
 			}
 		}		
 	}
 
+		glConfig.vidWidth = actualWidth;
+		glConfig.vidHeight = actualHeight;
 
 	if (!r_colorbits->value)
 		colorbits = 24;
@@ -581,8 +583,6 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 		glConfig.colorBits = tcolorbits;
 		glConfig.depthBits = tdepthbits;
 		glConfig.stencilBits = tstencilbits;
-		glConfig.vidWidth = actualWidth;
-		glConfig.vidHeight = actualHeight;
 		break;
 	}
 
@@ -602,6 +602,7 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 		attr.override_redirect = True;
 		attr.backing_store = NotUseful;
 		attr.save_under = False;
+	
 	} else
 		mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
 
