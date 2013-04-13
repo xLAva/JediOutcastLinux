@@ -388,11 +388,18 @@ void R_TakeScreenshot( int x, int y, int width, int height, char *fileName ) {
 
 	qboolean bSaveAsJPG = !strnicmp(&fileName[strlen(fileName)-4],".jpg",4);
 
+	if (x > glConfig.vidWidth || width > glConfig.vidWidth || y > glConfig.vidHeight || height > glConfig.vidHeight)
+	{
+		printf("R_TakeScreenshot out of bounds\n");
+	}
+
 	if (bSaveAsJPG)
 	{
 		// JPG saver expects to be fed RGBA data, though it presumably ignores 'A'...
 		//
 		buffer = (unsigned char *) ri.Malloc(glConfig.vidWidth*glConfig.vidHeight*4, TAG_TEMP_WORKSPACE, qfalse);
+		
+		glPixelStorei(GL_PACK_ALIGNMENT,1);
 		qglReadPixels( x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer ); 
 
 		// gamma correct
@@ -415,6 +422,7 @@ void R_TakeScreenshot( int x, int y, int width, int height, char *fileName ) {
 		buffer[15] = height >> 8;
 		buffer[16] = 24;	// pixel size
 
+		glPixelStorei(GL_PACK_ALIGNMENT,1);
 		qglReadPixels( x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer+18 ); 
 
 		// swap rgb to bgr
@@ -492,6 +500,7 @@ void R_LevelShot( void ) {
 	buffer[15] = LEVELSHOTSIZE >> 8;
 	buffer[16] = 24;	// pixel size
 
+	glPixelStorei(GL_PACK_ALIGNMENT,1);
 	qglReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, source ); 
 
 	// resample from source

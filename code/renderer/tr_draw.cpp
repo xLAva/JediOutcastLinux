@@ -152,6 +152,7 @@ void RE_GetScreenShot(byte *data, int w, int h)
 	{
 		return;
 	}
+	glPixelStorei(GL_PACK_ALIGNMENT,1);
 	qglReadPixels (0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, buffer ); 
 	
 	xstep = (glConfig.vidWidth << 16) / w;
@@ -192,6 +193,7 @@ void RE_GetScreenShot(byte *buffer, int w, int h)
 	{
 		return;
 	}
+	glPixelStorei(GL_PACK_ALIGNMENT,1);
 	qglReadPixels (0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, source ); 
 	
 	assert (w == h);
@@ -795,6 +797,7 @@ qboolean RE_InitDissolve(qboolean bForceCircularExtroWipe)
 		{
 			// read current screen image...  (GL_RGBA should work even on 3DFX in that the RGB parts will be valid at least)
 			//
+			glPixelStorei(GL_PACK_ALIGNMENT,1);
 			qglReadPixels (0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGBA, GL_UNSIGNED_BYTE, pBuffer );
 			//
 			// now expand the pic over the top of itself so that it has a stride value of {PowerOf2(glConfig.vidWidth)}

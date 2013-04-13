@@ -2010,6 +2010,7 @@ qboolean RB_TestZFlare( vec3_t point, vec3_t color, vec3_t normal) {
 	glState.finishCalled = qfalse;
 
 	// read back the z buffer contents
+	glPixelStorei(GL_PACK_ALIGNMENT,1); 
 	qglReadPixels( backEnd.viewParms.viewportX + window[0],backEnd.viewParms.viewportY + window[1], 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth );
 
 	screenZ = backEnd.viewParms.projectionMatrix[14] / 
