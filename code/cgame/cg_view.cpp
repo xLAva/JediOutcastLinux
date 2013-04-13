@@ -1235,7 +1235,7 @@ qboolean CG_CalcFOVFromX( float fov_x )
 	float factorVid = cgs.glconfig.vidWidth / (float)cgs.glconfig.vidHeight;
 	factor = factorVid / factor;
 	
-	fov_x = fov_x*factor;
+	fov_x = fov_x*((factor-1.0f)/2+1.0f);
 
 
 	x = cg.refdef.width / tan( fov_x / 360 * M_PI );
