@@ -209,7 +209,7 @@ typedef struct {
 #if !defined _WIN32
 
 #define _3DFX_DRIVER_NAME	"libMesaVoodooGL.so.3.1"
-#define OPENGL_DRIVER_NAME	"libGL.so"
+#define OPENGL_DRIVER_NAME	"libGL.so.1"
 
 #else
 

@@ -3013,7 +3013,7 @@ qboolean QGL_Init( const char *dllname )
 	}
 #endif
 
-	//if ( ( glw_state.OpenGLLib = dlopen( dllname, RTLD_LAZY ) ) == 0 )
+	if ( ( glw_state.OpenGLLib = dlopen( dllname, RTLD_LAZY ) ) == 0 )
 	{
 		char	fn[1024];
 		FILE *fp;
