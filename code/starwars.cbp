@@ -193,20 +193,6 @@
 		<Unit filename="0_compiled_first/0_SH_Leak.cpp">
 			<Option target="Win32 SHDebug" />
 		</Unit>
-		<Unit filename="ALut.lib" />
-		<Unit filename="EaxMan.dll" />
-		<Unit filename="FFC10.dll" />
-		<Unit filename="FFC10d.dll" />
-		<Unit filename="IFC22.dll" />
-		<Unit filename="OpenAL32.dll" />
-		<Unit filename="OpenAL32.lib" />
-		<Unit filename="SHDebug/HA312W32.DLL">
-			<Option target="Win32 Release" />
-			<Option target="Win32 Debug" />
-			<Option target="Win32 FinalBuild" />
-			<Option target="Linux Release" />
-		</Unit>
-		<Unit filename="SHDebug/SHW32.DLL" />
 		<Unit filename="cgame/cg_public.h" />
 		<Unit filename="client/OpenAL/al.h" />
 		<Unit filename="client/OpenAL/alc.h" />
@@ -250,33 +236,6 @@
 		<Unit filename="encryption/encryption.h" />
 		<Unit filename="encryption/sockets.cpp" />
 		<Unit filename="encryption/sockets.h" />
-		<Unit filename="ff/IFC/FeelitAPI.h" />
-		<Unit filename="ff/IFC/IFC.h" />
-		<Unit filename="ff/IFC/IFC22.lib" />
-		<Unit filename="ff/IFC/IFCErrors.h" />
-		<Unit filename="ff/IFC/ImmBaseTypes.h" />
-		<Unit filename="ff/IFC/ImmBox.h" />
-		<Unit filename="ff/IFC/ImmCompoundEffect.h" />
-		<Unit filename="ff/IFC/ImmCondition.h" />
-		<Unit filename="ff/IFC/ImmConstant.h" />
-		<Unit filename="ff/IFC/ImmDXDevice.h" />
-		<Unit filename="ff/IFC/ImmDamper.h" />
-		<Unit filename="ff/IFC/ImmDevice.h" />
-		<Unit filename="ff/IFC/ImmDevices.h" />
-		<Unit filename="ff/IFC/ImmEffect.h" />
-		<Unit filename="ff/IFC/ImmEffectSuite.h" />
-		<Unit filename="ff/IFC/ImmEllipse.h" />
-		<Unit filename="ff/IFC/ImmEnclosure.h" />
-		<Unit filename="ff/IFC/ImmFriction.h" />
-		<Unit filename="ff/IFC/ImmGrid.h" />
-		<Unit filename="ff/IFC/ImmIFR.h" />
-		<Unit filename="ff/IFC/ImmInertia.h" />
-		<Unit filename="ff/IFC/ImmMouse.h" />
-		<Unit filename="ff/IFC/ImmPeriodic.h" />
-		<Unit filename="ff/IFC/ImmProjects.h" />
-		<Unit filename="ff/IFC/ImmRamp.h" />
-		<Unit filename="ff/IFC/ImmSpring.h" />
-		<Unit filename="ff/IFC/ImmTexture.h" />
 		<Unit filename="ff/cl_ff.cpp">
 			<Option target="Win32 Release" />
 			<Option target="Win32 Debug" />
@@ -637,22 +596,6 @@
 		<Unit filename="server/sv_savegame.cpp" />
 		<Unit filename="server/sv_snapshot.cpp" />
 		<Unit filename="server/sv_world.cpp" />
-		<Unit filename="smartheap/HAW32M.LIB">
-			<Option target="Win32 SHDebug" />
-		</Unit>
-		<Unit filename="smartheap/HEAPAGNT.H">
-			<Option target="Win32 SHDebug" />
-		</Unit>
-		<Unit filename="smartheap/SMRTHEAP.C">
-			<Option compilerVar="CC" />
-			<Option target="Win32 SHDebug" />
-		</Unit>
-		<Unit filename="smartheap/SMRTHEAP.H">
-			<Option target="Win32 SHDebug" />
-		</Unit>
-		<Unit filename="smartheap/smrtheap.hpp">
-			<Option target="Win32 SHDebug" />
-		</Unit>
 		<Unit filename="ui/gameinfo.h" />
 		<Unit filename="ui/menudef.h" />
 		<Unit filename="ui/ui_atoms.cpp" />
