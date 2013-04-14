@@ -23,6 +23,7 @@
 					<Add option="-m32" />
 					<Add option="-fPIC" />
 					<Add option="-ffast-math" />
+					<Add option="-fno-operator-names" />
 					<Add option="-DLINUX" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_IMMERSION_DISABLED" />
