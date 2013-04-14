@@ -28,8 +28,7 @@
 
 #include <GL/gl.h>
 #include <GL/glx.h>
-//#include <GL/fxmesa.h> //LAvaPort -> we might need this - what ever it is
-
+//#include <GL/fxmesa.h> //LAvaPort 
 #else
 
 #include <gl.h>

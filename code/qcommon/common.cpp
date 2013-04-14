@@ -1922,7 +1922,7 @@ void Com_Init( char *commandLine ) {
 			// if the user didn't give any commands, run default action
 //			if ( !com_dedicated->integer ) 
 			{
-//				Cbuf_AddText ("cinematic openinglogos\n");				//LAvaPort
+				Cbuf_AddText ("cinematic openinglogos\n");
 //				if( !com_introPlayed->integer ) {
 //					Cvar_Set( com_introPlayed->name, "1" );
 //					Cvar_Set( "nextmap", "cinematic intro" );

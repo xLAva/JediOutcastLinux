@@ -411,12 +411,18 @@ void S_Init( void ) {
 
 	cv = Cvar_Get("s_UseOpenAL" , "0",CVAR_ARCHIVE|CVAR_LATCH);
 	s_UseOpenAL = !!(cv->integer);
-  //LAvaPort
+  //LAvaPort - ugly
+  #ifdef __linux__
   s_UseOpenAL = true;
+  #endif
 
 	if (s_UseOpenAL)
 	{
-		ALCDevice = alcOpenDevice(NULL/*(ALubyte*)"DirectSound3D"*/); //LAvaPort
+		#ifdef __linux__
+		ALCDevice = alcOpenDevice(NULL); //LAvaPort
+		#else
+		ALCDevice = alcOpenDevice((ALubyte*)"DirectSound3D"); 
+		#endif
 		if (!ALCDevice)
 			return;
 
