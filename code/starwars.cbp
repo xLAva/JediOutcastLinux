@@ -16,7 +16,6 @@
 					<Add option="-O2" />
 					<Add option="-Wall" />
 					<Add option="-g" />
-					<Add option="-W" />
 					<Add option="-fexceptions" />
 					<Add option="-fpermissive" />
 					<Add option="-m32" />
@@ -412,9 +411,6 @@
 		<Unit filename="linux/linux_console.cpp">
 			<Option target="Linux Release" />
 		</Unit>
-		<Unit filename="linux/linux_event.cpp">
-			<Option target="Linux Release" />
-		</Unit>
 		<Unit filename="linux/linux_glimp.cpp">
 			<Option target="Linux Release" />
 		</Unit>
@@ -425,9 +421,6 @@
 			<Option target="Linux Release" />
 		</Unit>
 		<Unit filename="linux/linux_main.cpp">
-			<Option target="Linux Release" />
-		</Unit>
-		<Unit filename="linux/linux_net.cpp">
 			<Option target="Linux Release" />
 		</Unit>
 		<Unit filename="linux/linux_qgl.cpp">
