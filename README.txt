@@ -1,22 +1,67 @@
-Activision and Raven are releasing this code for people to learn from and play with. 
-This code is copyright Activision 2002. This source is released under GNU GPLv2.
+JediOutcastLinux
+================
+
+Jedi Knight II: Jedi Outcast (Single Player Linux Port).
+https://github.com/xLAva/JediOutcastLinux
+
+The current state is playable without any major problems.
+- loading/saving and a lot of other open issues are fixed
+
+I only had time to test the first two levels, but everything looks fine.
 
 
-Some source code in this release is not covered by the GPL:
-e.g.
-zlib is Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler
+Development
+
+I used Code:Blocks as starting point for this port.
+The whole compile process is based on it, but I think it should be pretty easy to add Makefiles or other compiling structures.
+The source code is compiled with GCC.
+
+My development system: Ubuntu 12.10 64bit
+- I'm using a 64bit system, but this port is still a 32 bit program!
 
 
-  This software is provided 'as-is', without any express or implied
-  warranty.  In no event will the authors be held liable for any damages
-  arising from the use of this software.
+Binary
 
-  Permission is granted subject to the following restrictions:
+If you just want to play the game without compiling anything, the binary files are located here: "jedioutcast/code/Release/".
+The binary files are not build or tested to run on every Linux system, but they should work on Ubuntu 12.10.
+I just wanted to add a little short cut.
 
-  1. The origin of this software must not be misrepresented; you must not
-     claim that you wrote the original software. If you use this software
-     in a product, an acknowledgment in the product documentation would be
-     appreciated but is not required.
-  2. Altered source versions must be plainly marked as such, and must not be
-     misrepresented as being the original software.
-  3. This notice may not be removed or altered from any source distribution.
+The following files are needed to run the game:
+- jk2sp
+- jk2gamex86.so
+
+In order to start Jedi Outcast, the "base" folder from your original game has to be copied into the folder of the Linux binary files.
+Be sure to mark "jk2sp" as executable and start the game with it.
+
+Example:
+~/jedioutcast/Release/jk2sp
+~/jedioutcast/Release/jk2gamex86.so
+~/jedioutcast/Release/base/
+
+
+Known Issues:
+
+- multi-monitor handling is still experimental
+- some font rendering issues with the Intel Mesa driver (on my test machine)
+- input handling in window mode is not perfect
+
+
+Widescreen Feature:
+
+This is the only thing I changed from the original code to improve the gaming experience.
+- added some tweaks for widescreen support (show more content left and right instead of cutting content from top and bottom)
+- if you want to play in your native monitor resolution you have to choose the following option "2048x1536". I change this to the current resolution of the main monitor during OpenGL start up.
+
+
+Porting Notes
+
+This was a fast port, so don't be surprised to see some bad hacks in place.
+The first goal was to get it to run. Making it better is the next step.
+I share the code now (in it's current shape), because I know you want to play with it and maybe help out.
+
+There is still a lot of work left to do:
+- CLEANUP: I have a lot of porting helpers in place (comments and other stuff)
+- stay closer to the original code: play with compiler flags to avoid/revert some bigger changes
+- make my widescreen tweaks optional
+
+
