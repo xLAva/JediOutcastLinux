@@ -189,21 +189,37 @@ static int CheckXRandR()
 
 void GLW_SetModeXRandr(int* actualWidth, int* actualHeight, qboolean* fullscreen, bool usePrimaryRes)
 {
+	int primaryWidth = -1;
+	int primaryHeight = -1;
+	
 	res = XRRGetScreenResources (dpy, root);
+	if (res)
+	{
+		RROutput primaryDisplay = XRRGetOutputPrimary(dpy, root);
+		if (primaryDisplay > 0)
+		{
+			XRROutputInfo *output_info = XRRGetOutputInfo (dpy, res, primaryDisplay);
+			if (output_info)
+			{
+				XRRCrtcInfo* crtcInfo = XRRGetCrtcInfo (dpy, res, output_info->crtc);
+				if (crtcInfo)
+				{
+					primaryWidth = crtcInfo->width;
+					primaryHeight = crtcInfo->height;
 
-	RROutput primaryDisplay = XRRGetOutputPrimary(dpy, root);
-	XRROutputInfo *output_info = XRRGetOutputInfo (dpy, res, primaryDisplay);
+					XRRFreeCrtcInfo(crtcInfo);
+				}
 
+				XRRFreeOutputInfo(output_info);
+			}
+		}
+	}
 
-	XRRCrtcInfo* crtcInfo = XRRGetCrtcInfo (dpy, res, output_info->crtc);
-	int primaryWidth = crtcInfo->width;
-	int primaryHeight = crtcInfo->height;
-
-
-	XRRFreeCrtcInfo(crtcInfo);
-
-	XRRFreeOutputInfo(output_info);
-
+  bool disablePrimary = false;
+	if (primaryWidth == -1 || primaryHeight == -1)
+	{
+		disablePrimary = true;
+	}
 
 	int best_fit, best_dist, dist, x, y;
 
@@ -226,7 +242,7 @@ void GLW_SetModeXRandr(int* actualWidth, int* actualHeight, qboolean* fullscreen
 		best_dist = 9999999;
 		best_fit = -1;
 
-		if (!usePrimaryRes)
+		if (disablePrimary || !usePrimaryRes)
 		{
 			for (int i = 0; i < num_sizes; i++) {
 				//printf("width %d height %d \n",xrrs[i].width, xrrs[i].height);
@@ -247,7 +263,7 @@ void GLW_SetModeXRandr(int* actualWidth, int* actualHeight, qboolean* fullscreen
 			}
 		}
 
-		if (best_fit == -1)
+		if (!disablePrimary && best_fit == -1)
 		{
 			for (int i = 0; i < num_sizes; i++) 
 			{
