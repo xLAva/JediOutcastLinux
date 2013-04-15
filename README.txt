@@ -10,16 +10,6 @@ The current state is playable without any major problems.
 I only had time to test the first two levels, but everything looks fine.
 
 
-Development
-
-I used Code:Blocks as starting point for this port.
-The whole compile process is based on it, but I think it should be pretty easy to add Makefiles or other compiling structures.
-The source code is compiled with GCC.
-
-My development system: Ubuntu 12.10 64bit
-- I'm using a 64bit system, but this port is still a 32 bit program!
-
-
 Binary
 
 If you just want to play the game without compiling anything, the binary files are located here: "jedioutcast/code/Release/".
@@ -33,10 +23,31 @@ The following files are needed to run the game:
 In order to start Jedi Outcast, the "base" folder from your original game has to be copied into the folder of the Linux binary files.
 Be sure to mark "jk2sp" as executable and start the game with it.
 
+For those not having the Steam version: you'll need the 1.04 update from here http://www.lucasarts.com/support/update/jedioutcast2.html 
+
 Example:
 ~/jedioutcast/Release/jk2sp
 ~/jedioutcast/Release/jk2gamex86.so
 ~/jedioutcast/Release/base/
+
+Needed libraries on Ubuntu 12.10 32bit:
+sudo apt-get install libopenal1
+
+Needed libraries on Ubuntu 12.10 64bit:
+sudo apt-get install ia32-libs libxxf86dga1:i386
+
+
+Development
+
+I used Code:Blocks as starting point for this port.
+The whole compile process is based on it, but I think it should be pretty easy to add Makefiles or other compiling structures.
+The source code is compiled with GCC.
+
+My development system: Ubuntu 12.10 64bit
+- I'm using a 64bit system, but this port is still a 32 bit program!
+
+Needed development libraries (and codeblocks):
+sudo apt-get install codeblocks g++-multilib libgl1-mesa-dev:i386 libxxf86dga-dev:i386 libxrandr-dev:i386 libopenal-dev:i386
 
 
 Known Issues:
