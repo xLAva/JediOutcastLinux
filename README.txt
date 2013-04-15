@@ -65,3 +65,4 @@ There is still a lot of work left to do:
 - make my widescreen tweaks optional
 
 
+Feel free to contact me: jochen.leopold@model-view.com
