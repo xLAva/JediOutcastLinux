@@ -195,30 +195,53 @@ void GLW_SetModeXRandr(int* actualWidth, int* actualHeight, qboolean* fullscreen
 	res = XRRGetScreenResources (dpy, root);
 	if (res)
 	{
+		XRRCrtcInfo* crtcInfo = NULL;
+		
 		RROutput primaryDisplay = XRRGetOutputPrimary(dpy, root);
 		if (primaryDisplay > 0)
 		{
 			XRROutputInfo *output_info = XRRGetOutputInfo (dpy, res, primaryDisplay);
-			if (output_info)
+			if (output_info && output_info->crtc && output_info->connection != RR_Disconnected)
 			{
-				XRRCrtcInfo* crtcInfo = XRRGetCrtcInfo (dpy, res, output_info->crtc);
-				if (crtcInfo)
+				// get info from the primary display
+				crtcInfo = XRRGetCrtcInfo (dpy, res, output_info->crtc);
+			}
+			XRRFreeOutputInfo(output_info);
+			
+		}
+		
+		if (!crtcInfo)
+		{
+			// primary display not found or it is not connected
+			// just get the first active monitor
+			XRROutputInfo *output_info = NULL;
+			for (int i=0; i<res->noutput && !crtcInfo; i++)
+			{
+				output_info = XRRGetOutputInfo (dpy, res, res->outputs[i]);
+				if (output_info && output_info->crtc && output_info->connection != RR_Disconnected)
 				{
-					primaryWidth = crtcInfo->width;
-					primaryHeight = crtcInfo->height;
-
-					XRRFreeCrtcInfo(crtcInfo);
+					crtcInfo = XRRGetCrtcInfo (dpy, res, output_info->crtc);
 				}
-
+				
 				XRRFreeOutputInfo(output_info);
 			}
 		}
+		
+		if (crtcInfo)
+		{
+			primaryWidth = crtcInfo->width;
+			primaryHeight = crtcInfo->height;
+
+			XRRFreeCrtcInfo(crtcInfo);
+		}
+		
 	}
 
   bool disablePrimary = false;
 	if (primaryWidth == -1 || primaryHeight == -1)
 	{
 		disablePrimary = true;
+		ri.Printf( PRINT_ALL, "...WARNING: xrandr query for the primary display resolution failed.\n" );
 	}
 
 	int best_fit, best_dist, dist, x, y;
@@ -293,7 +316,7 @@ void GLW_SetModeXRandr(int* actualWidth, int* actualHeight, qboolean* fullscreen
 			//XF86VidModeSetViewPort(dpy, scrnum, 0, 0);
 		} else{
 			(*fullscreen) = 0;
-			
+			ri.Printf( PRINT_ALL, "...WARNING: fullscreen unavailable in this mode\n" );
 		}
 	}
 }
