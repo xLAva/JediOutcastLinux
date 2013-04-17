@@ -153,7 +153,7 @@ static qboolean GLW_StartDriverAndSetMode( const char *drivername,
 	rserr_t err;
 
 
-	err = GLW_SetMode( drivername, mode, fullscreen );
+	err = (rserr_t) GLW_SetMode( drivername, mode, fullscreen );
 
 	switch ( err )
 	{
@@ -174,7 +174,7 @@ static int CheckXRandR()
 {
 	int major;
 	int minor;
-	int	r_useXRandr = ri.Cvar_Get( "r_useXRandr", "1", CVAR_ARCHIVE);
+	int	r_useXRandr = (int) ri.Cvar_Get( "r_useXRandr", "1", CVAR_ARCHIVE);
 	if (r_useXRandr)
 	{
     /* Query the extension version */
@@ -409,7 +409,7 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 				if (!default_safed)
 				{
 					default_safed = true;
-					XF86VidModeGetModeLine(dpy, scrnum, &default_vidmodeInfo.dotclock, (XF86VidModeModeLine*)&default_vidmodeInfo.hdisplay);
+					XF86VidModeGetModeLine(dpy, scrnum, (int*) &default_vidmodeInfo.dotclock, (XF86VidModeModeLine*)&default_vidmodeInfo.hdisplay);
 					printf("default:\nwidth %d height %d htotal %d vtotal %d hskew %d flags %d\n",default_vidmodeInfo.hdisplay, default_vidmodeInfo.vdisplay, default_vidmodeInfo.htotal, default_vidmodeInfo.vtotal, default_vidmodeInfo.hskew, default_vidmodeInfo.flags);
 
 				}
@@ -1215,7 +1215,7 @@ sem_t	renderActiveEvent;
 
 void (*glimpRenderThread)( void );
 
-void GLimp_RenderThreadWrapper( void *stub ) {
+void* GLimp_RenderThreadWrapper( void *stub ) {
 	glimpRenderThread();
 
 #if 0

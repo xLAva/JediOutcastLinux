@@ -318,8 +318,9 @@ qboolean G_InitRoff( char *file, unsigned char *data )
 
 			roffs[num_roffs].type = 2; //rww - any reason this wasn't being set already?
 
+			int i;
 			// Copy all of the goods into our ROFF cache
-			for ( int i = 0; i < count; i++ )
+			for ( i = 0; i < count; i++ )
 			{
 				VectorCopy( roff_data[i].origin_delta, mem[i].origin_delta );
 				VectorCopy( roff_data[i].rotate_delta, mem[i].rotate_delta );

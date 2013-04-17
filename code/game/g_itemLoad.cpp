@@ -21,7 +21,7 @@
 
 extern gitem_t	bg_itemlist[];
 
-struct 
+struct _itemParms
 {
 	int	itemNum;
 } itemParms;

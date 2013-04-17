@@ -458,7 +458,7 @@ int CSequence::Load( void )
 	(m_owner->GetInterface())->I_ReadSaveData( 'SNMC', &numCommands, sizeof( m_numCommands ), NULL );
 
 	//Get all the commands
-	for ( i = 0; i < numCommands; i++ )
+	for ( int i = 0; i < numCommands; i++ )
 	{
 		//Get the block ID and create a new container
 		(m_owner->GetInterface())->I_ReadSaveData( 'BLID', &id, sizeof( id ), NULL );

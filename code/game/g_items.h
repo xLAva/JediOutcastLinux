@@ -4,7 +4,7 @@
 #define __ITEMS_H__
 
 // Items enums
-typedef enum 
+enum 
 {
 ITM_NONE,
 
@@ -71,7 +71,7 @@ ITM_NUM_ITEMS
 }; 
 
 // Inventory item enums
-typedef enum //# item_e
+enum //# item_e
 {
 	INV_ELECTROBINOCULARS,
 	INV_BACTA_CANISTER,
