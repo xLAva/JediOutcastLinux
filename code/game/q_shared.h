@@ -196,7 +196,11 @@ typedef int		clipHandle_t;
 
 
 #define	MAX_QPATH			64		// max length of a quake game pathname
+#ifdef __linux__
+#define MAX_OSPATH			4096
+#else
 #define	MAX_OSPATH			128		// max length of a filesystem pathname
+#endif
 
 #define	MAX_NAME_LENGTH		32		// max length of a client name
 
