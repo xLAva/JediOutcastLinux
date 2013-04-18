@@ -8,15 +8,15 @@
 # Make sure some_build_dir is different from PATH_TO_JK2_SOURCE_DIR
 #
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+cmake_minimum_required(VERSION 2.6)
 
-PROJECT (jk2)
+project(jk2)
 
-SET(CMAKE_BUILD_TYPE "RELEASE")
-SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wno-write-strings -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-cpp -fexceptions -m32 -fPIC -ffast-math -D_IMMERSION_DISABLED -DLINUX -DNDEBUG -D_JK2EXE -D_FF_DISABLE -D_M_IX86")
-SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-write-strings -Wno-conversion-null -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-cpp -fexceptions -fpermissive -m32 -fPIC -ffast-math -fno-operator-names  -D_IMMERSION_DISABLED -DLINUX -DNDEBUG -D_JK2EXE -D_FF_DISABLE -D_M_IX86")
+set(CMAKE_BUILD_TYPE "RELEASE")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wno-write-strings -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-cpp -fexceptions -m32 -ffast-math -DLINUX -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-write-strings -Wno-conversion-null -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-cpp -fexceptions -fpermissive -m32 -ffast-math -fno-operator-names -DLINUX -DNDEBUG")
 
-SET(GAME_SOURCE_FILES
+set(GAME_SOURCE_FILES
 	code/cgame/FX_ATSTMain.cpp
 	code/cgame/FX_Blaster.cpp
 	code/cgame/FX_Bowcaster.cpp
@@ -147,10 +147,10 @@ SET(GAME_SOURCE_FILES
 	code/ui/gameinfo.cpp
 )
 
-ADD_LIBRARY(jk2gamex86 SHARED ${GAME_SOURCE_FILES})
-SET_TARGET_PROPERTIES(jk2gamex86 PROPERTIES PREFIX "")
+add_library(jk2gamex86 SHARED ${GAME_SOURCE_FILES})
+set_target_properties(jk2gamex86 PROPERTIES PREFIX "")
 
-SET(STARWARS_SOURCE_FILES
+set(STARWARS_SOURCE_FILES
 	code/client/cl_cgame.cpp
 	code/client/cl_cin.cpp
 	code/client/cl_console.cpp
@@ -311,6 +311,8 @@ set (EXTRA_LIBS ${EXTRA_LIBS} Xxf86dga)
 set (EXTRA_LIBS ${EXTRA_LIBS} Xrandr)
 set (EXTRA_LIBS ${EXTRA_LIBS} rt)
 set (EXTRA_LIBS ${EXTRA_LIBS} pthread)
+set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "-m32")
 
 add_executable(jk2sp ${STARWARS_SOURCE_FILES})
 target_link_libraries (jk2sp  ${EXTRA_LIBS})
+set_target_properties (jk2sp PROPERTIES COMPILE_DEFINITIONS "_JK2EXE;_M_IX86")
