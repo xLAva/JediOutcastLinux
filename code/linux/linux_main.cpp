@@ -231,6 +231,9 @@ char **Sys_ListFiles( const char *directory, const char *extension, int *numfile
 	char		**listCopy;
 	char		*list[MAX_FOUND_FILES];
 	int			flag;
+	int         scancount;
+	int         scanloop;
+	struct dirent **scanlist;
 	struct stat st;
 
 	int			extLen;
@@ -244,16 +247,18 @@ char **Sys_ListFiles( const char *directory, const char *extension, int *numfile
 	}
 
 	extLen = strlen( extension );
-	
+
 	// search
 	nfiles = 0;
 
-	if ((fdir = opendir(directory)) == NULL) {
+    scancount = scandir(directory, &scanlist, NULL, alphasort);
+    if (scancount < 0) {
 		*numfiles = 0;
 		return NULL;
 	}
-
-	while ((d = readdir(fdir)) != NULL) {
+    for (scanloop=0; scanloop < scancount; scanloop++)
+    {
+        d = scanlist[scanloop];
 		Com_sprintf(search, sizeof(search), "%s/%s", directory, d->d_name);
 		if (stat(search, &st) == -1)
 			continue;
@@ -263,7 +268,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, int *numfile
 
 		if (*extension) {
 			if ( strlen( d->d_name ) < strlen( extension ) ||
-				Q_stricmp( 
+				Q_stricmp(
 					d->d_name + strlen( d->d_name ) - strlen( extension ),
 					extension ) ) {
 				continue; // didn't match
@@ -278,7 +283,10 @@ char **Sys_ListFiles( const char *directory, const char *extension, int *numfile
 
 	list[ nfiles ] = 0;
 
-	closedir(fdir);
+    for (scanloop=0; scanloop < scancount; scanloop++) {
+        free(scanlist[scanloop]);
+    }
+    free(scanlist);
 
 	// return a copy of the list
 	*numfiles = nfiles;
