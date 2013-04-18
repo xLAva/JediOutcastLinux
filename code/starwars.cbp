@@ -14,20 +14,21 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-Wall" />
-					<Add option="-g" />
+					<Add option="-Wno-write-strings" />
+					<Add option="-Wno-conversion-null" />
+					<Add option="-Wno-pointer-arith" />
+					<Add option="-Wno-multichar" />
+					<Add option="-Wno-int-to-pointer-cast" />
+					<Add option="-Wno-enum-compare" />
+					<Add option="-Wno-cpp" />
 					<Add option="-fexceptions" />
-					<Add option="-fpermissive" />
 					<Add option="-m32" />
 					<Add option="-ffast-math" />
 					<Add option="-fno-operator-names" />
 					<Add option="-DLINUX" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_JK2EXE" />
-					<Add option="-D_IMMERSION_DISABLE" />
-					<Add option="-D_FF_DISABLE" />
 					<Add option="-D_M_IX86" />
-					<Add directory="ff/ifc" />
 				</Compiler>
 				<Linker>
 					<Add option="-m32" />
@@ -38,6 +39,8 @@
 					<Add library="libXxf86vm" />
 					<Add library="libXxf86dga" />
 					<Add library="Xrandr" />
+					<Add library="rt" />
+					<Add library="pthread" />
 				</Linker>
 			</Target>
 			<Target title="Win32 Release">

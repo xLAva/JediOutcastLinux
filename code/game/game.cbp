@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Linux Release">
-				<Option output="../Release/jk2gamex86" prefix_auto="1" extension_auto="1" />
+				<Option output="../Release/jk2gamex86" prefix_auto="0" extension_auto="1" />
 				<Option object_output="../Release/game" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -15,20 +15,20 @@
 				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add option="-W" />
+					<Add option="-Wno-write-strings" />
+					<Add option="-Wno-conversion-null" />
+					<Add option="-Wno-pointer-arith" />
+					<Add option="-Wno-multichar" />
+					<Add option="-Wno-int-to-pointer-cast" />
+					<Add option="-Wno-enum-compare" />
+					<Add option="-Wno-cpp" />
 					<Add option="-fexceptions" />
-					<Add option="-fpermissive" />
 					<Add option="-m32" />
 					<Add option="-fPIC" />
 					<Add option="-ffast-math" />
 					<Add option="-fno-operator-names" />
 					<Add option="-DLINUX" />
 					<Add option="-DNDEBUG" />
-					<Add option="-D_IMMERSION_DISABLED" />
-					<Add directory="../icarus" />
-					<Add directory="./game" />
 				</Compiler>
 				<Linker>
 					<Add option="-m32" />
