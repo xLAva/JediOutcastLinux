@@ -2312,7 +2312,7 @@ void PM_SetAnimFinal(int *torsoAnim,int *legsAnim,
 								legAnimSpeed,
 								currentFrame,
 								blendTime);
-#endif^
+#endif
 							if ( oldAnimSpeed != animSpeed 
 								&& ((oldAnimSpeed>0&&animSpeed>0) || (oldAnimSpeed<0&&animSpeed<0)) )
 							{//match the new speed, actually

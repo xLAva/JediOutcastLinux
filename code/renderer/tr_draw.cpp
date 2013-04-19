@@ -834,7 +834,7 @@ qboolean RE_InitDissolve(qboolean bForceCircularExtroWipe)
 			byte *pbSwapLineBuffer = (byte *)Z_Malloc( iCopyBytes, TAG_TEMP_WORKSPACE, qfalse);
 			pbSrc = &pBuffer[0];
 			pbDst = &pBuffer[(glConfig.vidHeight-1) * iPow2VidWidth * 4];
-			for (y = 0; y < glConfig.vidHeight/2; y++)
+			for (int y = 0; y < glConfig.vidHeight/2; y++)
 			{
 				memcpy(pbSwapLineBuffer, pbDst, iCopyBytes);
 				memcpy(pbDst, pbSrc, iCopyBytes);
@@ -904,7 +904,7 @@ qboolean RE_InitDissolve(qboolean bForceCircularExtroWipe)
 											);
 			
 			static byte bBlack[8*8*4]={0};
-			for (i=0; i<8*8*4; i+=4)	// itu?
+			for (int i=0; i<8*8*4; i+=4)	// itu?
 				bBlack[i+3]=255;		// 
 
 			Dissolve.pBlack = R_CreateImage( "*DissolveBlack",	// const char *name

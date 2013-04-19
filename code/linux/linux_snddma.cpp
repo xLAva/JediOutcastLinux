@@ -35,7 +35,7 @@ qboolean SNDDMA_Init(void)
 	extern uid_t saved_euid;
 
 	if (snd_inited)
-		return;
+		return 0;
 
 	if (!snddevice) {
 		sndbits = Cvar_Get("sndbits", "16", CVAR_ARCHIVE);

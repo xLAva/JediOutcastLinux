@@ -90,7 +90,7 @@ func_t	funcs[] = {
 //qboolean COM_ParseString( char **data, char **s ); 
 //qboolean COM_ParseFloat( char **data, float *f );
 
-struct 
+struct _wpnParms
 {
 	int	weaponNum;	// Current weapon number
 	int	ammoNum;
