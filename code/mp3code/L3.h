@@ -42,7 +42,9 @@ ____________________________________________________________________________*/
 
 
 #ifdef _M_IX86
+#ifndef LITTLE_ENDIAN
 #define LITTLE_ENDIAN 1
+#endif
 #endif
 
 #ifdef _M_ALPHA

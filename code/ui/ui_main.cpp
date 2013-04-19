@@ -746,7 +746,7 @@ static void UI_StopCinematic(int handle)
 		}
 	}
 }
-static UI_HandleLoadSelection()
+static void UI_HandleLoadSelection()
 {
 	Cvar_Set("ui_SelectionOK", va("%d",(s_savegame.currentLine < s_savegame.saveFileCnt)) );
 	Cvar_Set("ui_gameDesc", s_savedata[s_savegame.currentLine].currentSaveFileComments );	// set comment 

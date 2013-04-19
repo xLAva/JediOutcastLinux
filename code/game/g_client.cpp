@@ -630,7 +630,7 @@ void Player_CacheFromPrevLevel(void)
 
 extern gitem_t	*FindItemForInventory( int inv );
 
-		for ( i = 1 ; i < 16 ; i++ ) 
+		for ( int i = 1 ; i < 16 ; i++ ) 
 		{
 			if ( ibits & ( 1 << i ) ) 
 			{

@@ -50,6 +50,16 @@ Needed development libraries (and codeblocks):
 sudo apt-get install codeblocks g++-multilib libgl1-mesa-dev:i386 libxxf86dga-dev:i386 libxrandr-dev:i386 libopenal-dev:i386
 
 
+Building
+
+	cmake: These are the steps necessary to build the binaries using cmake, the directory names are only for reference,
+	       you can change them as you wish.
+
+			$ mkdir -p ~/src/jk2build
+			$ cd ~/src/jk2build
+			$ cmake ~/src/JediOutcastLinux 
+			$ make
+
 Known Issues:
 
 - multi-monitor handling is still experimental
