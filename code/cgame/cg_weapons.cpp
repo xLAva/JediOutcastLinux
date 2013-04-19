@@ -1266,7 +1266,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 				ct = 1;
 			}
 
-			for ( i = 0; i < ct; i++ )
+			for ( int i = 0; i < ct; i++ )
 			{
 				theFxScheduler.PlayEffect( "repeater/muzzle_smoke", cent->currentState.clientNum );
 			}

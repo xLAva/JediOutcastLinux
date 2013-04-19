@@ -984,7 +984,7 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 
 	if (name[0] == '*')
 	{
-		char *psLightMapNameSearchPos = strrchr(name,'/');
+		char *psLightMapNameSearchPos = (char*) strrchr(name,'/');
 		if (  psLightMapNameSearchPos && !strncmp( psLightMapNameSearchPos+1, "lightmap", 8 ) ) {
 			isLightmap = qtrue;
 		}

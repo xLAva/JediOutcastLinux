@@ -11,7 +11,7 @@
 
 #define	FOFS(x) ((int)&(((gentity_t *)0)->x))
 
-typedef enum 
+enum 
 {
 	HL_NONE = 0,
 	HL_FOOT_RT,

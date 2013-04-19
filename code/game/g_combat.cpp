@@ -422,7 +422,7 @@ void G_AlertTeam( gentity_t *victim, gentity_t *attacker, float radius, float so
 	numEnts = gi.EntitiesInBox( mins, maxs, radiusEnts, 128 );
 
 	//Cull this list
-	for ( i = 0; i < numEnts; i++ )
+	for ( int i = 0; i < numEnts; i++ )
 	{
 		//Validate clients
 		if ( radiusEnts[i]->client == NULL )

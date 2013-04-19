@@ -377,7 +377,7 @@ int	CNode::Save( int numNodes, fileHandle_t file )
 	//Write out the node ranks
 	gi.FS_Write( &numNodes, sizeof( numNodes ), file );
 
-	for ( i = 0; i < numNodes; i++ )
+	for ( int i = 0; i < numNodes; i++ )
 	{
 		gi.FS_Write( &m_ranks[i], sizeof( int ), file );
 	}
@@ -411,7 +411,7 @@ int CNode::Load( int numNodes, fileHandle_t file )
 	//Get the edge information
 	gi.FS_Read( &m_numEdges, sizeof( m_numEdges ), file );
 
-	for ( i = 0; i < m_numEdges; i++ )
+	for ( int i = 0; i < m_numEdges; i++ )
 	{
 		edge_t	edge;
 
@@ -428,7 +428,7 @@ int CNode::Load( int numNodes, fileHandle_t file )
 	//Allocate the memory
 	InitRanks( numRanks );
 
-	for ( i = 0; i < numRanks; i++ )
+	for ( int i = 0; i < numRanks; i++ )
 	{
 		gi.FS_Read( &m_ranks[i], sizeof( int ), file );
 	}
@@ -814,7 +814,7 @@ void CNavigator::CalculatePath( CNode *node )
 		node->AddRank( testNode->GetID(), curRank++ );
 
 		//Add in all the new edges
-		for ( i = 0; i < testNode->GetNumEdges(); i++ )
+		for ( int i = 0; i < testNode->GetNumEdges(); i++ )
 		{
 			CNode	*addNode = m_nodes[ testNode->GetEdge(i) ];
 			assert( addNode );
@@ -858,7 +858,7 @@ void CNavigator::CalculatePaths( bool	recalc )
 		m_nodes[i]->InitRanks( m_nodes.size() );
 	}
 
-	for ( i = 0; i < m_nodes.size(); i++ )
+	for ( int i = 0; i < m_nodes.size(); i++ )
 	{
 		CalculatePath( m_nodes[i] );
 	}
