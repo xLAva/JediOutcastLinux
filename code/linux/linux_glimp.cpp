@@ -1618,25 +1618,37 @@ static void HandleEvents(void)
 			break;
 
 		case ButtonPress:
-			b=-1;
-			if (event.xbutton.button == 1)
-				b = 0;
-			else if (event.xbutton.button == 2)
-				b = 2;
-			else if (event.xbutton.button == 3)
-				b = 1;
-			Sys_QueEvent( 0, SE_KEY, A_MOUSE1 + b, qtrue, 0, NULL );
+			if (event.xbutton.button == 4) {
+				Sys_QueEvent( 0, SE_KEY, A_MWHEELUP, qtrue, 0, NULL );
+			} else if (event.xbutton.button == 5) {
+				Sys_QueEvent( 0, SE_KEY, A_MWHEELDOWN, qtrue, 0, NULL );
+			} else {
+				b=-1;
+				if (event.xbutton.button == 1)
+					b = 0;
+				else if (event.xbutton.button == 2)
+					b = 2;
+				else if (event.xbutton.button == 3)
+					b = 1;
+				Sys_QueEvent( 0, SE_KEY, A_MOUSE1 + b, qtrue, 0, NULL );
+			}
 			break;
 
 		case ButtonRelease:
-			b=-1;
-			if (event.xbutton.button == 1)
-				b = 0;
-			else if (event.xbutton.button == 2)
-				b = 2;
-			else if (event.xbutton.button == 3)
-				b = 1;
-			Sys_QueEvent( 0, SE_KEY, A_MOUSE1 + b, qfalse, 0, NULL );
+			if (event.xbutton.button == 4) {
+				Sys_QueEvent( 0, SE_KEY, A_MWHEELUP, qfalse, 0, NULL );
+			} else if (event.xbutton.button == 5) {
+				Sys_QueEvent( 0, SE_KEY, A_MWHEELDOWN, qfalse, 0, NULL );
+			} else {
+				b=-1;
+				if (event.xbutton.button == 1)
+					b = 0;
+				else if (event.xbutton.button == 2)
+					b = 2;
+				else if (event.xbutton.button == 3)
+					b = 1;
+				Sys_QueEvent( 0, SE_KEY, A_MOUSE1 + b, qfalse, 0, NULL );
+			}
 			break;
 
 		case CreateNotify :
