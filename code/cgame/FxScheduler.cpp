@@ -1375,7 +1375,7 @@ void CFxScheduler::CreateEffect( CPrimitiveTemplate *fx, vec3_t origin, vec3_t a
 
 	if( fx->mSpawnFlags & FX_RAND_ROT_AROUND_FWD )
 	{
-		RotatePointAroundVector( ax[1], ax[0], axis[1], random()*360.0f );
+		RotatePointAroundVector( ax[1], ax[0], axis[1], randomLava()*360.0f );
 		CrossProduct( ax[0], ax[1], ax[2] );
 	}
 
