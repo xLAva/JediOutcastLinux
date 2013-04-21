@@ -2413,6 +2413,7 @@ defaultoffsetposition:
 	else if (strcmp(type, "sound") == 0)
 	{
 		objectID = cgi_S_RegisterSound(argument);
+		printf("sound\n");
 		cgi_S_StartSound(cent->lerpOrigin, cent->currentState.number, CHAN_BODY, objectID);
 	}
 	else if (strcmp(type, "loop") == 0)
