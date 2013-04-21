@@ -376,6 +376,7 @@ void CG_TryPlayCustomSound( vec3_t origin, int entityNum, soundChannel_t channel
 		return;
 	}
 
+				printf("sound16\n");
 	cgi_S_StartSound( origin, entityNum, channel, soundIndex );
 }
 /*
@@ -1249,6 +1250,7 @@ void CG_PlayerAnimSounds( int animFileIndex, qboolean torso, int oldFrame, int f
 			//FIXME: allow customSounds in here *...
 			if ( cgs.sound_precache[ holdSnd ] ) 
 			{
+				printf("sound15\n");
 				cgi_S_StartSound( NULL, entNum, CHAN_AUTO, cgs.sound_precache[holdSnd ] );
 			}
 			else
