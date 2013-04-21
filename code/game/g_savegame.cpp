@@ -639,7 +639,7 @@ void WriteGEntities(qboolean qbAutosave)
 
 	gi.AppendToSaveGame('NMED', &iCount, sizeof(iCount));
 
-	for (i=0; i<(qbAutosave?1:globals.num_entities); i++)
+	for (int i=0; i<(qbAutosave?1:globals.num_entities); i++)
 	{
 		gentity_t* ent = &g_entities[i];
 
@@ -903,7 +903,7 @@ void ReadGEntities(qboolean qbAutosave)
 		// now zap any g_ents that were inuse when the level was loaded, but are no longer in use in the saved version
 		//	that we've just loaded...
 		//
-		for (i=iPreviousEntRead+1; i<globals.num_entities; i++)
+		for (int i=iPreviousEntRead+1; i<globals.num_entities; i++)
 		{
 			if ( g_entities[i].inuse )	// not actually necessary
 			{

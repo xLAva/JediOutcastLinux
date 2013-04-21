@@ -4690,7 +4690,7 @@ Q3_SetCinematicSkipScript
 
 ============
 */
-static Q3_SetCinematicSkipScript( char *scriptname )
+static void Q3_SetCinematicSkipScript( char *scriptname )
 {
 
 	if(Q_stricmp("none", scriptname) == 0 || Q_stricmp("NULL", scriptname) == 0)

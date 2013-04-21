@@ -153,7 +153,7 @@ static qboolean GLW_StartDriverAndSetMode( const char *drivername,
 	rserr_t err;
 
 
-	err = GLW_SetMode( drivername, mode, fullscreen );
+	err = (rserr_t) GLW_SetMode( drivername, mode, fullscreen );
 
 	switch ( err )
 	{
@@ -174,7 +174,7 @@ static int CheckXRandR()
 {
 	int major;
 	int minor;
-	int	r_useXRandr = ri.Cvar_Get( "r_useXRandr", "1", CVAR_ARCHIVE);
+	int	r_useXRandr = (int) ri.Cvar_Get( "r_useXRandr", "1", CVAR_ARCHIVE);
 	if (r_useXRandr)
 	{
     /* Query the extension version */
@@ -195,30 +195,53 @@ void GLW_SetModeXRandr(int* actualWidth, int* actualHeight, qboolean* fullscreen
 	res = XRRGetScreenResources (dpy, root);
 	if (res)
 	{
+		XRRCrtcInfo* crtcInfo = NULL;
+		
 		RROutput primaryDisplay = XRRGetOutputPrimary(dpy, root);
 		if (primaryDisplay > 0)
 		{
 			XRROutputInfo *output_info = XRRGetOutputInfo (dpy, res, primaryDisplay);
-			if (output_info)
+			if (output_info && output_info->crtc && output_info->connection != RR_Disconnected)
 			{
-				XRRCrtcInfo* crtcInfo = XRRGetCrtcInfo (dpy, res, output_info->crtc);
-				if (crtcInfo)
+				// get info from the primary display
+				crtcInfo = XRRGetCrtcInfo (dpy, res, output_info->crtc);
+			}
+			XRRFreeOutputInfo(output_info);
+			
+		}
+		
+		if (!crtcInfo)
+		{
+			// primary display not found or it is not connected
+			// just get the first active monitor
+			XRROutputInfo *output_info = NULL;
+			for (int i=0; i<res->noutput && !crtcInfo; i++)
+			{
+				output_info = XRRGetOutputInfo (dpy, res, res->outputs[i]);
+				if (output_info && output_info->crtc && output_info->connection != RR_Disconnected)
 				{
-					primaryWidth = crtcInfo->width;
-					primaryHeight = crtcInfo->height;
-
-					XRRFreeCrtcInfo(crtcInfo);
+					crtcInfo = XRRGetCrtcInfo (dpy, res, output_info->crtc);
 				}
-
+				
 				XRRFreeOutputInfo(output_info);
 			}
 		}
+		
+		if (crtcInfo)
+		{
+			primaryWidth = crtcInfo->width;
+			primaryHeight = crtcInfo->height;
+
+			XRRFreeCrtcInfo(crtcInfo);
+		}
+		
 	}
 
   bool disablePrimary = false;
 	if (primaryWidth == -1 || primaryHeight == -1)
 	{
 		disablePrimary = true;
+		ri.Printf( PRINT_ALL, "...WARNING: xrandr query for the primary display resolution failed.\n" );
 	}
 
 	int best_fit, best_dist, dist, x, y;
@@ -293,7 +316,7 @@ void GLW_SetModeXRandr(int* actualWidth, int* actualHeight, qboolean* fullscreen
 			//XF86VidModeSetViewPort(dpy, scrnum, 0, 0);
 		} else{
 			(*fullscreen) = 0;
-			
+			ri.Printf( PRINT_ALL, "...WARNING: fullscreen unavailable in this mode\n" );
 		}
 	}
 }
@@ -386,7 +409,7 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 				if (!default_safed)
 				{
 					default_safed = true;
-					XF86VidModeGetModeLine(dpy, scrnum, &default_vidmodeInfo.dotclock, (XF86VidModeModeLine*)&default_vidmodeInfo.hdisplay);
+					XF86VidModeGetModeLine(dpy, scrnum, (int*) &default_vidmodeInfo.dotclock, (XF86VidModeModeLine*)&default_vidmodeInfo.hdisplay);
 					printf("default:\nwidth %d height %d htotal %d vtotal %d hskew %d flags %d\n",default_vidmodeInfo.hdisplay, default_vidmodeInfo.vdisplay, default_vidmodeInfo.htotal, default_vidmodeInfo.vtotal, default_vidmodeInfo.hskew, default_vidmodeInfo.flags);
 
 				}
@@ -1192,7 +1215,7 @@ sem_t	renderActiveEvent;
 
 void (*glimpRenderThread)( void );
 
-void GLimp_RenderThreadWrapper( void *stub ) {
+void* GLimp_RenderThreadWrapper( void *stub ) {
 	glimpRenderThread();
 
 #if 0
@@ -1595,25 +1618,37 @@ static void HandleEvents(void)
 			break;
 
 		case ButtonPress:
-			b=-1;
-			if (event.xbutton.button == 1)
-				b = 0;
-			else if (event.xbutton.button == 2)
-				b = 2;
-			else if (event.xbutton.button == 3)
-				b = 1;
-			Sys_QueEvent( 0, SE_KEY, A_MOUSE1 + b, qtrue, 0, NULL );
+			if (event.xbutton.button == 4) {
+				Sys_QueEvent( 0, SE_KEY, A_MWHEELUP, qtrue, 0, NULL );
+			} else if (event.xbutton.button == 5) {
+				Sys_QueEvent( 0, SE_KEY, A_MWHEELDOWN, qtrue, 0, NULL );
+			} else {
+				b=-1;
+				if (event.xbutton.button == 1)
+					b = 0;
+				else if (event.xbutton.button == 2)
+					b = 2;
+				else if (event.xbutton.button == 3)
+					b = 1;
+				Sys_QueEvent( 0, SE_KEY, A_MOUSE1 + b, qtrue, 0, NULL );
+			}
 			break;
 
 		case ButtonRelease:
-			b=-1;
-			if (event.xbutton.button == 1)
-				b = 0;
-			else if (event.xbutton.button == 2)
-				b = 2;
-			else if (event.xbutton.button == 3)
-				b = 1;
-			Sys_QueEvent( 0, SE_KEY, A_MOUSE1 + b, qfalse, 0, NULL );
+			if (event.xbutton.button == 4) {
+				Sys_QueEvent( 0, SE_KEY, A_MWHEELUP, qfalse, 0, NULL );
+			} else if (event.xbutton.button == 5) {
+				Sys_QueEvent( 0, SE_KEY, A_MWHEELDOWN, qfalse, 0, NULL );
+			} else {
+				b=-1;
+				if (event.xbutton.button == 1)
+					b = 0;
+				else if (event.xbutton.button == 2)
+					b = 2;
+				else if (event.xbutton.button == 3)
+					b = 1;
+				Sys_QueEvent( 0, SE_KEY, A_MOUSE1 + b, qfalse, 0, NULL );
+			}
 			break;
 
 		case CreateNotify :

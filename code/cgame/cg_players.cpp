@@ -163,7 +163,7 @@ static const char *GetCustomSound_VariantCapped(const char *ppsTable[], int iEnt
 
 	if (iVariantCap || bForceVariant1)
 	{
-		char *p = strchr(ppsTable[iEntryNum],'.');
+		char *p = (char*) strchr(ppsTable[iEntryNum],'.');
 		if (p && p-2 > ppsTable[iEntryNum] && isdigit(p[-1]) && !isdigit(p[-2]))
 		{
 			int iThisVariant = p[-1]-'0';
@@ -3478,7 +3478,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, centity_t *cen
 		ent->customShader = 0;
 		cgi_R_AddRefEntityToScene( ent );
 
-		if ( cg.time - ent->endTime < 1000 && (cg_timescale.value * cg_timescale.value * random()) > 0.05f )
+		if ( cg.time - ent->endTime < 1000 && (cg_timescale.value * cg_timescale.value * randomLava()) > 0.05f )
 		{
 			vec3_t fxOrg;
 			mdxaBone_t	boltMatrix;
@@ -4320,7 +4320,7 @@ void CG_DoSaber( vec3_t origin, vec3_t dir, float length, float lengthMax, saber
 	}
 
 	// always add a light because sabers cast a nice glow before they slice you in half!!  or something...
-	cgi_R_AddLightToScene( mid, (length*2.0f) + (random()*8.0f), rgb[0], rgb[1], rgb[2] );
+	cgi_R_AddLightToScene( mid, (length*2.0f) + (randomLava()*8.0f), rgb[0], rgb[1], rgb[2] );
 
 	memset( &saber, 0, sizeof( refEntity_t ));
 
@@ -4445,7 +4445,7 @@ void CG_CreateSaberMarks( vec3_t start, vec3_t end, vec3_t normal )
 		mark->poly.numVerts = mf->numPoints;
 		mark->color[0] = 215 + randomLava() * 40.0f;
 		mark->color[1] = 96 + randomLava() * 32.0f;
-		mark->color[2] = mark->color[3] = random()*15.0f;
+		mark->color[2] = mark->color[3] = randomLava()*15.0f;
 		memcpy( mark->verts, verts, mf->numPoints * sizeof( verts[0] ) );
 	}
 }

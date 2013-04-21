@@ -499,7 +499,7 @@ typedef enum
 //
 extern void funcBBrushPain				(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, vec3_t point, int damage, int mod,int hitLoc=HL_NONE);
 extern void misc_model_breakable_pain	(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, vec3_t point, int damage, int mod,int hitLoc=HL_NONE);
-extern void NPC_Pain					(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, vec3_t point, int damage, int mod,int hitLoc=HL_NONE);
+extern void NPC_Pain					(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, vec3_t point, int damage, int mod,int hitLoc);
 extern void station_pain				(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, vec3_t point, int damage, int mod,int hitLoc=HL_NONE);
 extern void func_usable_pain			(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, vec3_t point, int damage, int mod,int hitLoc=HL_NONE);
 extern void NPC_ATST_Pain				(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, vec3_t point, int damage, int mod,int hitLoc=HL_NONE);
@@ -556,7 +556,7 @@ extern void funcBBrushDie				(gentity_t *self, gentity_t *inflictor, gentity_t *
 extern void misc_model_breakable_die	(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod,int dFlags=0,int hitLoc=HL_NONE);
 extern void misc_model_cargo_die		(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod,int dFlags=0,int hitLoc=HL_NONE);
 extern void func_train_die				(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod,int dFlags=0,int hitLoc=HL_NONE);
-extern void player_die					(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod,int dFlags=0,int hitLoc=HL_NONE);
+extern void player_die					(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod,int dFlags,int hitLoc);
 extern void ExplodeDeath_Wait			(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod,int dFlags=0,int hitLoc=HL_NONE);
 extern void ExplodeDeath				(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod,int dFlags=0,int hitLoc=HL_NONE);
 extern void func_usable_die				(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod,int dFlags=0,int hitLoc=HL_NONE);
