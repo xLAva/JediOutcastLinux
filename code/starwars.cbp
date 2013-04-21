@@ -14,6 +14,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-g" />
 					<Add option="-Wno-write-strings" />
 					<Add option="-Wno-conversion-null" />
 					<Add option="-Wno-pointer-arith" />
