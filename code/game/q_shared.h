@@ -719,6 +719,12 @@ inline int Q_irand(int min, int max) {
 	//return ((rand() * (max - min)) >> 15) + min;
 	//int r = ((rand() * (max - min)) >> 15) + min;
 	
+	if (max == min)
+	{
+		// avoid division by 0
+		return min;
+	}
+	
 	//int r= ((rand() /(RAND_MAX/(max-min)) ))+min;
 	//printf("Q_irand: min=%d, max=%d, r=%d\n", min, max, r);
 	return ((rand() /(RAND_MAX/(max-min)) ))+min;
