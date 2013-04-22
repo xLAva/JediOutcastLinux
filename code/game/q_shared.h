@@ -721,7 +721,7 @@ inline int Q_irand(int min, int max) {
 	
 	//int r= ((rand() /(RAND_MAX/(max-min)) ))+min;
 	//printf("Q_irand: min=%d, max=%d, r=%d\n", min, max, r);
-	return ((rand() /(RAND_MAX/(max-min)) ))+min;
+	return ((rand() * (max-min) / RAND_MAX ))+min;
 }
 
 //returns a float between 0 and 1.0
