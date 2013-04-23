@@ -36,7 +36,7 @@ static struct
 	int				savegameFromFlag;
 } s_savegame;
 
-#define MAX_SAVELOADFILES	100
+#define MAX_SAVELOADFILES	1000
 #define MAX_SAVELOADNAME	32
 
 byte screenShotBuf[SG_SCR_WIDTH * SG_SCR_HEIGHT * 4];
