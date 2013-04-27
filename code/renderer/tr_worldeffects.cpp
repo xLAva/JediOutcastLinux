@@ -489,8 +489,8 @@ void CMistyFog::Update(CWorldEffectsSystem *system, float elapseTime)
 
 	// translate
 
-	forwardWind = DotProduct(mWindTransform, backEnd.viewParms.orient.axis[0]);
-	rightWind = DotProduct(mWindTransform, backEnd.viewParms.orient.axis[1]);
+	forwardWind = DotProduct(mWindTransform, backEnd.viewParms.or.axis[0]);
+	rightWind = DotProduct(mWindTransform, backEnd.viewParms.or.axis[1]);
 
 	mTextureCoords[0][0] += rightWind / mSpeed;
 	mTextureCoords[1][0] += rightWind / mSpeed;
@@ -640,8 +640,8 @@ void CMistyFog::CreateTextureCoords(void)
 	mSpeed = 800.0 + FloatRand() * 2000.0;
 	mSpeed /= 4.0;
 
-	forwardWind = DotProduct(mWindTransform, backEnd.viewParms.orient.axis[0]);
-	rightWind = DotProduct(mWindTransform, backEnd.viewParms.orient.axis[1]);
+	forwardWind = DotProduct(mWindTransform, backEnd.viewParms.or.axis[0]);
+	rightWind = DotProduct(mWindTransform, backEnd.viewParms.or.axis[1]);
 
 	if (forwardWind > 0.5)
 	{	// moving away, so make the size smaller
@@ -1063,7 +1063,7 @@ void CWind::Update(CWorldEffectsSystem *system, float elapseTime)
 		return;
 	}
 
-	VectorSubtract(backEnd.viewParms.orient.origin, mPoint, difference);
+	VectorSubtract(backEnd.viewParms.or.origin, mPoint, difference);
 	if (VectorLength(difference) > 300.0)
 	{
 		return;
@@ -1497,7 +1497,7 @@ void CSnowSystem::Update(float elapseTime)
 		CWorldEffectsSystem::Update(elapseTime);
 	}
 
-	VectorCopy(backEnd.viewParms.orient.origin, origin);
+	VectorCopy(backEnd.viewParms.or.origin, origin);
 
 	mNextWindGust -= elapseTime;
 	if (mNextWindGust < 0.0)
@@ -1733,7 +1733,7 @@ void CSnowSystem::Render(void)
 
 	CWorldEffectsSystem::Render();
 
-	VectorAdd(backEnd.viewParms.orient.origin, mMinSpread, origin);
+	VectorAdd(backEnd.viewParms.or.origin, mMinSpread, origin);
 
 	qglColor4f(0.8f, 0.8f, 0.8f, mAlpha);
 
@@ -2068,8 +2068,8 @@ void CRainSystem::Render(void)
 		return;
 	}
 
-	VectorScale(backEnd.viewParms.orient.axis[0], 1, forward);		// forward
-	VectorScale(backEnd.viewParms.orient.axis[1], 0.2f, left);		// left
+	VectorScale(backEnd.viewParms.or.axis[0], 1, forward);		// forward
+	VectorScale(backEnd.viewParms.or.axis[1], 0.2f, left);		// left
 	down[0] = 0 - mWindDirection[0] * mRainHeight * mWindAngle;
 	down[1] = 0 - mWindDirection[1] * mRainHeight * mWindAngle;
 	down[2] = -mRainHeight;
@@ -2082,7 +2082,7 @@ void CRainSystem::Render(void)
 
 	qglMatrixMode(GL_MODELVIEW);
 	qglPushMatrix();
-    qglTranslatef (backEnd.viewParms.orient.origin[0], backEnd.viewParms.orient.origin[1],  backEnd.viewParms.orient.origin[2]);
+    qglTranslatef (backEnd.viewParms.or.origin[0], backEnd.viewParms.or.origin[1],  backEnd.viewParms.or.origin[2]);
 
 	item = mRainList;
 	qglBegin(GL_TRIANGLES );
@@ -2194,7 +2194,7 @@ void RB_RenderWorldEffects(void)
 //	qglPushMatrix();
 	qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
 
-	originContents = ri.CM_PointContents(backEnd.viewParms.orient.origin, 0);
+	originContents = ri.CM_PointContents(backEnd.viewParms.or.origin, 0);
 
 	if (rainSystem)
 	{
