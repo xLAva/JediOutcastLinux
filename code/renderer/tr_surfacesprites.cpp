@@ -1429,18 +1429,18 @@ void RB_DrawSurfaceSprites( shaderStage_t *stage, shaderCommands_t *input)
 	{	
 		if (backEnd.currentEntity == &tr.worldEntity)
 		{	// Drawing the world, so our job is dead-easy, in the viewparms
-			VectorCopy(backEnd.viewParms.or.origin, ssViewOrigin);
-			VectorCopy(backEnd.viewParms.or.axis[1], ssViewRight);
-			VectorCopy(backEnd.viewParms.or.axis[2], ssViewUp);
+			VectorCopy(backEnd.viewParms.orient.origin, ssViewOrigin);
+			VectorCopy(backEnd.viewParms.orient.axis[1], ssViewRight);
+			VectorCopy(backEnd.viewParms.orient.axis[2], ssViewUp);
 		}
 		else
 		{	// Drawing an entity, so we need to transform the viewparms to the model's coordinate system
-//			R_WorldPointToEntity (backEnd.viewParms.or.origin, ssViewOrigin);
-			R_WorldNormalToEntity (backEnd.viewParms.or.axis[1], ssViewRight); 
-			R_WorldNormalToEntity (backEnd.viewParms.or.axis[2], ssViewUp);
-			VectorCopy(backEnd.or.viewOrigin, ssViewOrigin);
-//			R_WorldToLocal(backEnd.viewParms.or.axis[1], ssViewRight);
-//			R_WorldToLocal(backEnd.viewParms.or.axis[2], ssViewUp);
+//			R_WorldPointToEntity (backEnd.viewParms.orient.origin, ssViewOrigin);
+			R_WorldNormalToEntity (backEnd.viewParms.orient.axis[1], ssViewRight); 
+			R_WorldNormalToEntity (backEnd.viewParms.orient.axis[2], ssViewUp);
+			VectorCopy(backEnd.orient.viewOrigin, ssViewOrigin);
+//			R_WorldToLocal(backEnd.viewParms.orient.axis[1], ssViewRight);
+//			R_WorldToLocal(backEnd.viewParms.orient.axis[2], ssViewUp);
 		}
 		ssLastEntityDrawn = backEnd.currentEntity;
 	}
