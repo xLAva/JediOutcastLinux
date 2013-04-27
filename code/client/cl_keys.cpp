@@ -1323,7 +1323,8 @@ void CL_KeyEvent (int key, qboolean down, unsigned time) {
 	}
 
 	// console key is hardcoded, so the user can never unbind it
-	if (key == A_CONSOLE) 
+	char *keyBinding = Key_GetBinding(key);
+	if ( (key == A_CONSOLE) || ( keyBinding && strcmp(keyBinding,"toggleconsole") == 0 ) ) 
 	{
 		if (!down) 
 		{
