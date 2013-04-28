@@ -985,7 +985,7 @@ typedef struct {
 	int						identityLightByte;	// identityLight * 255
 	int						overbrightBits;		// r_overbrightBits->integer, but set to 0 if no hw gamma
 
-	orientationr_t			orient;
+	orientationr_t			orient;          // for current entity
 
 	trRefdef_t				refdef;
 
