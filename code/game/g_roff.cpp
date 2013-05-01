@@ -220,7 +220,6 @@ defaultoffsetposition:
 	}
 	else if (strcmp(type, "sound") == 0)
 	{
-		printf("sound2\n");
 		objectID = G_SoundIndex(argument);
 		cgi_S_StartSound(cent->s.pos.trBase, cent->s.number, CHAN_BODY, objectID);
 	}

@@ -256,12 +256,11 @@ void G_SoundOnEnt (gentity_t *ent, soundChannel_t channel, const char *soundPath
 	cgi_S_UpdateEntityPosition( ent->s.number, ent->currentOrigin );
 	if ( cgs.sound_precache[ index ] ) 
 	{
-		printf("sound3\n");
-		cgi_S_StartSound( ent->currentOrigin, ent->s.number, channel, cgs.sound_precache[ index ] );
+		cgi_S_StartSound( NULL, ent->s.number, channel, cgs.sound_precache[ index ] );
 	}
 	else
 	{
-		CG_TryPlayCustomSound( ent->currentOrigin, ent->s.number, channel, soundPath, -1 );
+		CG_TryPlayCustomSound( NULL, ent->s.number, channel, soundPath, -1 );
 	}
 }
 

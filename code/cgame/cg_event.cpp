@@ -708,8 +708,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 					//	}
 						else
 						{
-										printf("sound25\n");
-
 							cgi_S_StartSound ( NULL, cent->gent->s.number, CHAN_AUTO, disintSound2 );
 						}
 					}
@@ -758,8 +756,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 	case EV_BMODEL_SOUND:
 		DEBUGNAME("EV_BMODEL_SOUND");
-			printf("sound22\n");
-		
 		cgi_S_StartSound( NULL, es->number, CHAN_AUTO, es->eventParm );
 		break;
 
@@ -767,8 +763,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_GENERAL_SOUND");
 		if ( cgs.sound_precache[ es->eventParm ] ) 
 		{
-			printf("sound21\n");
-			
 			cgi_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.sound_precache[ es->eventParm ] );
 		} 
 		else 
@@ -781,8 +775,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_GLOBAL_SOUND:	// play from the player's head so it never diminishes
 		DEBUGNAME("EV_GLOBAL_SOUND");
 		if ( cgs.sound_precache[ es->eventParm ] ) {
-			printf("sound20\n");
-
 			cgi_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.sound_precache[ es->eventParm ] );
 		} else {
 			s = CG_ConfigString( CS_SOUNDS + es->eventParm );
