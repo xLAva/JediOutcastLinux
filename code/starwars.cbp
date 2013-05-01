@@ -24,7 +24,6 @@
 					<Add option="-fexceptions" />
 					<Add option="-m32" />
 					<Add option="-ffast-math" />
-					<Add option="-fno-operator-names" />
 					<Add option="-DLINUX" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_JK2EXE" />
