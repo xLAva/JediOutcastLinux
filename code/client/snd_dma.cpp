@@ -466,8 +466,7 @@ void S_Init( void ) {
 				// Reached limit of sources
 				break;
 			}
-			alSourcef(s_channels[i].alSource, AL_MAX_DISTANCE, 10.0f);
-			alSourcef(s_channels[i].alSource, AL_REFERENCE_DISTANCE, 1.0f);
+			alSourcef(s_channels[i].alSource, AL_REFERENCE_DISTANCE, 400.0f);
 			if (alGetError() != AL_NO_ERROR)
 			{
 				break;
@@ -1413,9 +1412,9 @@ void S_StartSound(const vec3_t origin, int entityNum, int entchannel, sfxHandle_
 	}
 	SND_TouchSFX(sfx);
 
-	//if ( s_show->integer == 1 ) {
-		Com_Printf( "%i : %s on (%d) origin:%d\n", s_paintedtime, sfx->sSoundName, entityNum, origin!=NULL );
-	//}
+	if ( s_show->integer == 1 ) {
+		Com_Printf( "%i : %s on (%d)\n", s_paintedtime, sfx->sSoundName, entityNum );
+	}
 
 	if (s_UseOpenAL)
 	{
@@ -1463,7 +1462,6 @@ void S_StartSound(const vec3_t origin, int entityNum, int entchannel, sfxHandle_
 	}
 
 	if (origin) {
-		Com_Printf( "origin:%f %f %f\n", origin[0], origin[1], origin[2] );		
 		VectorCopy (origin, ch->origin);
 		ch->fixed_origin = qtrue;
 	} else {
@@ -2646,9 +2644,7 @@ void S_Update_(void) {
 
 			if ( ch->entchannel == CHAN_VOICE || ch->entchannel == CHAN_VOICE_ATTEN || ch->entchannel == CHAN_VOICE_GLOBAL )
 			{
-				//alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 1500.0f);
-				alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 1.f);
-				alSourcef(s_channels[source].alSource, AL_MAX_DISTANCE, 10.f);
+				alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 1500.0f);
 				alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volumeVoice->value) / 255.0f);
 
 				if (s_bEAX)
@@ -2671,10 +2667,8 @@ void S_Update_(void) {
 			}
 			else
 			{
-				alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 1.f);
-				alSourcef(s_channels[source].alSource, AL_MAX_DISTANCE, 10.f);
+				alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 400.f);
 				alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volume->value) / 255.f);
-
 
 				if (s_bEALFileLoaded)
 					UpdateEAXBuffer(ch);
@@ -3174,13 +3168,9 @@ void UpdateLoopingSounds()
 			alSourcei(s_channels[source].alSource, AL_BUFFER, ch->thesfx->Buffer);
 			alSourcefv(s_channels[source].alSource, AL_POSITION, pos);
 			alSourcei(s_channels[source].alSource, AL_LOOPING, AL_TRUE);
-			//alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 400.f);
-			alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 1.f);
-			alSourcef(s_channels[source].alSource, AL_MAX_DISTANCE, 10.f);
+			alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 400.f);
 			alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volume->value) / 255.0f);
 			alSourcei(s_channels[source].alSource, AL_SOURCE_RELATIVE, ch->fixed_origin ? AL_TRUE : AL_FALSE);
-			
-
 
 			if (s_bEALFileLoaded)
 				UpdateEAXBuffer(ch);
