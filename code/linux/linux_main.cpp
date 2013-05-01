@@ -61,21 +61,21 @@ Sys_Error
 ================
 */
 void Sys_Error( const char *error, ... ) {
-  va_list     argptr;
-  char        string[1024];
+	va_list     argptr;
+	char        string[1024];
 
-  // change stdin to non blocking
-  fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
+	// change stdin to non blocking
+	fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
 
-  //Sys_Shutdown(); -> LAvaPort - we might need it
+	Com_ShutdownZoneMemory();
+	Com_ShutdownHunkMemory();
 
-  va_start (argptr,error);
-  vsprintf (string,error,argptr);
-  va_end (argptr);
-  fprintf(stderr, "Error: %s\n", string);
+	va_start (argptr,error);
+	vsprintf (string,error,argptr);
+	va_end (argptr);
+	fprintf(stderr, "Error: %s\n", string);
 
-  exit (1);
-	
+	exit (1);
 }
 
 
@@ -85,8 +85,9 @@ Sys_Quit
 ================
 */
 void Sys_Quit( void ) {
-	//Sys_Shutdown(); -> LAvaPort - we might need it
-  fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
+  	Com_ShutdownZoneMemory();
+  	Com_ShutdownHunkMemory();
+	fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
 	exit (0);
 }
 
