@@ -7,6 +7,8 @@
  *
  *****************************************************************************/
 
+#include <string.h>
+#include <errno.h>
 
 #include "../game/q_shared.h"
 #include "qcommon.h"
@@ -614,6 +616,7 @@ FS_FOpenFileWrite
 
 ===========
 */
+
 fileHandle_t FS_FOpenFileWrite( const char *filename ) {
 	char			*ospath;
 	fileHandle_t	f;
@@ -640,6 +643,7 @@ fileHandle_t FS_FOpenFileWrite( const char *filename ) {
 	fsh[f].handleSync = qfalse;
 	if (!fsh[f].handleFiles.file.o) {
 		f = 0;
+		Com_Printf(S_COLOR_MAGENTA"%s: %s\n", filename, strerror(errno));
 	}
 	return f;
 }
