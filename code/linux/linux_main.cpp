@@ -32,6 +32,9 @@
 #include "../renderer/tr_public.h"
 #include "linux_local.h"
 
+// Used to determine CD Path
+static char programpath[MAX_OSPATH];
+
 /*
 ==================
 Sys_LowPhysicalMemory()
@@ -173,23 +176,41 @@ int Sys_Milliseconds (void)
 
 /*
 ==============
-Sys_DefaultCDPath
+Sys_DefaultCDPath - same as in unix_shared.cpp
 ==============
 */
-char *Sys_DefaultCDPath( void ) {
-	return "";
+
+char *Sys_DefaultCDPath(void)
+{
+	if (*programpath)
+		return programpath;
+	else
+		return Sys_Cwd();
 }
 
 /*
 ==============
-Sys_DefaultBasePath
+Sys_DefaultBasePath - same as in unix_shared.cpp
 ==============
 */
-char *Sys_DefaultBasePath( void ) {
-	return Sys_Cwd();
-}
 
-static char programpath[MAX_OSPATH];
+char *Sys_DefaultBasePath(void)
+{
+	char *p;
+	static char basepath[MAX_OSPATH];
+	int e;
+
+	if ((p = getenv("HOME")) != NULL) {
+		Q_strncpyz(basepath, p, sizeof(basepath));
+		Q_strcat(basepath, sizeof(basepath), "/.jk2");
+		if (mkdir(basepath, 0777)) {
+			if (errno != EEXIST) 
+				Sys_Error("Unable to create directory \"%s\", error is %s(%d)\n", basepath, strerror(errno), errno);
+		}
+		return basepath;
+	}
+	return ""; // assume current dir
+}
 
 void SetProgramPath(char *path)
 {
@@ -392,9 +413,19 @@ void *Sys_GetGameAPI (void *parms)
 	if (game_library)
 		Com_Error (ERR_FATAL, "Sys_GetGameAPI without Sys_UnloadingGame");
 
-	// check the current debug directory first for development purposes
 	getcwd (cwd, sizeof(cwd));
-	Com_sprintf (name, sizeof(name), "%s/%s/%s", cwd, debugdir, gamename);
+
+	// check the current debug directory first for development purposes
+	if (*programpath) 
+	  {
+	    Com_sprintf (name, sizeof(name), "%s/%s/%s", programpath, debugdir, gamename);
+	  }
+	
+	else 
+	  {
+	    Com_sprintf (name, sizeof(name), "%s/%s/%s", cwd, debugdir, gamename);
+	  }
+	
 	game_library = dlopen (name, RTLD_LAZY );
 	if (game_library)
 	{
@@ -403,14 +434,22 @@ void *Sys_GetGameAPI (void *parms)
 	else
 	{
 		// check the current directory for other development purposes
-		Com_sprintf (name, sizeof(name), "%s/%s", cwd, gamename);
+
+	        if (*programpath) 
+	        {
+		        Com_sprintf (name, sizeof(name), "%s/%s", programpath, gamename);
+	        } else {
+		        Com_sprintf (name, sizeof(name), "%s/%s", cwd, gamename);
+	        }
+
 		game_library = dlopen (name, RTLD_LAZY );
 		if (game_library)
 		{
 			Com_DPrintf ("LoadLibrary (%s)\n", name);
 		} else {
 
-			Com_Error( ERR_FATAL, "Couldn't load game: %s\n", dlerror() );
+		        Com_Error( ERR_FATAL, "Couldn't load game: %s\n", dlerror() );
+		  
 		}
 	}
 
