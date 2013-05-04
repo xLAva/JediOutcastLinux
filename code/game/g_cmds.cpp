@@ -804,7 +804,7 @@ qboolean PickSeekerSpawnPoint( vec3_t org, vec3_t fwd, vec3_t right, int skip, v
 	vec3_t	mins, maxs, forward, end;
 	trace_t tr;
 
-	VectorSet( maxs, -8, -8, -24); // ?? size
+	VectorSet( mins, -8, -8, -24); // ?? size
 	VectorSet( maxs, 8, 8, 8 );
 
 	VectorCopy( fwd, forward );
