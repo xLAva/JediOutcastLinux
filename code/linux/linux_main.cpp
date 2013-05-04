@@ -413,6 +413,8 @@ void *Sys_GetGameAPI (void *parms)
 	if (game_library)
 		Com_Error (ERR_FATAL, "Sys_GetGameAPI without Sys_UnloadingGame");
 
+	getcwd (cwd, sizeof(cwd));
+
 	// check the current debug directory first for development purposes
 	if (*programpath) 
 	  {
@@ -421,7 +423,6 @@ void *Sys_GetGameAPI (void *parms)
 	
 	else 
 	  {
-	    getcwd (cwd, sizeof(cwd));
 	    Com_sprintf (name, sizeof(name), "%s/%s/%s", cwd, debugdir, gamename);
 	  }
 	
@@ -433,7 +434,14 @@ void *Sys_GetGameAPI (void *parms)
 	else
 	{
 		// check the current directory for other development purposes
-		Com_sprintf (name, sizeof(name), "%s/%s", cwd, gamename);
+
+	        if (*programpath) 
+	        {
+		        Com_sprintf (name, sizeof(name), "%s/%s", programpath, gamename);
+	        } else {
+		        Com_sprintf (name, sizeof(name), "%s/%s", cwd, gamename);
+	        }
+
 		game_library = dlopen (name, RTLD_LAZY );
 		if (game_library)
 		{
