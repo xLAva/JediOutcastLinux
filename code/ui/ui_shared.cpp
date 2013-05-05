@@ -1587,10 +1587,13 @@ void Menu_TransitionItemByName(menuDef_t *menu, const char *p, rectDef_t rectFro
 			item->window.offsetTime = time;
 			memcpy(&item->window.rectClient, &rectFrom, sizeof(rectDef_t));
 			memcpy(&item->window.rectEffects, &rectTo, sizeof(rectDef_t));
-			item->window.rectEffects2.x = abs(rectTo.x - rectFrom.x) / amt;
-			item->window.rectEffects2.y = abs(rectTo.y - rectFrom.y) / amt;
-			item->window.rectEffects2.w = abs(rectTo.w - rectFrom.w) / amt;
-			item->window.rectEffects2.h = abs(rectTo.h - rectFrom.h) / amt;
+			
+			printf("x %f - %f, y %f - %f, w %f - %f, h %f - %f\n", rectTo.x, rectFrom.x, rectTo.y, rectFrom.y, rectTo.w, rectFrom.w, rectTo.h, rectFrom.h);
+			
+			item->window.rectEffects2.x = fabs(rectTo.x - rectFrom.x) / amt;
+			item->window.rectEffects2.y = fabs(rectTo.y - rectFrom.y) / amt;
+			item->window.rectEffects2.w = fabs(rectTo.w - rectFrom.w) / amt;
+			item->window.rectEffects2.h = fabs(rectTo.h - rectFrom.h) / amt;
 			Item_UpdatePosition(item);
 		}
 	}
