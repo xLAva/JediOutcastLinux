@@ -36,6 +36,8 @@ sudo apt-get install libopenal1
 Needed libraries on Ubuntu 12.10 64bit:
 sudo apt-get install ia32-libs libxxf86dga1:i386
 
+Brightness:
+The game seems to be really dark, it would be a good idea to edit the "jk2config.cfg" file found in the "base" folder, look for "seta r_gamma", I set mine to 1.6 and it makes the game far more playable.
 
 Development
 
