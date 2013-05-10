@@ -36,7 +36,6 @@
 					<Add library="GL" />
 					<Add library="X11" />
 					<Add library="libXxf86vm" />
-					<Add library="libXxf86dga" />
 					<Add library="Xrandr" />
 					<Add library="rt" />
 					<Add library="pthread" />
