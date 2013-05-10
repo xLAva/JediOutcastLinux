@@ -34,7 +34,7 @@ Needed libraries on Ubuntu 12.10 32bit:
 sudo apt-get install libopenal1
 
 Needed libraries on Ubuntu 12.10 64bit:
-sudo apt-get install ia32-libs libxxf86dga1:i386
+sudo apt-get install ia32-libs
 
 
 Development
@@ -47,7 +47,7 @@ My development system: Ubuntu 12.10 64bit
 - I'm using a 64bit system, but this port is still a 32 bit program!
 
 Needed development libraries (and codeblocks):
-sudo apt-get install codeblocks g++-multilib libgl1-mesa-dev:i386 libxxf86dga-dev:i386 libxrandr-dev:i386 libopenal-dev:i386
+sudo apt-get install codeblocks g++-multilib libgl1-mesa-dev:i386 libxrandr-dev:i386 libopenal-dev:i386
 
 
 Building
