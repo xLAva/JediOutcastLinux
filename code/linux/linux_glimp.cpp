@@ -34,7 +34,9 @@
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 
+#ifdef USE_XF86DGA
 #include <X11/extensions/xf86dga.h>
+#endif
 #include <X11/extensions/xf86vmode.h>
 #include <X11/extensions/Xrandr.h>
 
@@ -602,6 +604,7 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 	if (vidmode_active)
 		XMoveWindow(dpy, win, 0, 0);
 
+	#ifdef USE_XF86DGA
   // Check for DGA
 	//if (in_dgamouse->value) {
 		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
@@ -612,6 +615,7 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 			ri.Printf( PRINT_ALL, "XF86DGA Mouse (Version %d.%d) initialized\n",
 				MajorVersion, MinorVersion);
 	//}
+	#endif
 
 	XFlush(dpy);
 
@@ -1498,6 +1502,7 @@ static void install_grabs(void)
 
 		XChangePointerControl(dpy, qtrue, qtrue, 2, 1, 0);
 
+		#ifdef USE_XF86DGA
 		if (in_dgamouse->value) {
 			int MajorVersion, MinorVersion;
 
@@ -1515,6 +1520,11 @@ static void install_grabs(void)
 						 0, 0, 0, 0,
 						 glConfig.vidWidth / 2, glConfig.vidHeight / 2);
 		}
+		#else
+		XWarpPointer(dpy, None, win,
+					 0, 0, 0, 0,
+					 glConfig.vidWidth / 2, glConfig.vidHeight / 2);		
+		#endif
 
 		XGrabKeyboard(dpy, win,
 				  False,
@@ -1528,7 +1538,9 @@ static void uninstall_grabs(void)
 {
 	if (dgamouse) {
 		dgamouse = qfalse;
+		#ifdef USE_XF86DGA		
 		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
+		#endif
 	}
 
 	XChangePointerControl(dpy, qtrue, qtrue, mouse_accel_numerator, 
