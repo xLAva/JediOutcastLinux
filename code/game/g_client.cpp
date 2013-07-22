@@ -283,7 +283,7 @@ gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, team_t team, vec3_t origin, vec
 
 		origin[2] = MIN_WORLD_COORD;
 		gi.trace(&tr, spot->s.origin, playerMins, playerMaxs, origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, (EG2_Collision)0, 0 );
-		if ( tr.fraction < 1.0 && !tr.allsolid && !tr.startsolid )
+		if ( tr.fraction < 1.0f && !tr.allsolid && !tr.startsolid )
 		{//found a floor
 			VectorCopy(tr.endpos, origin );
 		}

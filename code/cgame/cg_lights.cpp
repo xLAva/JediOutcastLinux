@@ -82,6 +82,6 @@ void CG_SetLightstyle (int i)
 	cl_lightstyle[(i/3)].length = j;
 	for (k=0 ; k<j ; k++)
 	{
-		cl_lightstyle[(i/3)].map[k][(i%3)] = (float)(s[k]-'a')/(float)('z'-'a') * 255.0;
+		cl_lightstyle[(i/3)].map[k][(i%3)] = (float)(s[k]-'a')/(float)('z'-'a') * 255.0f;
 	}
 }

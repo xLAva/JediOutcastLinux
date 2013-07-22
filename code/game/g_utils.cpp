@@ -691,7 +691,7 @@ float vectoyaw( const vec3_t vec ) {
 		yaw = 0;
 	} else {
 		if (vec[PITCH]) {
-			yaw = ( atan2( vec[YAW], vec[PITCH]) * 180 / M_PI );
+			yaw = ( atan2f( vec[YAW], vec[PITCH]) * 180 / M_PI );
 		} else if (vec[YAW] > 0) {
 			yaw = 90;
 		} else {
@@ -1162,7 +1162,7 @@ qboolean G_CheckInSolid (gentity_t *self, qboolean fix)
 		return qtrue;
 	}
 	
-	if(trace.fraction < 1.0)
+	if(trace.fraction < 1.0f)
 	{
 		if(fix)
 		{//Put them at end of trace and check again
@@ -1495,7 +1495,7 @@ qboolean G_ClearTrace( const vec3_t start, const vec3_t mins, const vec3_t maxs,
 
 	gi.trace( &tr, start, mins, maxs, end, ignore, clipmask, (EG2_Collision)0, 0 );
 
-	if ( tr.allsolid || tr.startsolid || tr.fraction < 1.0 )
+	if ( tr.allsolid || tr.startsolid || tr.fraction < 1.0f )
 	{
 		return qfalse;
 	}
@@ -1534,7 +1534,7 @@ qboolean G_ExpandPointToBBox( vec3_t point, const vec3_t mins, const vec3_t maxs
 		{
 			return qfalse;
 		}
-		if ( tr.fraction < 1.0 )
+		if ( tr.fraction < 1.0f )
 		{
 			VectorCopy( start, end );
 			end[i] += maxs[i]-(mins[i]*tr.fraction);
@@ -1543,7 +1543,7 @@ qboolean G_ExpandPointToBBox( vec3_t point, const vec3_t mins, const vec3_t maxs
 			{
 				return qfalse;
 			}
-			if ( tr.fraction < 1.0 )
+			if ( tr.fraction < 1.0f )
 			{
 				return qfalse;
 			}

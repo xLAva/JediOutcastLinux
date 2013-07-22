@@ -18,6 +18,9 @@
 #define	SLOWDOWN_DIST	128.0f
 #define	MIN_NPC_SPEED	16.0f
 
+#ifdef AUTOAIM
+extern	int g_lastFireTime;
+#endif
 extern qboolean Q3_TaskIDPending( gentity_t *ent, taskID_t taskType );
 extern void G_MaintainFormations(gentity_t *self);
 extern void BG_CalculateOffsetAngles( gentity_t *ent, usercmd_t *ucmd );//in bg_pangles.cpp
@@ -433,8 +436,8 @@ void P_DamageFeedback( gentity_t *player ) {
 	else 
 	{
 		vectoangles( client->damage_from, angles );
-		client->ps.damagePitch = angles[PITCH]/360.0 * 256;
-		client->ps.damageYaw = angles[YAW]/360.0 * 256;
+		client->ps.damagePitch = angles[PITCH]/360.0f * 256;
+		client->ps.damageYaw = angles[YAW]/360.0f * 256;
 	}
 
 	client->ps.damageCount = count;
@@ -626,7 +629,7 @@ void DoImpact( gentity_t *self, gentity_t *other, qboolean damageSelf )
 
 			dot = DotProduct( dir1, dir2 );
 
-			if ( dot >= 0.2 )
+			if ( dot >= 0.2f )
 			{
 				force = dot;
 			}
@@ -1211,6 +1214,46 @@ static qboolean ClientCinematicThink( gclient_t *client ) {
 	return( qfalse );
 }
 
+#ifdef AUTOAIM
+/*
+================
+Sys_Milliseconds
+================
+*/
+int curtime;
+int	sys_timeBase;
+int Sys_Milliseconds (void)
+{
+	//struct timeval tp;
+	//struct timezone tzp;
+
+	//gettimeofday(&tp, &tzp);
+	
+	//if (!sys_timeBase)
+	//{
+	//	sys_timeBase = tp.tv_sec;
+	//	return tp.tv_usec/1000;
+	//}
+
+	//curtime = (tp.tv_sec - sys_timeBase)*1000 + tp.tv_usec/1000;
+
+	//LAvaPort
+	//try out higher resolution timer (not sure if we need this)
+	
+	struct timespec tp;
+	clock_gettime(CLOCK_MONOTONIC, &tp);
+	
+	if (!sys_timeBase)
+	{
+		sys_timeBase = tp.tv_sec;
+		return tp.tv_nsec/1000000;
+	}
+
+	curtime = (tp.tv_sec - sys_timeBase)*1000 + tp.tv_nsec/1000000;
+	
+	return curtime;
+}
+#endif
 
 /*
 ================
@@ -1264,6 +1307,11 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			}
 #endif
 			fired = qtrue;
+#ifdef AUTOAIM
+//			extern int Sys_Milliseconds();
+			if (ent->s.clientNum == 0)
+				g_lastFireTime = Sys_Milliseconds();
+#endif
 			FireWeapon( ent, qfalse );
 			break;
 
@@ -1274,6 +1322,10 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			}
 #endif
 			fired = qtrue;
+#ifdef AUTOAIM
+			if (ent->s.clientNum == 0)
+				g_lastFireTime = Sys_Milliseconds();
+#endif
 			FireWeapon( ent, qtrue );
 			break;
 
@@ -1507,8 +1559,8 @@ void BG_AddPushVecToUcmd( gentity_t *self, usercmd_t *ucmd )
 	self->client->ps.speed = VectorNormalize(moveDir);
 	//moveDir is now our intended move velocity plus our push Vector
 
-	fMove = 127.0 * DotProduct(forward, moveDir);
-	rMove = 127.0 * DotProduct(right, moveDir);
+	fMove = 127.0f * DotProduct(forward, moveDir);
+	rMove = 127.0f * DotProduct(right, moveDir);
 	ucmd->forwardmove = floor(fMove);//If in the same dir , will be positive
 	ucmd->rightmove = floor(rMove);//If in the same dir , will be positive
 
@@ -2080,7 +2132,7 @@ extern cvar_t	*g_skippingcin;
 			speed = VectorLength( ent->client->ps.velocity );
 			if ( speed && ent->client->ps.groundEntityNum == ENTITYNUM_NONE )
 			{
-				int diff = AngleNormalize180(SHORT2ANGLE(ucmd->angles[YAW]+ent->client->ps.delta_angles[YAW]) - floor(ent->client->ps.viewangles[YAW]));
+				int diff = AngleNormalize180(SHORT2ANGLE(ucmd->angles[YAW]+ent->client->ps.delta_angles[YAW]) - floorf(ent->client->ps.viewangles[YAW]));
 				int slide = floor(((float)(diff))/120.0f*-127.0f);
 				
 				if ( (slide > 0 && ucmd->rightmove >= 0) || ((slide < 0 && ucmd->rightmove <= 0)) )
@@ -2474,18 +2526,18 @@ extern cvar_t	*g_skippingcin;
 						// if the NPC is locked into a Yaw, we want to check the lockedDesiredYaw...otherwise the NPC can't walk backwards, because it always thinks it trying to turn according to desiredYaw
 						if( client->renderInfo.renderFlags & RF_LOCKEDANGLE ) // yeah I know the RF_ flag is a pretty ugly hack...
 						{	
-							turndelta = (180 - fabs( AngleDelta( ent->currentAngles[YAW], ent->NPC->lockedDesiredYaw ) ))/180;
+							turndelta = (180 - fabsf( AngleDelta( ent->currentAngles[YAW], ent->NPC->lockedDesiredYaw ) ))/180.0f;
 						}
 						else
 						{
-							turndelta = (180 - fabs( AngleDelta( ent->currentAngles[YAW], ent->NPC->desiredYaw ) ))/180;
+							turndelta = (180 - fabsf( AngleDelta( ent->currentAngles[YAW], ent->NPC->desiredYaw ) ))/180.0f;
 						}
 												
 						if ( turndelta < 0.75f )
 						{
 							client->ps.speed = 0;
 						}
-						else if ( ent->NPC->distToGoal < 100 && turndelta < 1.0 )
+						else if ( ent->NPC->distToGoal < 100 && turndelta < 1.0f )
 						{//Turn is greater than 45 degrees or closer than 100 to goal
 							client->ps.speed = floor(((float)(client->ps.speed))*turndelta);
 						}
@@ -2737,7 +2789,7 @@ extern cvar_t	*g_skippingcin;
 		}
 		if ( ent->client->ps.viewangles[PITCH] > 0 )
 		{
-			cg.overrides.thirdPersonPitchOffset = ent->client->ps.viewangles[PITCH]*-0.75;
+			cg.overrides.thirdPersonPitchOffset = ent->client->ps.viewangles[PITCH]*-0.75f;
 			cg.overrides.thirdPersonVertOffset = 300+ent->client->ps.viewangles[PITCH]*-10;
 			if ( cg.overrides.thirdPersonVertOffset < 0 )
 			{
@@ -2746,7 +2798,7 @@ extern cvar_t	*g_skippingcin;
 		}
 		else if ( ent->client->ps.viewangles[PITCH] < 0 )
 		{
-			cg.overrides.thirdPersonPitchOffset = ent->client->ps.viewangles[PITCH]*-0.75;
+			cg.overrides.thirdPersonPitchOffset = ent->client->ps.viewangles[PITCH]*-0.75f;
 			cg.overrides.thirdPersonVertOffset = 300+ent->client->ps.viewangles[PITCH]*-5;
 			if ( cg.overrides.thirdPersonVertOffset > 300 )
 			{

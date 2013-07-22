@@ -9,18 +9,35 @@
 #define qglBlendFunc glBlendFunc
 #define qglCallList glCallList
 #define qglCallLists glCallLists
+#ifdef HAVE_GLES
 #define qglClear glClear
+//#define qglClear myglClear
+#else
+#define qglClear glClear
+#endif
 #define qglClearAccum glClearAccum
 #define qglClearColor glClearColor
+#ifdef HAVE_GLES
+#define qglClearDepth glClearDepthf
+#else
 #define qglClearDepth glClearDepth
+#endif
 #define qglClearIndex glClearIndex
 #define qglClearStencil glClearStencil
+#ifdef HAVE_GLES
+#define qglClipPlane glClipPlanef
+#else
 #define qglClipPlane glClipPlane
+#endif
 #define qglColor3b glColor3b
 #define qglColor3bv glColor3bv
 #define qglColor3d glColor3d
 #define qglColor3dv glColor3dv
+#ifdef HAVE_GLES
+#define qglColor3f(r, g, b) glColor4f(r, g, b, 1.0f)
+#else
 #define qglColor3f glColor3f
+#endif
 #define qglColor3fv glColor3fv
 #define qglColor3i glColor3i
 #define qglColor3iv glColor3iv
@@ -43,7 +60,11 @@
 #define qglColor4s glColor4s
 #define qglColor4sv glColor4sv
 #define qglColor4ub glColor4ub
+#ifdef HAVE_GLES
+#define qglColor4ubv(a) glColor4ub((a)[0], (a)[1], (a)[2], (a)[3])
+#else
 #define qglColor4ubv glColor4ubv
+#endif
 #define qglColor4ui glColor4ui
 #define qglColor4uiv glColor4uiv
 #define qglColor4us glColor4us
@@ -61,7 +82,11 @@
 #define qglDeleteTextures glDeleteTextures
 #define qglDepthFunc glDepthFunc
 #define qglDepthMask glDepthMask
+#ifdef HAVE_GLES
+#define qglDepthRange glDepthRangef
+#else
 #define qglDepthRange glDepthRange
+#endif
 #define qglDisable glDisable
 #define qglDisableClientState glDisableClientState
 #define qglDrawArrays glDrawArrays
@@ -95,7 +120,11 @@
 #define qglFogi glFogi
 #define qglFogiv glFogiv
 #define qglFrontFace glFrontFace
+#ifdef HAVE_GLES
+#define qglFrustum glFrustumf
+#else
 #define qglFrustum glFrustum
+#endif
 #define qglGenLists glGenLists
 #define qglGenTextures glGenTextures
 #define qglGetBooleanv glGetBooleanv
@@ -186,7 +215,11 @@
 #define qglNormal3s glNormal3s
 #define qglNormal3sv glNormal3sv
 #define qglNormalPointer glNormalPointer
+#ifdef HAVE_GLES
+#define qglOrtho glOrthof
+#else
 #define qglOrtho glOrtho
+#endif
 #define qglPassThrough glPassThrough
 #define qglPixelMapfv glPixelMapfv
 #define qglPixelMapuiv glPixelMapuiv
@@ -298,7 +331,12 @@
 #define qglTexGeni glTexGeni
 #define qglTexGeniv glTexGeniv
 #define qglTexImage1D glTexImage1D
+/*SEB #define qglTexImage2D MyglTexImage2D*/ 
+#ifdef HAVE_GLES
 #define qglTexImage2D glTexImage2D
+#else
+#define qglTexImage2D glTexImage2D
+#endif
 #define qglTexParameterf glTexParameterf
 #define qglTexParameterfv glTexParameterfv
 #define qglTexParameteri glTexParameteri
@@ -332,5 +370,15 @@
 #define qglVertex4s glVertex4s
 #define qglVertex4sv glVertex4sv
 #define qglVertexPointer glVertexPointer
+#ifdef HAVE_GLES
 #define qglViewport glViewport
+//#define qglViewport myglViewport
+#else
+#define qglViewport glViewport
+#endif
 
+#ifdef HAVE_GLES
+//#define GL_BACK_LEFT 0x402
+//#define GL_BACK_RIGHT 0x403
+#define GL_CLAMP     GL_CLAMP_TO_EDGE
+#endif

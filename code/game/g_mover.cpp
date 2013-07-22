@@ -838,7 +838,7 @@ void Use_BinaryMover_Go( gentity_t *ent )
 			VectorScale( ent->s.pos.trDelta, fPartial, curDelta );
 			fPartial /= ent->s.pos.trDuration;
 			fPartial /= 0.001f;
-			fPartial = acos( fPartial );
+			fPartial = acosf( fPartial );
 			fPartial = RAD2DEG( fPartial );
 			fPartial = (90.0f - fPartial)/90.0f*ent->s.pos.trDuration;
 			partial = total - floor( fPartial );
@@ -872,7 +872,7 @@ void Use_BinaryMover_Go( gentity_t *ent )
 			VectorScale( ent->s.pos.trDelta, fPartial, curDelta );
 			fPartial /= ent->s.pos.trDuration;
 			fPartial /= 0.001f;
-			fPartial = acos( fPartial );
+			fPartial = acosf( fPartial );
 			fPartial = RAD2DEG( fPartial );
 			fPartial = (90.0f - fPartial)/90.0f*ent->s.pos.trDuration;
 			partial = total - floor( fPartial );
@@ -1444,9 +1444,9 @@ void SP_func_door (gentity_t *ent)
 	// calculate second position
 	gi.SetBrushModel( ent, ent->model );
 	G_SetMovedir( ent->s.angles, ent->movedir );
-	abs_movedir[0] = fabs( ent->movedir[0] );
-	abs_movedir[1] = fabs( ent->movedir[1] );
-	abs_movedir[2] = fabs( ent->movedir[2] );
+	abs_movedir[0] = fabsf( ent->movedir[0] );
+	abs_movedir[1] = fabsf( ent->movedir[1] );
+	abs_movedir[2] = fabsf( ent->movedir[2] );
 	VectorSubtract( ent->maxs, ent->mins, size );
 	distance = DotProduct( abs_movedir, size ) - lip;
 	VectorMA( ent->pos1, distance, ent->movedir, ent->pos2 );
@@ -1566,11 +1566,11 @@ void SpawnPlatTrigger( gentity_t *ent ) {
 	tmax[2] = ent->pos1[2] + ent->maxs[2] + 8;
 
 	if ( tmax[0] <= tmin[0] ) {
-		tmin[0] = ent->pos1[0] + (ent->mins[0] + ent->maxs[0]) *0.5;
+		tmin[0] = ent->pos1[0] + (ent->mins[0] + ent->maxs[0]) *0.5f;
 		tmax[0] = tmin[0] + 1;
 	}
 	if ( tmax[1] <= tmin[1] ) {
-		tmin[1] = ent->pos1[1] + (ent->mins[1] + ent->maxs[1]) *0.5;
+		tmin[1] = ent->pos1[1] + (ent->mins[1] + ent->maxs[1]) *0.5f;
 		tmax[1] = tmin[1] + 1;
 	}
 	
@@ -1706,9 +1706,9 @@ void SP_func_button( gentity_t *ent ) {
 	G_SpawnFloat( "lip", "4", &lip );
 
 	G_SetMovedir( ent->s.angles, ent->movedir );
-	abs_movedir[0] = fabs(ent->movedir[0]);
-	abs_movedir[1] = fabs(ent->movedir[1]);
-	abs_movedir[2] = fabs(ent->movedir[2]);
+	abs_movedir[0] = fabsf(ent->movedir[0]);
+	abs_movedir[1] = fabsf(ent->movedir[1]);
+	abs_movedir[2] = fabsf(ent->movedir[2]);
 	VectorSubtract( ent->maxs, ent->mins, size );
 	distance = abs_movedir[0] * size[0] + abs_movedir[1] * size[1] + abs_movedir[2] * size[2] - lip;
 	VectorMA (ent->pos1, distance, ent->movedir, ent->pos2);
@@ -2368,7 +2368,7 @@ void SP_func_bobbing (gentity_t *ent) {
 
 		// Now use the phase to calculate where it should be at the start.
 		ent->radius = phase;
-		phase = (float)sin( phase * M_PI * 2 );
+		phase = (float)sinf( phase * M_PI * 2 );
 		VectorMA( ent->s.pos.trBase, phase, ent->s.pos.trDelta, ent->s.pos.trBase );
 
 		if ( ent->targetname )
@@ -2418,12 +2418,12 @@ void SP_func_pendulum(gentity_t *ent) {
 	gi.SetBrushModel( ent, ent->model );
 
 	// find pendulum length
-	length = fabs( ent->mins[2] );
+	length = fabsf( ent->mins[2] );
 	if ( length < 8 ) {
 		length = 8;
 	}
 
-	freq = 1 / ( M_PI * 2 ) * sqrt( g_gravity->value / ( 3 * length ) );
+	freq = 1 / ( M_PI * 2 ) * sqrtf( g_gravity->value / ( 3 * length ) );
 
 	ent->s.pos.trDuration = ( 1000 / freq );
 

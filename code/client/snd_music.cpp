@@ -252,7 +252,7 @@ static qboolean Music_ParseMusic(CGenericParser2 &Parser, MusicData_t &MusicData
 						{
 							float fThisEntryTime = (*itEntryTimes).second;
 
-							if (fabs(fThisEntryTime - MusicExitTime.fTime) < 1.5f)
+							if (fabsf(fThisEntryTime - MusicExitTime.fTime) < 1.5f)
 							{
 //								bTooCloseToEntryPoint = qtrue;	// not sure about this, ignore for now
 								break;
@@ -933,7 +933,7 @@ qboolean Music_AllowedToTransition( float			fPlayingTimeElapsed,
 		{
 			MusicExitTime_t *pExitTime = &(*it);
 			
-			if ( fabs(pExitTime->fTime - fPlayingTimeElapsed) <= fTimeEpsilon )
+			if ( fabsf(pExitTime->fTime - fPlayingTimeElapsed) <= fTimeEpsilon )
 			{
 				// got an exit point!, work out feedback params...
 				//

@@ -227,7 +227,7 @@ static void turret_aim( gentity_t *self )
 	if ( diffYaw )
 	{
 		// cap max speed....
-		if ( fabs(diffYaw) > 14.0f )
+		if ( fabsf(diffYaw) > 14.0f )
 		{
 			diffYaw = ( diffYaw >= 0 ? 14.0f : -14.0f );
 		}
@@ -243,7 +243,7 @@ static void turret_aim( gentity_t *self )
 
 	if ( diffPitch )
 	{
-		if ( fabs(diffPitch) > 3.0f )
+		if ( fabsf(diffPitch) > 3.0f )
 		{
 			// cap max speed
 			self->speed += (diffPitch > 0.0f) ? -3.0f : 3.0f;
@@ -368,7 +368,7 @@ static qboolean turret_find_enemies( gentity_t *self )
 		trace_t	tr;
 		gi.trace( &tr, org2, NULL, NULL, org, self->s.number, MASK_SHOT, (EG2_Collision)0, 0 );
 
-		if ( !tr.allsolid && !tr.startsolid && ( tr.fraction == 1.0 || tr.entityNum == target->s.number ))
+		if ( !tr.allsolid && !tr.startsolid && ( tr.fraction == 1.0f || tr.entityNum == target->s.number ))
 		{
 			// Only acquire if have a clear shot, Is it in range and closer than our best?
 			VectorSubtract( target->currentOrigin, self->currentOrigin, enemyDir );
@@ -747,7 +747,7 @@ void laser_arm_fire (gentity_t *ent)
 	ent->fly_sound_debounce_time = level.time;//used as lastShotTime
 
 	// Only deal damage when in alt-fire mode
-	if ( trace.fraction < 1.0 && ent->alt_fire )
+	if ( trace.fraction < 1.0f && ent->alt_fire )
 	{
 		if ( trace.entityNum < ENTITYNUM_WORLD )
 		{
@@ -1118,7 +1118,7 @@ static qboolean pas_find_enemies( gentity_t *self )
 		trace_t	tr;
 		gi.trace( &tr, org2, NULL, NULL, org, self->s.number, MASK_SHOT, (EG2_Collision)0, 0 );
 
-		if ( !tr.allsolid && !tr.startsolid && ( tr.fraction == 1.0 || tr.entityNum == target->s.number ))
+		if ( !tr.allsolid && !tr.startsolid && ( tr.fraction == 1.0f || tr.entityNum == target->s.number ))
 		{
 			// Only acquire if have a clear shot, Is it in range and closer than our best?
 			VectorSubtract( target->currentOrigin, self->currentOrigin, enemyDir );
@@ -1278,14 +1278,14 @@ void pas_think( gentity_t *ent )
 	else
 	{
 		// no enemy, so make us slowly sweep back and forth as if searching for a new one
-		diffYaw = sin( level.time * 0.0001f + ent->count ) * 2.0f;
+		diffYaw = sinf( level.time * 0.0001f + ent->count ) * 2.0f;
 	}
 
-	if ( fabs(diffYaw) > 0.25f )
+	if ( fabsf(diffYaw) > 0.25f )
 	{
 		moved = qtrue;
 
-		if ( fabs(diffYaw) > 10.0f )
+		if ( fabsf(diffYaw) > 10.0f )
 		{
 			// cap max speed
 			ent->speed += (diffYaw > 0.0f) ? -10.0f : 10.0f;
@@ -1298,11 +1298,11 @@ void pas_think( gentity_t *ent )
 	}
 
 
-	if ( fabs(diffPitch) > 0.25f )
+	if ( fabsf(diffPitch) > 0.25f )
 	{
 		moved = qtrue;
 
-		if ( fabs(diffPitch) > 4.0f )
+		if ( fabsf(diffPitch) > 4.0f )
 		{
 			// cap max speed
 			ent->random += (diffPitch > 0.0f) ? -4.0f : 4.0f;

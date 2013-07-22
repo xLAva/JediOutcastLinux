@@ -1496,7 +1496,7 @@ static void CG_RegisterGraphics( void ) {
 		cgs.inlineDrawModel[i] = cgi_R_RegisterModel( name );
 		cgi_R_ModelBounds( cgs.inlineDrawModel[i], mins, maxs );
 		for ( j = 0 ; j < 3 ; j++ ) {
-			cgs.inlineModelMidpoints[i][j] = mins[j] + 0.5 * ( maxs[j] - mins[j] );
+			cgs.inlineModelMidpoints[i][j] = mins[j] + 0.5f * ( maxs[j] - mins[j] );
 		}
 	}
 
@@ -1576,7 +1576,6 @@ Ghoul2 Insert End
 			}
 		}
 	}
-
 
 	cg.loadLCARSStage = 9;
 
@@ -2937,7 +2936,7 @@ void CG_DrawInventorySelect( void )
 	// Work backwards from current icon
 	holdX = x - ((bigIconSize/2) + pad + smallIconSize);
 	height = smallIconSize * cg.iconHUDPercent;
-	addX = (float) smallIconSize * .75;
+	addX = (float) smallIconSize * .75f;
 
 	for (iconCnt=0;iconCnt<sideLeftIconCnt;i--)
 	{
@@ -2972,7 +2971,7 @@ void CG_DrawInventorySelect( void )
 	{
 		cgi_R_SetColor(NULL);
 		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, inv_icons[cg.inventorySelect] );
-		addX = (float) bigIconSize * .75;
+		addX = (float) bigIconSize * .75f;
 		cgi_R_SetColor(colorTable[CT_ICON_BLUE]);
 		CG_DrawNumField ((x-(bigIconSize/2)) + addX, y, 2, cg.snap->ps.inventory[cg.inventorySelect], 6, 12, 
 			NUM_FONT_SMALL,qfalse);
@@ -3014,7 +3013,7 @@ void CG_DrawInventorySelect( void )
 	// Work forwards from current icon
 	holdX = x + (bigIconSize/2) + pad;
 	height = smallIconSize * cg.iconHUDPercent;
-	addX = (float) smallIconSize * .75;
+	addX = (float) smallIconSize * .75f;
 	for (iconCnt=0;iconCnt<sideRightIconCnt;i++)
 	{
 		if (i> INV_MAX-1)
@@ -3136,7 +3135,7 @@ void CG_DrawDataPadInventorySelect( void )
 	// Work backwards from current icon
 	holdX = x - ((bigIconSize/2) + pad + smallIconSize);
 	height = smallIconSize * cg.iconHUDPercent;
-	addX = (float) smallIconSize * .75;
+	addX = (float) smallIconSize * .75f;
 
 	for (iconCnt=0;iconCnt<sideLeftIconCnt;i--)
 	{
@@ -3171,7 +3170,7 @@ void CG_DrawDataPadInventorySelect( void )
 	{
 		cgi_R_SetColor(NULL);
 		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, inv_icons[cg.DataPadInventorySelect] );
-		addX = (float) bigIconSize * .75;
+		addX = (float) bigIconSize * .75f;
 		cgi_R_SetColor(colorTable[CT_ICON_BLUE]);
 		CG_DrawNumField ((x-(bigIconSize/2)) + addX, y, 2, cg.snap->ps.inventory[cg.DataPadInventorySelect], 6, 12, 
 			NUM_FONT_SMALL,qfalse);
@@ -3199,7 +3198,7 @@ void CG_DrawDataPadInventorySelect( void )
 	// Work forwards from current icon
 	holdX = x + (bigIconSize/2) + pad;
 	height = smallIconSize * cg.iconHUDPercent;
-	addX = (float) smallIconSize * .75;
+	addX = (float) smallIconSize * .75f;
 	for (iconCnt=0;iconCnt<sideRightIconCnt;i++)
 	{
 		if (i> INV_MAX-1)

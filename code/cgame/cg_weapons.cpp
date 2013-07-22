@@ -100,14 +100,17 @@ void CG_RegisterWeapon( int weaponNum ) {
 	// calc midpoint for rotation
 	cgi_R_ModelBounds( weaponInfo->weaponModel, mins, maxs );
 	for ( i = 0 ; i < 3 ; i++ ) {
-		weaponInfo->weaponMidpoint[i] = mins[i] + 0.5 * ( maxs[i] - mins[i] );
+		weaponInfo->weaponMidpoint[i] = mins[i] + 0.5f * ( maxs[i] - mins[i] );
 	}
 
 	// setup the shader we will use for the icon
 	if (weaponData[weaponNum].weaponIcon[0])
 	{
 		weaponInfo->weaponIcon = cgi_R_RegisterShaderNoMip( weaponData[weaponNum].weaponIcon);
-		weaponInfo->weaponIconNoAmmo = cgi_R_RegisterShaderNoMip( va("%s_na",weaponData[weaponNum].weaponIcon));
+		char buff[1024];
+		sprintf(buff, "%s_na",weaponData[weaponNum].weaponIcon);
+		weaponInfo->weaponIconNoAmmo = cgi_R_RegisterShaderNoMip( buff );
+//		weaponInfo->weaponIconNoAmmo = cgi_R_RegisterShaderNoMip( va("%s_na",weaponData[weaponNum].weaponIcon));
 	}
 
 	for ( ammo = bg_itemlist + 1 ; ammo->classname ; ammo++ ) {	
@@ -576,7 +579,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 		theFxScheduler.RegisterEffect( "blaster/deflect" );
 		theFxScheduler.RegisterEffect( "blaster/smoke_bolton" ); // note: this will be called game side
 		break;
-	}
+	}	
 }
 
 /*
@@ -604,6 +607,7 @@ void CG_RegisterItemVisuals( int itemNum ) {
 
 	if ( item->icon && item->icon[0] )
 	{
+//if (item->giType==IT_AMMO)
 		itemInfo->icon = cgi_R_RegisterShaderNoMip( item->icon );
 	}
 	else
@@ -795,16 +799,16 @@ void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	}
 
 	// gun angles from bobbing
-	angles[ROLL] += scale * cg.bobfracsin * 0.0075;
-	angles[YAW] += scale * cg.bobfracsin * 0.01;
-	angles[PITCH] += cg.xyspeed * cg.bobfracsin * 0.0075;
+	angles[ROLL] += scale * cg.bobfracsin * 0.0075f;
+	angles[YAW] += scale * cg.bobfracsin * 0.01f;
+	angles[PITCH] += cg.xyspeed * cg.bobfracsin * 0.0075f;
 
 	// drop the weapon when landing
 	delta = cg.time - cg.landTime;
 	if ( delta < LAND_DEFLECT_TIME ) {
-		origin[2] += cg.landChange*0.25 * delta / LAND_DEFLECT_TIME;
+		origin[2] += cg.landChange*0.25f * delta / LAND_DEFLECT_TIME;
 	} else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME ) {
-		origin[2] += cg.landChange*0.25 * 
+		origin[2] += cg.landChange*0.25f * 
 			(LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME;
 	}
 
@@ -812,18 +816,18 @@ void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	// drop the weapon when stair climbing
 	delta = cg.time - cg.stepTime;
 	if ( delta < STEP_TIME/2 ) {
-		origin[2] -= cg.stepChange*0.25 * delta / (STEP_TIME/2);
+		origin[2] -= cg.stepChange*0.25f * delta / (STEP_TIME/2);
 	} else if ( delta < STEP_TIME ) {
-		origin[2] -= cg.stepChange*0.25 * (STEP_TIME - delta) / (STEP_TIME/2);
+		origin[2] -= cg.stepChange*0.25f * (STEP_TIME - delta) / (STEP_TIME/2);
 	}
 #endif
 
 	// idle drift
 	scale = /*cg.xyspeed + */40;
-	fracsin = sin( cg.time * 0.001 );
-	angles[ROLL] += scale * fracsin * 0.01;
-	angles[YAW] += scale * fracsin * 0.01;
-	angles[PITCH] += (scale * 0.5f ) * fracsin * 0.01;
+	fracsin = sinf( cg.time * 0.001f );
+	angles[ROLL] += scale * fracsin * 0.01f;
+	angles[YAW] += scale * fracsin * 0.01f;
+	angles[PITCH] += (scale * 0.5f ) * fracsin * 0.01f;
 }
 
 /*
@@ -1029,7 +1033,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	if ( actualFOV > 80 ) 
 	{
-		fovOffset = -0.1 * ( actualFOV - 80 );
+		fovOffset = -0.1f * ( actualFOV - 80 );
 	} 
 	else 
 	{
@@ -1040,7 +1044,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	{
 		//add leaning offset
 		leanOffset = cg.snap->ps.leanofs * 0.25f;
-		fovOffset += fabs(cg.snap->ps.leanofs) * -0.1f;
+		fovOffset += fabsf(cg.snap->ps.leanofs) * -0.1f;
 	}
 	else
 	{
@@ -1089,7 +1093,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 		{
 			hand.oldframe = CG_MapTorsoToWeaponFrame( ci,floor(currentFrame), torsoAnim, cent->currentState.weapon, ( cent->currentState.eFlags & EF_FIRING ) );
 			hand.frame = CG_MapTorsoToWeaponFrame( ci,ceil(currentFrame), torsoAnim, cent->currentState.weapon, ( cent->currentState.eFlags & EF_FIRING ) );
-			hand.backlerp=1.0f-(currentFrame-floor(currentFrame));
+			hand.backlerp=1.0f-(currentFrame-floorf(currentFrame));
 			if ( cg_debugAnim.integer == 1 && cent->currentState.clientNum == 0 )
 			{
 				Com_Printf( "Torso frame %d to %d makes Weapon frame %d to %d\n", cent->pe.torso.oldFrame,  cent->pe.torso.frame, hand.oldframe, hand.frame );
@@ -1128,7 +1132,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 		CG_GetTagWorldPosition( &gun, "tag_flash", org_, axis_ );
 		if ( cent->gent->client->ps.saberActive && cent->gent->client->ps.saberLength < cent->gent->client->ps.saberLengthMax )
 		{
-			cent->gent->client->ps.saberLength += cg.frametime*0.03;
+			cent->gent->client->ps.saberLength += cg.frametime*0.03f;
 			if ( cent->gent->client->ps.saberLength > cent->gent->client->ps.saberLengthMax )
 			{
 				cent->gent->client->ps.saberLength = cent->gent->client->ps.saberLengthMax;
@@ -1682,6 +1686,7 @@ void CG_DrawDataPadWeaponSelect( void )
 */
 
 	cgi_R_SetColor( NULL );
+
 }
 
 /*
@@ -2119,7 +2124,7 @@ extern qboolean Q3_TaskIDPending( gentity_t *ent, taskID_t taskType );
 			{//not waiting on a scripted sound to finish
 				if( !jumping )
 				{
-					if( randomLava() > 0.5 )
+					if( randomLava() > 0.5f )
 					{
 						G_SoundOnEnt( player, CHAN_VOICE, va( "sound/chars/kyle/09kyk015.wav" ));
 					}

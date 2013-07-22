@@ -1590,10 +1590,10 @@ void Menu_TransitionItemByName(menuDef_t *menu, const char *p, rectDef_t rectFro
 			
 			printf("x %f - %f, y %f - %f, w %f - %f, h %f - %f\n", rectTo.x, rectFrom.x, rectTo.y, rectFrom.y, rectTo.w, rectFrom.w, rectTo.h, rectFrom.h);
 			
-			item->window.rectEffects2.x = fabs(rectTo.x - rectFrom.x) / amt;
-			item->window.rectEffects2.y = fabs(rectTo.y - rectFrom.y) / amt;
-			item->window.rectEffects2.w = fabs(rectTo.w - rectFrom.w) / amt;
-			item->window.rectEffects2.h = fabs(rectTo.h - rectFrom.h) / amt;
+			item->window.rectEffects2.x = fabsf(rectTo.x - rectFrom.x) / amt;
+			item->window.rectEffects2.y = fabsf(rectTo.y - rectFrom.y) / amt;
+			item->window.rectEffects2.w = fabsf(rectTo.w - rectFrom.w) / amt;
+			item->window.rectEffects2.h = fabsf(rectTo.h - rectFrom.h) / amt;
 			Item_UpdatePosition(item);
 		}
 	}
@@ -4136,6 +4136,18 @@ static bind_t g_bindings[] =
 	{"force_heal",		A_F5,				-1,		-1,		-1},
 	{"+force_grip",		A_F6,				-1,		-1,		-1},
 	{"+force_lightning",A_F7,				-1,		-1,		-1},
+	#ifdef PANDORA
+	{"+useforce",		A_HOME,				-1,		-1,		-1},
+	{"forceprev",		'o',				-1,		-1,		-1},
+	{"forcenext",		'p',				-1,		-1,		-1},
+	{"use_bacta",		'b',				-1,		-1,		-1},
+	{"use_seeker",		'h',				-1,		-1,		-1},
+	{"use_sentry",		'k'					-1,		-1,		-1},
+	{"use_lightamp_goggles",'j',			-1,		-1,		-1},
+	{"use_electrobinoculars",'g',			-1,		-1,		-1},
+	{"invnext",			'.',				-1,		-1,		-1},
+	{"invprev",			',',				-1,		-1,		-1},
+	#else
 	{"+useforce",		'f',				-1,		-1,		-1},
 	{"forceprev",		'z',				-1,		-1,		-1},
 	{"forcenext",		'x',				-1,		-1,		-1},
@@ -4146,21 +4158,36 @@ static bind_t g_bindings[] =
 	{"use_electrobinoculars",-1,			-1,		-1,		-1},
 	{"invnext",			-1,					-1,		-1,		-1},
 	{"invprev",			-1,					-1,		-1,		-1},
+	#endif
 	{"invuse",			-1,					-1,		-1,		-1},
 	{"+speed", 			A_SHIFT,			-1,		-1,		-1},
 	{"+forward", 		A_CURSOR_UP,		-1,		-1,		-1},
 	{"+back", 			A_CURSOR_DOWN,		-1,		-1,		-1},
+	#ifdef PANDORA
+	{"+moveleft", 		-1,					-1,		-1,		-1},
+	{"+moveright",		-1,					-1,		-1,		-1},
+	{"+moveup",			A_PAGE_DOWN,		-1,		-1,		-1},
+	{"+movedown",		-1,					-1,		-1,		-1},
+	#else
 	{"+moveleft", 		',',				-1,		-1,		-1},
 	{"+moveright",		'.',				-1,		-1,		-1},
 	{"+moveup",			'v',				-1,		-1,		-1},
 	{"+movedown",		'c',				-1,		-1,		-1},
+	#endif
 	{"+left", 			A_CURSOR_LEFT,		-1,		-1,		-1},
 	{"+right", 			A_CURSOR_RIGHT,		-1,		-1,		-1},
 	{"+strafe", 		A_ALT,				-1,		-1,		-1},
+	#ifdef PANDORA
+	{"+lookup", 		-1,					-1,		-1,		-1},
+	{"+lookdown",		A_DELETE,			-1,		-1,		-1},
+	{"+mlook", 			 '/',				-1,		-1,		-1},
+	{"centerview",		-1,					-1,		-1,		-1},
+	#else
 	{"+lookup", 		A_PAGE_DOWN,		-1,		-1,		-1},
 	{"+lookdown",		A_DELETE,			-1,		-1,		-1},
 	{"+mlook", 			 '/',				-1,		-1,		-1},
 	{"centerview",		A_END,				-1,		-1,		-1},
+	#endif
 	{"zoom", 			-1,					-1,		-1,		-1},
 	{"weapon 0",		-1,					-1,		-1,		-1},
 	{"weapon 1",		'1',				-1,		-1,		-1},
@@ -4177,16 +4204,29 @@ static bind_t g_bindings[] =
 	{"weapon 12",		-1,					-1,		-1,		-1},
 	{"weapon 13",		-1,					-1,		-1,		-1},
 	{"+attack", 		A_CTRL,				-1,		-1,		-1},
+	#ifdef PANDORA
+	{"+altattack", 		A_SHIFT,					-1,		-1,		-1},
+	{"weapprev",		'q',				-1,		-1,		-1},
+	{"weapnext", 		'w',				-1,		-1,		-1},
+	{"+block", 			-1,					-1,		-1,		-1},
+	{"+use",			A_PAGE_UP,			-1,		-1,		-1},
+	{"datapad",			A_SPACE,			-1,		-1,		-1},
+	#else
 	{"+altattack", 		-1,					-1,		-1,		-1},
 	{"weapprev",		'[',				-1,		-1,		-1},
 	{"weapnext", 		']',				-1,		-1,		-1},
 	{"+block", 			-1,					-1,		-1,		-1},
 	{"+use",			A_SPACE,			-1,		-1,		-1},
 	{"datapad",			A_TAB,				-1,		-1,		-1},
+	#endif
 	{"save quik*",		A_F9,				-1,		-1,		-1},
 	{"load quik",		-1,					-1,		-1,		-1},
 	{"load auto",		-1,					-1,		-1,		-1},
+	#ifdef PANDORA
+	{"cg_thirdperson !",'m',				-1,		-1,		-1},
+	#else
 	{"cg_thirdperson !",'p',				-1,		-1,		-1},
+	#endif
 	{"exitview",		-1,					-1,		-1,		-1},
 	{"uimenu ingameloadmenu",	A_F10,		-1,		-1,		-1},
 	{"uimenu ingamesavemenu",	A_F11,		-1,		-1,		-1},
@@ -4781,18 +4821,18 @@ Item_TextColor
 void Item_TextColor(itemDef_t *item, vec4_t *newColor) 
 {
 	vec4_t lowLight;
-	const vec4_t greyColor = { .5, .5, .5, 1};
+	const vec4_t greyColor = { .5f, .5f, .5f, 1};
 	menuDef_t *parent = (menuDef_t*)item->parent;
 
 	Fade(&item->window.flags, &item->window.foreColor[3], parent->fadeClamp, &item->window.nextTime, parent->fadeCycle, qtrue, parent->fadeAmount);
 
 	if (item->window.flags & WINDOW_HASFOCUS) 
 	{
-		lowLight[0] = 0.8 * parent->focusColor[0]; 
-		lowLight[1] = 0.8 * parent->focusColor[1]; 
-		lowLight[2] = 0.8 * parent->focusColor[2]; 
-		lowLight[3] = 0.8 * parent->focusColor[3]; 
-		LerpColor(parent->focusColor,lowLight,*newColor,0.5+0.5*sin(DC->realTime / PULSE_DIVISOR));
+		lowLight[0] = 0.8f * parent->focusColor[0]; 
+		lowLight[1] = 0.8f * parent->focusColor[1]; 
+		lowLight[2] = 0.8f * parent->focusColor[2]; 
+		lowLight[3] = 0.8f * parent->focusColor[3]; 
+		LerpColor(parent->focusColor,lowLight,*newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 	} 
 /*	else if (item->textStyle == ITEM_TEXTSTYLE_BLINK && !((DC->realTime/BLINK_DIVISOR) & 1)) 
 	{
@@ -5041,11 +5081,11 @@ void Item_TextField_Paint(itemDef_t *item)
 
 	if (item->window.flags & WINDOW_HASFOCUS) 
 	{
-		lowLight[0] = 0.8 * parent->focusColor[0]; 
-		lowLight[1] = 0.8 * parent->focusColor[1]; 
-		lowLight[2] = 0.8 * parent->focusColor[2]; 
-		lowLight[3] = 0.8 * parent->focusColor[3]; 
-		LerpColor(parent->focusColor,lowLight,newColor,0.5+0.5*sin(DC->realTime / PULSE_DIVISOR));
+		lowLight[0] = 0.8f * parent->focusColor[0]; 
+		lowLight[1] = 0.8f * parent->focusColor[1]; 
+		lowLight[2] = 0.8f * parent->focusColor[2]; 
+		lowLight[3] = 0.8f * parent->focusColor[3]; 
+		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 	} 
 	else 
 	{
@@ -5343,7 +5383,7 @@ void Item_Bind_Paint(itemDef_t *item)
 			lowLight[2] = 0.8f * parent->focusColor[2]; 
 			lowLight[3] = 0.8f * parent->focusColor[3]; 
 		}
-		LerpColor(parent->focusColor,lowLight,newColor,0.5+0.5*sin(DC->realTime / PULSE_DIVISOR));
+		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 	} 
 	else 
 	{
@@ -5419,14 +5459,14 @@ void Item_Model_Paint(itemDef_t *item)
 
 	DC->modelBounds( item->asset, mins, maxs );
 
-	origin[2] = -0.5 * ( mins[2] + maxs[2] );
-	origin[1] = 0.5 * ( mins[1] + maxs[1] );
+	origin[2] = -0.5f * ( mins[2] + maxs[2] );
+	origin[1] = 0.5f * ( mins[1] + maxs[1] );
 
 	// calculate distance so the model nearly fills the box
 	if (qtrue) 
 	{
-		float len = 0.5 * ( maxs[2] - mins[2] );		
-		origin[0] = len / 0.268;	// len / tan( fov/2 )
+		float len = 0.5f * ( maxs[2] - mins[2] );		
+		origin[0] = len / 0.268f;	// len / tan( fov/2 )
 		//origin[0] = len / tan(w/2);
 	} 
 	else 
@@ -5524,19 +5564,19 @@ void Item_OwnerDraw_Paint(itemDef_t *item)
 
 		if (item->window.flags & WINDOW_HASFOCUS) 
 		{
-			lowLight[0] = 0.8 * parent->focusColor[0]; 
-			lowLight[1] = 0.8 * parent->focusColor[1]; 
-			lowLight[2] = 0.8 * parent->focusColor[2]; 
-			lowLight[3] = 0.8 * parent->focusColor[3]; 
-			LerpColor(parent->focusColor,lowLight,color,0.5+0.5*sin(DC->realTime / PULSE_DIVISOR));
+			lowLight[0] = 0.8f * parent->focusColor[0]; 
+			lowLight[1] = 0.8f * parent->focusColor[1]; 
+			lowLight[2] = 0.8f * parent->focusColor[2]; 
+			lowLight[3] = 0.8f * parent->focusColor[3]; 
+			LerpColor(parent->focusColor,lowLight,color,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 		} 
 		else if (item->textStyle == ITEM_TEXTSTYLE_BLINK && !((DC->realTime/BLINK_DIVISOR) & 1)) 
 		{
-			lowLight[0] = 0.8 * item->window.foreColor[0]; 
-			lowLight[1] = 0.8 * item->window.foreColor[1]; 
-			lowLight[2] = 0.8 * item->window.foreColor[2]; 
-			lowLight[3] = 0.8 * item->window.foreColor[3]; 
-			LerpColor(item->window.foreColor,lowLight,color,0.5+0.5*sin(DC->realTime / PULSE_DIVISOR));
+			lowLight[0] = 0.8f * item->window.foreColor[0]; 
+			lowLight[1] = 0.8f * item->window.foreColor[1]; 
+			lowLight[2] = 0.8f * item->window.foreColor[2]; 
+			lowLight[3] = 0.8f * item->window.foreColor[3]; 
+			LerpColor(item->window.foreColor,lowLight,color,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 		}
 
 		if (item->cvarFlags & (CVAR_ENABLE | CVAR_DISABLE) && !Item_EnableShowViaCvar(item, CVAR_ENABLE)) 
@@ -5568,11 +5608,11 @@ void Item_YesNo_Paint(itemDef_t *item)
 
 	if (item->window.flags & WINDOW_HASFOCUS) 
 	{
-		lowLight[0] = 0.8 * parent->focusColor[0]; 
-		lowLight[1] = 0.8 * parent->focusColor[1]; 
-		lowLight[2] = 0.8 * parent->focusColor[2]; 
-		lowLight[3] = 0.8 * parent->focusColor[3]; 
-		LerpColor(parent->focusColor,lowLight,newColor,0.5+0.5*sin(DC->realTime / PULSE_DIVISOR));
+		lowLight[0] = 0.8f * parent->focusColor[0]; 
+		lowLight[1] = 0.8f * parent->focusColor[1]; 
+		lowLight[2] = 0.8f * parent->focusColor[2]; 
+		lowLight[3] = 0.8f * parent->focusColor[3]; 
+		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 	} 
 	else 
 	{
@@ -5606,11 +5646,11 @@ void Item_Multi_Paint(itemDef_t *item)
 
 	if (item->window.flags & WINDOW_HASFOCUS) 
 	{
-		lowLight[0] = 0.8 * parent->focusColor[0]; 
-		lowLight[1] = 0.8 * parent->focusColor[1]; 
-		lowLight[2] = 0.8 * parent->focusColor[2]; 
-		lowLight[3] = 0.8 * parent->focusColor[3]; 
-		LerpColor(parent->focusColor,lowLight,newColor,0.5+0.5*sin(DC->realTime / PULSE_DIVISOR));
+		lowLight[0] = 0.8f * parent->focusColor[0]; 
+		lowLight[1] = 0.8f * parent->focusColor[1]; 
+		lowLight[2] = 0.8f * parent->focusColor[2]; 
+		lowLight[3] = 0.8f * parent->focusColor[3]; 
+		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 	} 
 	else 
 	{
@@ -5741,11 +5781,11 @@ void Item_Slider_Paint(itemDef_t *item)
 
 	if (item->window.flags & WINDOW_HASFOCUS) 
 	{
-		lowLight[0] = 0.8 * parent->focusColor[0]; 
-		lowLight[1] = 0.8 * parent->focusColor[1]; 
-		lowLight[2] = 0.8 * parent->focusColor[2]; 
-		lowLight[3] = 0.8 * parent->focusColor[3]; 
-		LerpColor(parent->focusColor,lowLight,newColor,0.5+0.5*sin(DC->realTime / PULSE_DIVISOR));
+		lowLight[0] = 0.8f * parent->focusColor[0]; 
+		lowLight[1] = 0.8f * parent->focusColor[1]; 
+		lowLight[2] = 0.8f * parent->focusColor[2]; 
+		lowLight[3] = 0.8f * parent->focusColor[3]; 
+		LerpColor(parent->focusColor,lowLight,newColor,0.5f+0.5f*sinf(DC->realTime / PULSE_DIVISOR));
 	} 
 	else 
 	{
@@ -5802,8 +5842,8 @@ void Item_Paint(itemDef_t *item)
 			rx = item->window.rectClient.x + w - item->window.rectEffects.x;
 			ry = item->window.rectClient.y + h - item->window.rectEffects.y;
 			a = (float) (3 * M_PI / 180);
-  			c = cos(a);
-			s = sin(a);
+  			c = cosf(a);
+			s = sinf(a);
 			item->window.rectClient.x = (rx * c - ry * s) + item->window.rectEffects.x - w;
 			item->window.rectClient.y = (rx * s + ry * c) + item->window.rectEffects.y - h;
 			Item_UpdatePosition(item);
@@ -6108,9 +6148,9 @@ void LerpColor(vec4_t a, vec4_t b, vec4_t c, float t)
 		{
 			c[i] = 0;
 		}
-		else if (c[i] > 1.0)
+		else if (c[i] > 1.0f)
 		{
-			c[i] = 1.0;
+			c[i] = 1.0f;
 		}
 	}
 }
@@ -6130,7 +6170,7 @@ void Fade(int *flags, float *f, float clamp, int *nextTime, int offsetTime, qboo
 			if (*flags & WINDOW_FADINGOUT) 
 			{
 				*f -= fadeAmount;
-				if (bFlags && *f <= 0.0) 
+				if (bFlags && *f <= 0.0f) 
 				{
 					*flags &= ~(WINDOW_FADINGOUT | WINDOW_VISIBLE);
 				}

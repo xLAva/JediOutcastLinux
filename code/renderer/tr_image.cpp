@@ -52,7 +52,7 @@ return a hash value for the filename
 */
 long generateHashValue( const char *fname ) {
 	int		i;
-	long	hash;
+	unsigned long	hash;
 	char	letter;
 
 	hash = 0;
@@ -61,7 +61,7 @@ long generateHashValue( const char *fname ) {
 		letter = tolower(fname[i]);
 		if (letter =='.') break;				// don't include extension
 		if (letter =='\\') letter = '/';		// damn path names
-		hash+=(long)(letter)*(i+119);
+		hash+=(unsigned long)(letter)*(i+119);
 		i++;
 	}
 	hash &= (FILE_HASH_SIZE-1);
@@ -148,13 +148,20 @@ static float R_BytesPerTex (int format)
 		break;
 	case 3:
 		//"RGB  " 
+		#ifdef HAVE_GLES
+		return 3;
+		#else
 		return glConfig.colorBits/8.0f;
+		#endif
 		break;
 	case 4:
 		//"RGBA " 
+		#ifdef HAVE_GLES
+		return 4;
+		#else
 		return glConfig.colorBits/8.0f;
+		#endif
 		break;
-		
 	case GL_RGBA4:
 		//"RGBA4" 
 		return 2;
@@ -164,6 +171,7 @@ static float R_BytesPerTex (int format)
 		return 2;
 		break;
 		
+#ifndef HAVE_GLES		
 	case GL_RGBA8:
 		//"RGBA8" 
 		return 4;
@@ -185,6 +193,7 @@ static float R_BytesPerTex (int format)
 		//"DXT5 " 
 		return 1;
 		break;
+#endif
 	default:
 		//"???? " 
 		return 4;
@@ -254,6 +263,7 @@ void R_ImageList_f( void ) {
 		case 4:
 			ri.Printf( PRINT_ALL, "RGBA " );
 			break;
+#ifndef HAVE_GLES			
 		case GL_RGBA8:
 			ri.Printf( PRINT_ALL, "RGBA8" );
 			break;
@@ -269,6 +279,7 @@ void R_ImageList_f( void ) {
 		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
 			ri.Printf( PRINT_ALL, "DXT5 " );
 			break;
+#endif
 		case GL_RGBA4:
 			ri.Printf( PRINT_ALL, "RGBA4" );
 			break;
@@ -286,9 +297,11 @@ void R_ImageList_f( void ) {
 		case GL_CLAMP:
 			ri.Printf( PRINT_ALL, "clmp " );
 			break;
+#ifndef HAVE_GLES
 		case GL_CLAMP_TO_EDGE:
 			ri.Printf( PRINT_ALL, "clpE " );
 			break;
+#endif
 		default:
 			ri.Printf( PRINT_ALL, "%4i ", image->wrapClampMode );
 			break;
@@ -315,7 +328,7 @@ Scale up the pixel values in a texture to increase the
 lighting range
 ================
 */
-static void R_LightScaleTexture (unsigned *in, int inwidth, int inheight, qboolean only_gamma )
+static void R_LightScaleTexture (unsigned *in, int inwidth, int inheight, qboolean only_gamma, int step=4 )
 {
 	if ( only_gamma )
 	{
@@ -327,7 +340,7 @@ static void R_LightScaleTexture (unsigned *in, int inwidth, int inheight, qboole
 			p = (byte *)in;
 
 			c = inwidth*inheight;
-			for (i=0 ; i<c ; i++, p+=4)
+			for (i=0 ; i<c ; i++, p+=step)
 			{
 				p[0] = s_gammatable[p[0]];
 				p[1] = s_gammatable[p[1]];
@@ -346,7 +359,7 @@ static void R_LightScaleTexture (unsigned *in, int inwidth, int inheight, qboole
 
 		if ( glConfig.deviceSupportsGamma )
 		{
-			for (i=0 ; i<c ; i++, p+=4)
+			for (i=0 ; i<c ; i++, p+=step)
 			{
 				p[0] = s_intensitytable[p[0]];
 				p[1] = s_intensitytable[p[1]];
@@ -355,7 +368,7 @@ static void R_LightScaleTexture (unsigned *in, int inwidth, int inheight, qboole
 		}
 		else
 		{
-			for (i=0 ; i<c ; i++, p+=4)
+			for (i=0 ; i<c ; i++, p+=step)
 			{
 				p[0] = s_gammatable[s_intensitytable[p[0]]];
 				p[1] = s_gammatable[s_intensitytable[p[1]]];
@@ -513,6 +526,84 @@ byte	mipBlendColors[16][4] = {
 	{0,0,255,128},
 };
 
+#ifdef HAVE_GLES
+// helper function for GLES format conversions
+byte * gles_convertRGB(byte * data, int width, int height)
+{
+	byte * temp = (byte *) ri.Malloc (width*height*3, TAG_TEMP_WORKSPACE, qfalse);
+	byte *src = data;
+	byte *dst = temp;
+	
+	for (int i=0; i<width*height; i++) {
+		for (int j=0; j<3; j++)
+			*(dst++) = *(src++);
+		src++;
+	}
+	
+	return temp;
+}
+byte *  gles_convertRGBA4(byte * data, int width, int height)
+{
+	byte * temp = (byte *) ri.Malloc (width*height*2, TAG_TEMP_WORKSPACE, qfalse);
+	
+    unsigned int * input = ( unsigned int *)(data);
+    unsigned short* output = (unsigned short*)(temp);
+    for (int i = 0; i < width*height; i++) {
+        unsigned int pixel = input[i];
+        // Unpack the source data as 8 bit values
+        unsigned int r = pixel & 0xff;
+        unsigned int g = (pixel >> 8) & 0xff;
+        unsigned int b = (pixel >> 16) & 0xff;
+        unsigned int a = (pixel >> 24) & 0xff;
+        // Convert to 4 bit vales
+        r >>= 4; g >>= 4; b >>= 4; a >>= 4;
+        output[i] = r << 12 | g << 8 | b << 4 | a;
+	}
+/*	byte *src = data;
+	byte *dst = temp;
+	byte a1, a2;
+	
+	for (int i=0; i<width*height; i++)
+		for (int j=0; j<2; j++) {
+			a1 = *(src++);
+			a2 = *(src++);
+			*(dst++)= (a1&0xf0)>>4 | (a2&0xf0);
+		}
+*/
+	return temp;
+}
+byte * gles_convertRGB5(byte * data, int width, int height)
+{
+	byte * temp = (byte *) ri.Malloc (width*height*2, TAG_TEMP_WORKSPACE, qfalse);
+	byte *src = data;
+	byte *dst = temp;
+	byte r,g,b;
+	
+    unsigned int * input = ( unsigned int *)(data);
+    unsigned short* output = (unsigned short*)(temp);
+    for (int i = 0; i < width*height; i++) {
+        unsigned int pixel = input[i];
+        // Unpack the source data as 8 bit values
+        unsigned int r = pixel & 0xff;
+        unsigned int g = (pixel >> 8) & 0xff;
+        unsigned int b = (pixel >> 16) & 0xff;
+//        unsigned int a = (pixel >> 24) & 0xff;
+        // Convert to 4 bit vales
+        r >>= 3; g >>= 2; b >>= 3; 
+        output[i] = r << 11 | g << 5 | b;
+	}
+/*	for (int i=0; i<width*height; i++) {
+		src++;
+		r = (*(src++))>>3;
+		g = (*(src++))>>2;
+		b = (*(src++))>>3;
+		*(dst++)= r<<3 | (g>>3);
+		*(dst++)= (g<<5)&0xff | b;
+	}
+*/	
+	return temp;
+}
+#endif
 
 /*
 ===============
@@ -597,15 +688,27 @@ static void Upload32( unsigned *data,
 	{
 		if ( glConfig.textureCompression == TC_S3TC && allowTC )
 		{
+#ifdef HAVE_GLES
+            assert(0);
+#else
 			*pformat = GL_RGB4_S3TC;
+#endif
 		}
 		else if ( glConfig.textureCompression == TC_S3TC_DXT && allowTC )
 		{	// Compress purely color - no alpha
 			if ( r_texturebits->integer == 16 ) {
+#ifdef HAVE_GLES
+				assert(0);
+#else
 				*pformat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;	//this format cuts to 16 bit
+#endif
 			}
 			else {//if we aren't using 16 bit then, use 32 bit compression
+#ifdef HAVE_GLES
+				assert(0);
+#else
 				*pformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+#endif
 			}
 		}
 		else if ( isLightmap && r_texturebitslm->integer > 0 )
@@ -613,43 +716,82 @@ static void Upload32( unsigned *data,
 			// Allow different bit depth when we are a lightmap
 			if ( r_texturebitslm->integer == 16 )
 			{
+#ifdef HAVE_GLES
+				//assert(0);
 				*pformat = GL_RGB5;
+#else
+				*pformat = GL_RGB5;
+#endif
 			}
 			else if ( r_texturebitslm->integer == 32 )
 			{
+#ifdef HAVE_GLES
+				*pformat = GL_RGB;
+#else
 				*pformat = GL_RGB8;
+#endif
 			}
 		}
 		else if ( r_texturebits->integer == 16 )
 		{
+#ifdef HAVE_GLES
 			*pformat = GL_RGB5;
+           //assert(0);
+#else
+			*pformat = GL_RGB5;
+#endif
 		}
 		else if ( r_texturebits->integer == 32 )
 		{
+#ifdef HAVE_GLES
+            *pformat = GL_RGB;
+#else
 			*pformat = GL_RGB8;
+#endif
 		}
 		else
 		{
+#ifdef HAVE_GLES
+            *pformat = GL_RGBA;
+#else
 			*pformat = 3;
+#endif
 		}
 	}
 	else if ( samples == 4 )
 	{
 		if ( glConfig.textureCompression == TC_S3TC_DXT && allowTC)
 		{	// Compress both alpha and color
+#ifdef HAVE_GLES
+            assert(0);
+#else
 			*pformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+#endif
 		}
 		else if ( r_texturebits->integer == 16 )
 		{
+#ifdef HAVE_GLES
 			*pformat = GL_RGBA4;
+            //assert(0);
+#else
+			*pformat = GL_RGBA4;
+#endif
 		}
 		else if ( r_texturebits->integer == 32 )
 		{
+#ifdef HAVE_GLES
+            *pformat = GL_RGBA;
+#else
 			*pformat = GL_RGBA8;
+#endif
 		}
 		else
 		{
+#ifdef HAVE_GLES
+            *pformat = GL_RGBA;
+#else
 			*pformat = 4;
+#endif
 		}
 	}
 
@@ -657,6 +799,40 @@ static void Upload32( unsigned *data,
 	*pUploadHeight = height;
 
 	// copy or resample data as appropriate for first MIP level
+	#ifdef HAVE_GLES
+	//*pformat = GL_RGBA;
+	R_LightScaleTexture (data, width, height, !mipmap );
+
+	glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, (mipmap)?GL_TRUE:GL_FALSE );
+	
+	// and now, convert if needed and upload
+	// GLES doesn't do convertion itself, so we have to handle that
+	byte *temp;
+	switch ( *pformat ) {
+	 case GL_RGB5:
+		temp = gles_convertRGB5((byte*)data, width, height);
+		qglTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, temp);
+		ri.Free(temp);
+	    break;
+	 case GL_RGBA4:
+		temp = gles_convertRGBA4((byte*)data, width, height);
+		qglTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, temp);
+		ri.Free(temp);
+	    break;
+	 case GL_RGB:
+		temp = gles_convertRGB((byte*)data, width, height);
+		qglTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, temp);
+		ri.Free(temp);
+	    break;
+	 default:
+	    *pformat = GL_RGBA;
+		qglTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	}
+
+	
+//	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+//	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	#else
 	if (!mipmap)
 	{
 		qglTexImage2D (GL_TEXTURE_2D, 0, *pformat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -692,6 +868,7 @@ static void Upload32( unsigned *data,
 		}
 	}
 done:
+	#endif
 
 	if (mipmap)
 	{
@@ -733,11 +910,16 @@ int R_Images_StartIteration(void)
 
 image_t *R_Images_GetNextIteration(void)
 {
+//ri.Printf(PRINT_ALL, "R_Images_GetNextIteration..");
 	if (itAllocatedImages == AllocatedImages.end())
+	{
+//ri.Printf(PRINT_ALL, " end\n");
 		return NULL;
+	}
 
 	image_t *pImage = (*itAllocatedImages).second;
 	++itAllocatedImages;
+//ri.Printf(PRINT_ALL, "(%s) done\n", pImage->);
 	return pImage;
 }
 
@@ -971,6 +1153,7 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 					   qboolean mipmap, qboolean allowPicmip, qboolean allowTC, int glWrapClampMode
 					   )
 {
+//ri.Printf(PRINT_ALL, "R_CreateImage(\"%s\", %p, %i, %i, %i, %i, %i, %i)\n", name, pic, width, height, mipmap, allowPicmip, allowTC, glWrapClampMode);
 	image_t		*image;
 	qboolean	isLightmap = qfalse;
 
@@ -1547,7 +1730,7 @@ Returns NULL if it fails, not a default image.
 */
 image_t	*R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmip, qboolean allowTC, int glWrapClampMode ) {
 	image_t	*image;
-	int		width, height;
+	int		width=0, height=0;
 	byte	*pic;
 //	long	hash;
    
@@ -1639,7 +1822,7 @@ static void R_CreateDlightImage( void )
 			xs = (DLIGHT_SIZE * 0.5f - x);
 			ys = (DLIGHT_SIZE * 0.5f - y);
 
-            b = 255 - sqrt( xs * xs + ys * ys ) * 9.0f; // try and generate numbers in the range of 255-0
+            b = 255 - sqrtf( xs * xs + ys * ys ) * 9.0f; // try and generate numbers in the range of 255-0
 
 			// should be close, but clamp anyway
 			if ( b > 255 ) 
@@ -1690,22 +1873,22 @@ and for each vertex of transparent shaders in fog dynamically
 float	R_FogFactor( float s, float t ) {
 	float	d;
 
-	s -= 1.0/512;
+	s -= 1.0f/512;
 	if ( s < 0 ) {
 		return 0;
 	}
-	if ( t < 1.0/32 ) {
+	if ( t < 1.0f/32 ) {
 		return 0;
 	}
-	if ( t < 31.0/32 ) {
-		s *= (t - 1.0/32) / (30.0/32);
+	if ( t < 31.0f/32 ) {
+		s *= (t - 1.0f/32) / (30.0f/32);
 	}
 
 	// we need to leave a lot of clamp range
 	s *= 8;
 
-	if ( s > 1.0 ) {
-		s = 1.0;
+	if ( s > 1.0f ) {
+		s = 1.0f;
 	}
 
 	d = tr.fogTable[ (int)(s * (FOG_TABLE_SIZE-1)) ];
@@ -1753,7 +1936,9 @@ static void R_CreateFogImage( void ) {
 	borderColor[2] = 1.0;
 	borderColor[3] = 1;
 
+#ifndef HAVE_GLES
 	qglTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor );
+#endif
 }
 
 /*
@@ -1883,7 +2068,7 @@ void R_SetColorMappings( void ) {
 		if ( g == 1 ) {
 			inf = i;
 		} else {
-			inf = 255 * pow ( i/255.0f, 1.0f / g ) + 0.5f;
+			inf = 255 * powf ( i/255.0f, 1.0f / g ) + 0.5f;
 		}
 		inf <<= shift;
 		if (inf < 0) {

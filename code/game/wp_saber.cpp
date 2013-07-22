@@ -303,8 +303,8 @@ void G_Throw( gentity_t *targ, vec3_t newDir, float push )
 
 	if ( g_gravity->value > 0 )
 	{
-		VectorScale( newDir, g_knockback->value * (float)push / mass * 0.8, kvel );
-		kvel[2] = newDir[2] * g_knockback->value * (float)push / mass * 1.5;
+		VectorScale( newDir, g_knockback->value * (float)push / mass * 0.8f, kvel );
+		kvel[2] = newDir[2] * g_knockback->value * (float)push / mass * 1.5f;
 	}
 	else
 	{
@@ -1743,9 +1743,9 @@ qboolean WP_SaberDamageForTrace( int ignore, vec3_t start, vec3_t end, float dmg
 				if ( noGhoul || !hitEnt->ghoul2.size() )
 				{//we weren't doing a ghoul trace
 					char	*hitEffect;
-					if ( dmg >= 1.0 && hitEnt->bmodel )
+					if ( dmg >= 1.0f && hitEnt->bmodel )
 					{
-						dmg = 1.0;
+						dmg = 1.0f;
 					}
 					if ( len > 1 )
 					{
@@ -1763,14 +1763,14 @@ qboolean WP_SaberDamageForTrace( int ignore, vec3_t start, vec3_t end, float dmg
 					float	trFrac, dmgFrac;
 					if ( tr.allsolid )
 					{//totally inside them
-						trFrac = 1.0;
-						dmgFrac = 0.0;
+						trFrac = 1.0f;
+						dmgFrac = 0.0f;
 					}
 					else if ( tr.startsolid )
 					{//started inside them
 						//we don't know how much was inside, we know it's less than all, so use half?
-						trFrac = 0.5;
-						dmgFrac = 0.0;
+						trFrac = 0.5f;
+						dmgFrac = 0.0f;
 					}
 					else
 					{//started outside them and hit them
@@ -2670,7 +2670,7 @@ void WP_SaberDamageTrace( gentity_t *ent )
 			else
 			{//saber is transitioning, defending or idle, don't do as much damage
 				//FIXME: strong attacks and returns should do damage and be unblockable
-				if ( g_timescale->value < 1.0 )
+				if ( g_timescale->value < 1.0f )
 				{//in slow mo or force speed, we need to do damage during the transitions
 					if ( g_saberRealisticCombat->integer )
 					{
@@ -2796,7 +2796,7 @@ void WP_SaberDamageTrace( gentity_t *ent )
 		hit_wall = WP_SaberDamageForTrace( ent->s.number, baseOld, baseNew, baseDamage, md2, qfalse, entPowerLevel );
 		
 		//if hit a saber, shorten rest of traces to match
-		if ( saberHitFraction < 1.0 )
+		if ( saberHitFraction < 1.0f )
 		{
 			//adjust muzzleDir...
 			vec3_t ma1, ma2;
@@ -2828,7 +2828,7 @@ void WP_SaberDamageTrace( gentity_t *ent )
 			curDirFrac = 1.0f;
 		}
 		//NOTE: if saber spun at least 180 degrees since last damage trace, this is not reliable...!
-		if ( fabs(curDirFrac) < 1.0f - MAX_SABER_SWING_INC )
+		if ( fabsf(curDirFrac) < 1.0f - MAX_SABER_SWING_INC )
 		{//the saber blade spun more than 33 degrees since the last damage trace
 			curDirFrac = dirInc = 1.0f/((1.0f - curDirFrac)/MAX_SABER_SWING_INC);
 		}
@@ -2878,7 +2878,7 @@ void WP_SaberDamageTrace( gentity_t *ent )
 				}
 
 				//if hit a saber, shorten rest of traces to match
-				if ( saberHitFraction < 1.0 )
+				if ( saberHitFraction < 1.0f )
 				{
 					//adjust muzzle endpoint
 					VectorSubtract( mp2, mp1, baseDiff );
@@ -4664,11 +4664,11 @@ void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlo
 	//FIXME: take torsoAngles into account?
 	if ( zdiff > -5 )//0 )//40 )
 	{
-		if ( rightdot > 0.3 )
+		if ( rightdot > 0.3f )
 		{
 			self->client->ps.saberBlocked = BLOCKED_UPPER_RIGHT;
 		}
-		else if ( rightdot < -0.3 )
+		else if ( rightdot < -0.3f )
 		{
 			self->client->ps.saberBlocked = BLOCKED_UPPER_LEFT;
 		}
@@ -4683,11 +4683,11 @@ void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlo
 		{//hmm, pretty low, but not low enough to use the low block, so we need to duck
 			//NPC should duck, but NPC should never get here
 		}
-		if ( rightdot > 0.1 )
+		if ( rightdot > 0.1f )
 		{
 			self->client->ps.saberBlocked = BLOCKED_UPPER_RIGHT;
 		}
-		else if ( rightdot < -0.1 )
+		else if ( rightdot < -0.1f )
 		{
 			self->client->ps.saberBlocked = BLOCKED_UPPER_LEFT;
 		}
@@ -4808,7 +4808,7 @@ void WP_SaberBlock( gentity_t *saber, vec3_t hitloc, qboolean missileBlock )
 	}
 	else if (zdiff > 13)
 	{	// The upper half has three viable blocks...
-		if (rightdot > 0.25)
+		if (rightdot > 0.25f)
 		{	// In the right quadrant...
 			if (Q_irand(0,1))
 			{
@@ -5245,7 +5245,7 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 			{
 				vec3_t	saberTip;
 				VectorMA( self->client->renderInfo.muzzlePoint, self->client->ps.saberLength, self->client->renderInfo.muzzleDir, saberTip );
-				VectorMA( self->client->renderInfo.muzzlePoint, self->client->ps.saberLength*0.5, self->client->renderInfo.muzzleDir, saberOrg );
+				VectorMA( self->client->renderInfo.muzzlePoint, self->client->ps.saberLength*0.5f, self->client->renderInfo.muzzleDir, saberOrg );
 				for ( int i = 0; i < 3; i++ )
 				{
 					if ( saberTip[i] > self->client->renderInfo.muzzlePoint[i] )
@@ -6262,7 +6262,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 				VectorNormalize( forward );
 				VectorMA( self->client->renderInfo.eyePoint, radius, forward, end );
 				gi.trace( &tr, self->client->renderInfo.eyePoint, vec3_origin, vec3_origin, end, self->s.number, MASK_SHOT, (EG2_Collision)0, 0 );
-				if ( tr.entityNum != push_list[x]->s.number || tr.fraction == 1.0 || tr.allsolid || tr.startsolid )
+				if ( tr.entityNum != push_list[x]->s.number || tr.fraction == 1.0f || tr.allsolid || tr.startsolid )
 				{//must be pointing right at it
 					continue;
 				}
@@ -6315,7 +6315,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 				VectorNormalize( forward );
 				VectorMA( self->client->renderInfo.eyePoint, radius, forward, end );
 				gi.trace( &tr, self->client->renderInfo.eyePoint, vec3_origin, vec3_origin, end, self->s.number, MASK_SHOT, (EG2_Collision)0, 0 );
-				if ( tr.entityNum != push_list[x]->s.number || tr.fraction == 1.0 || tr.allsolid || tr.startsolid )
+				if ( tr.entityNum != push_list[x]->s.number || tr.fraction == 1.0f || tr.allsolid || tr.startsolid )
 				{//must be pointing right at it
 					continue;
 				}
@@ -6323,7 +6323,7 @@ void ForceThrow( gentity_t *self, qboolean pull )
 				if ( VectorCompare( vec3_origin, push_list[x]->s.origin ) )
 				{//does not have an origin brush, so pos1 & pos2 are relative to world origin, need to calc center
 					VectorSubtract( push_list[x]->absmax, push_list[x]->absmin, size );
-					VectorMA( push_list[x]->absmin, 0.5, size, center );
+					VectorMA( push_list[x]->absmin, 0.5f, size, center );
 					if ( (push_list[x]->spawnflags&1) && push_list[x]->moverState == MOVER_POS1 )
 					{//if at pos1 and started open, make sure we get the center where it *started* because we're going to add back in the relative values pos1 and pos2
 						VectorSubtract( center, push_list[x]->pos1, center );
@@ -6446,8 +6446,8 @@ void ForceThrow( gentity_t *self, qboolean pull )
 				}
 				if ( g_gravity->value > 0 )
 				{
-					VectorScale( pushDir, g_knockback->value * knockback / mass * 0.8, kvel );
-					kvel[2] = pushDir[2] * g_knockback->value * knockback / mass * 1.5;
+					VectorScale( pushDir, g_knockback->value * knockback / mass * 0.8f, kvel );
+					kvel[2] = pushDir[2] * g_knockback->value * knockback / mass * 1.5f;
 				}
 				else
 				{
@@ -6774,7 +6774,7 @@ void ForceTelepathy( gentity_t *self )
 	
 	//Cause a distraction if enemy is not fighting
 	gi.trace( &tr, self->client->renderInfo.eyePoint, vec3_origin, vec3_origin, end, self->s.number, MASK_OPAQUE|CONTENTS_BODY, (EG2_Collision)0, 0 );
-	if ( tr.entityNum == ENTITYNUM_NONE || tr.fraction == 1.0 || tr.allsolid || tr.startsolid )
+	if ( tr.entityNum == ENTITYNUM_NONE || tr.fraction == 1.0f || tr.allsolid || tr.startsolid )
 	{
 		return;
 	}
@@ -6999,7 +6999,7 @@ void ForceGrip( gentity_t *self )
 	if ( !traceEnt )
 	{//okay, trace straight ahead and see what's there
 		gi.trace( &tr, self->client->renderInfo.handLPoint, vec3_origin, vec3_origin, end, self->s.number, MASK_SHOT, (EG2_Collision)0, 0);
-		if ( tr.entityNum >= ENTITYNUM_WORLD || tr.fraction == 1.0 || tr.allsolid || tr.startsolid )
+		if ( tr.entityNum >= ENTITYNUM_WORLD || tr.fraction == 1.0f || tr.allsolid || tr.startsolid )
 		{
 			return;
 		}
@@ -7363,13 +7363,13 @@ void ForceShootLightning( gentity_t *self )
 			}
 
 			VectorSubtract( traceEnt->absmax, traceEnt->absmin, size );
-			VectorMA( traceEnt->absmin, 0.5, size, ent_org );
+			VectorMA( traceEnt->absmin, 0.5f, size, ent_org );
 
 			//see if they're in front of me
 			//must be within the forward cone
 			VectorSubtract( ent_org, center, dir );
 			VectorNormalize( dir );
-			if ( (dot = DotProduct( dir, forward )) < 0.5 )
+			if ( (dot = DotProduct( dir, forward )) < 0.5f )
 				continue;
 
 			//must be close enough
@@ -7411,7 +7411,7 @@ void ForceShootLightning( gentity_t *self )
 		while ( traces < 10 )
 		{//need to loop this in case we hit a Jedi who dodges the shot
 			gi.trace( &tr, start, vec3_origin, vec3_origin, end, ignore, MASK_SHOT, G2_RETURNONHIT, 0 );
-			if ( tr.entityNum == ENTITYNUM_NONE || tr.fraction == 1.0 || tr.allsolid || tr.startsolid )
+			if ( tr.entityNum == ENTITYNUM_NONE || tr.fraction == 1.0f || tr.allsolid || tr.startsolid )
 			{
 				return;
 			}
@@ -7861,7 +7861,7 @@ void WP_ForcePowerStop( gentity_t *self, forcePowers_t forcePower )
 	case FP_SPEED:
 		if ( !self->s.number )
 		{//player using force speed
-			if ( g_timescale->value != 1.0 )
+			if ( g_timescale->value != 1.0f )
 			{
 				gi.cvar_set("timescale", "1");
 			}
@@ -8107,7 +8107,7 @@ static void WP_ForcePowerRun( gentity_t *self, forcePowers_t forcePower, usercmd
 			gi.cvar_set("timescale", va("%4.2f", speed));
 			if ( g_timescale->value > speed )
 			{
-				newSpeed = g_timescale->value - 0.05;
+				newSpeed = g_timescale->value - 0.05f;
 				if ( newSpeed < speed )
 				{
 					newSpeed = speed;

@@ -32,6 +32,7 @@ void GL_Bind( image_t *image ) {
 	} else {
 		texnum = image->texnum;
 	}
+//ri.Printf(PRINT_ALL, "GL_Bind(%p), texnum=%i\n", image, texnum);
 
 	if ( r_nobind->integer && tr.dlightImage ) {		// performance evaluation option
 		texnum = tr.dlightImage->texnum;
@@ -41,6 +42,7 @@ void GL_Bind( image_t *image ) {
 		image->frameUsed = tr.frameCount;
 		glState.currenttextures[glState.currenttmu] = texnum;
 		qglBindTexture (GL_TEXTURE_2D, texnum);
+//ri.Printf(PRINT_ALL, "qglBindTexture(%i)\n", texnum);
 	}
 }
 
@@ -56,16 +58,32 @@ void GL_SelectTexture( int unit )
 
 	if ( unit == 0 )
 	{
+#ifdef HAVE_GLES
+		qglActiveTextureARB( GL_TEXTURE0);
+#else
 		qglActiveTextureARB( GL_TEXTURE0_ARB );
+#endif
 		GLimp_LogComment( "glActiveTextureARB( GL_TEXTURE0_ARB )\n" );
+#ifdef HAVE_GLES
+		qglClientActiveTextureARB( GL_TEXTURE0 );
+#else
 		qglClientActiveTextureARB( GL_TEXTURE0_ARB );
+#endif
 		GLimp_LogComment( "glClientActiveTextureARB( GL_TEXTURE0_ARB )\n" );
 	}
 	else if ( unit == 1 )
 	{
+#ifdef HAVE_GLES
+		qglActiveTextureARB( GL_TEXTURE1);
+#else
 		qglActiveTextureARB( GL_TEXTURE1_ARB );
+#endif
 		GLimp_LogComment( "glActiveTextureARB( GL_TEXTURE1_ARB )\n" );
+#ifdef HAVE_GLES
+		qglClientActiveTextureARB( GL_TEXTURE1 );
+#else
 		qglClientActiveTextureARB( GL_TEXTURE1_ARB );
+#endif
 		GLimp_LogComment( "glClientActiveTextureARB( GL_TEXTURE1_ARB )\n" );
 	} else {
 		ri.Error( ERR_DROP, "GL_SelectTexture: unit = %i", unit );
@@ -316,6 +334,7 @@ void GL_State( unsigned long stateBits )
 	//
 	if ( diff & GLS_POLYMODE_LINE )
 	{
+#ifndef HAVE_GLES
 		if ( stateBits & GLS_POLYMODE_LINE )
 		{
 			qglPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -324,6 +343,7 @@ void GL_State( unsigned long stateBits )
 		{
 			qglPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 		}
+#endif
 	}
 
 	//
@@ -475,7 +495,11 @@ void RB_BeginDrawingView (void) {
 	// clip to the plane of the portal
 	if ( backEnd.viewParms.isPortal ) {
 		float	plane[4];
+#ifdef HAVE_GLES
+		float	plane2[4];
+#else
 		double	plane2[4];
+#endif
 
 		plane[0] = backEnd.viewParms.portalPlane.normal[0];
 		plane[1] = backEnd.viewParms.portalPlane.normal[1];
@@ -816,6 +840,33 @@ const void *RB_RotatePic ( const void *data )
 		qglRotatef(cmd->a, 0.0, 0.0, 1.0);
 		
 		GL_Bind( image );
+		#ifdef HAVE_GLES
+		GLfloat tex[] = {
+		 cmd->s1, cmd->t1,
+		 cmd->s2, cmd->t1,
+		 cmd->s2, cmd->t2,
+		 cmd->s1, cmd->t2
+		};
+		GLfloat vtx[] = {
+		 -cmd->w, 0,
+		 0, 0,
+		 0, cmd->h,
+		 -cmd->w, cmd->h
+		};
+		GLboolean text = qglIsEnabled(GL_TEXTURE_COORD_ARRAY);
+		GLboolean glcol = qglIsEnabled(GL_COLOR_ARRAY);
+		if (glcol)
+			qglDisableClientState(GL_COLOR_ARRAY);
+		if (!text)
+			qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+		qglTexCoordPointer( 2, GL_FLOAT, 0, tex );
+		qglVertexPointer  ( 2, GL_FLOAT, 0, vtx );
+		qglDrawArrays( GL_TRIANGLE_FAN, 0, 4 );
+		if (glcol)
+			qglDisableClientState(GL_COLOR_ARRAY);
+		if (!text)
+			qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+		#else
 		qglBegin (GL_QUADS);
 		qglTexCoord2f( cmd->s1, cmd->t1);
 		qglVertex2f( -cmd->w, 0 );
@@ -826,6 +877,7 @@ const void *RB_RotatePic ( const void *data )
 		qglTexCoord2f( cmd->s1, cmd->t2 );
 		qglVertex2f( -cmd->w, cmd->h );
 		qglEnd();
+		#endif
 		
 		qglPopMatrix();
 	}
@@ -870,6 +922,33 @@ const void *RB_RotatePic2 ( const void *data )
 			qglRotatef( cmd->a, 0.0, 0.0, 1.0 );
 			
 			GL_Bind( image );
+			#ifdef HAVE_GLES
+			GLfloat tex[] = {
+			 cmd->s1, cmd->t1,
+			 cmd->s2, cmd->t1,
+			 cmd->s2, cmd->t2,
+			 cmd->s1, cmd->t2
+			};
+			GLfloat vtx[] = {
+			 -cmd->w * 0.5f, -cmd->h * 0.5f,
+			 cmd->w * 0.5f, -cmd->h * 0.5f,
+			 cmd->w * 0.5f, cmd->h * 0.5f,
+			 -cmd->w * 0.5f, cmd->h * 0.5f
+			};
+			GLboolean text = qglIsEnabled(GL_TEXTURE_COORD_ARRAY);
+			GLboolean glcol = qglIsEnabled(GL_COLOR_ARRAY);
+			if (glcol)
+				qglDisableClientState(GL_COLOR_ARRAY);
+			if (!text)
+				qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+			qglTexCoordPointer( 2, GL_FLOAT, 0, tex );
+			qglVertexPointer  ( 2, GL_FLOAT, 0, vtx );
+			qglDrawArrays( GL_TRIANGLE_FAN, 0, 4 );
+			if (glcol)
+				qglEnableClientState(GL_COLOR_ARRAY);
+			if (!text)
+				qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+			#else
 			qglBegin( GL_QUADS );
 				qglTexCoord2f( cmd->s1, cmd->t1);
 				qglVertex2f( -cmd->w * 0.5f, -cmd->h * 0.5f );
@@ -883,6 +962,7 @@ const void *RB_RotatePic2 ( const void *data )
 				qglTexCoord2f( cmd->s1, cmd->t2 );
 				qglVertex2f( -cmd->w * 0.5f, cmd->h * 0.5f );
 			qglEnd();
+			#endif
 			
 			qglPopMatrix();
 
@@ -969,7 +1049,9 @@ const void	*RB_DrawBuffer( const void *data ) {
 
 	cmd = (const drawBufferCommand_t *)data;
 
+#ifndef HAVE_GLES
 	qglDrawBuffer( cmd->buffer );
+#endif
 
 		// clear screen for debugging
 	if (tr.world && tr.refdef.doLAGoggles)
@@ -1052,10 +1134,19 @@ void RB_ShowImages( void ) {
 	qglFinish();
 
 	start = ri.Milliseconds();
+	
+	#ifdef HAVE_GLES
+	GLboolean text = qglIsEnabled(GL_TEXTURE_COORD_ARRAY);
+	GLboolean glcol = qglIsEnabled(GL_COLOR_ARRAY);
+	if (glcol)
+		qglDisableClientState(GL_COLOR_ARRAY);
+	if (!text)
+		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	#endif
 
 	int i=0;
-//	int iNumImages = 
-	   				 R_Images_StartIteration();
+	int iNumImages = R_Images_StartIteration();
+//ri.Printf(PRINT_ALL, "RB_ShowImages, %i images in the map\n", iNumImages);
 	while ( (image = R_Images_GetNextIteration()) != NULL)
 	{
 		w = glConfig.vidWidth / 20;
@@ -1065,11 +1156,31 @@ void RB_ShowImages( void ) {
 
 		// show in proportional size in mode 2
 		if ( r_showImages->integer == 2 ) {
-			w *= image->uploadWidth / 512.0;
-			h *= image->uploadHeight / 512.0;
+			w *= image->uploadWidth * (1.0f/ 512.0f);
+			h *= image->uploadHeight * (1.0f/ 512.0f);
 		}
-
+//ri.Printf(PRINT_ALL, "RB_ShowImages, \"%s\"image(%i)=%p\n", image->imgName, i, image);
 		GL_Bind( image );
+//ri.Printf(PRINT_ALL, "RB_ShowImages, GL_Bind done\n" );
+		#ifdef HAVE_GLES
+		GLfloat tex[] = {
+		 0, 0,
+		 1, 0,
+		 1, 1,
+		 0, 1
+		};
+		GLfloat vtx[] = {
+		 x, y,
+		 x + w, y,
+		 x + w, y + h,
+		 x, y + h
+		};
+		qglTexCoordPointer( 2, GL_FLOAT, 0, tex );
+		qglVertexPointer  ( 2, GL_FLOAT, 0, vtx );
+//ri.Printf(PRINT_ALL, "RB_ShowImages, qglDrawArrays" );
+		qglDrawArrays( GL_TRIANGLE_FAN, 0, 4 );
+//ri.Printf(PRINT_ALL, " done\n" );
+		#else
 		qglBegin (GL_QUADS);
 		qglTexCoord2f( 0, 0 );
 		qglVertex2f( x, y );
@@ -1080,8 +1191,16 @@ void RB_ShowImages( void ) {
 		qglTexCoord2f( 0, 1 );
 		qglVertex2f( x, y + h );
 		qglEnd();
+		#endif
 		i++;
 	}
+	#ifdef HAVE_GLES
+	if (glcol)
+		qglEnableClientState(GL_COLOR_ARRAY);
+	if (!text)
+		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	#endif
+//ri.Printf(PRINT_ALL, "RB_ShowImages finished\n", image);
 
 	qglFinish();
 
@@ -1114,6 +1233,7 @@ const void	*RB_SwapBuffers( const void *data ) {
 
 	// we measure overdraw by reading back the stencil buffer and
 	// counting up the number of increments that have happened
+	#ifndef HAVE_GLES
 	if ( r_measureOverdraw->integer ) {
 		int i;
 		long sum = 0;
@@ -1130,6 +1250,7 @@ const void	*RB_SwapBuffers( const void *data ) {
 		backEnd.pc.c_overDraw += sum;
 		ri.Free( stencilReadback );
 	}
+	#endif
 
 
     if ( !glState.finishCalled ) {

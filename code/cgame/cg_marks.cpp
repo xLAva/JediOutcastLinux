@@ -136,7 +136,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 	RotatePointAroundVector( axis[2], axis[0], axis[1], orientation );
 	CrossProduct( axis[0], axis[2], axis[1] );
 
-	texCoordScale = 0.5 * 1.0 / radius;
+	texCoordScale = 0.5f * 1.0f / radius;
 
 	// create the full polygon
 	for ( i = 0 ; i < 3 ; i++ ) {
@@ -148,7 +148,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 
 	// get the fragments
 	VectorScale( dir, -20, projection );
-	numFragments = cgi_CM_MarkFragments( 4, (const float (*)[3])originalPoints,
+	numFragments = cgi_CM_MarkFragments( 4, /*(const float (*)[3])*/originalPoints,
 					projection, MAX_MARK_POINTS, markPoints[0],
 					MAX_MARK_FRAGMENTS, markFragments );
 
@@ -173,8 +173,8 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 			VectorCopy( markPoints[mf->firstPoint + j], v->xyz );
 
 			VectorSubtract( v->xyz, origin, delta );
-			v->st[0] = 0.5 + DotProduct( delta, axis[1] ) * texCoordScale;
-			v->st[1] = 0.5 + DotProduct( delta, axis[2] ) * texCoordScale;
+			v->st[0] = 0.5f + DotProduct( delta, axis[1] ) * texCoordScale;
+			v->st[1] = 0.5f + DotProduct( delta, axis[2] ) * texCoordScale;
 			*(int *)v->modulate = *(int *)colors;
 		}
 

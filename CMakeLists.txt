@@ -12,10 +12,20 @@ cmake_minimum_required(VERSION 2.6)
 
 project(jk2)
 
-set(CMAKE_BUILD_TYPE "RELEASE")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wno-write-strings -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-cpp -fexceptions -m32 -ffast-math -DLINUX -DNDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-write-strings -Wno-conversion-null -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-cpp -fexceptions -m32 -ffast-math -fno-operator-names -DLINUX -DNDEBUG")
+option(PANDORA "Set to ON if targeting an OpenPandora device" ${PANDORA})
 
+set(CMAKE_BUILD_TYPE "RELEASE")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wno-write-strings -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-cpp -fexceptions -DLINUX -DNDEBUG -DFINAL_BUILD -ffast-math -ftree-vectorize -marm  -fcx-fortran-rules -fstrict-aliasing -Wdouble-promotion -Ofast")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-write-strings -Wno-conversion-null -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-cpp -fexceptions -fno-operator-names -DLINUX -DNDEBUG -DFINAL_BUILD -Wstrict-overflow=1 -ffast-math -ftree-vectorize -marm  -fcx-fortran-rules  -fstrict-aliasing -Wdouble-promotion -Ofast")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -fsigned-char")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fsigned-char")
+#set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -fsingle-precision-constant")
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fsingle-precision-constant")
+#set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -flto -fuse-linker-plugin")
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto -fuse-linker-plugin")
+if(PANDORA)
+	add_definitions(-DPANDORA -DHAVE_GLES -DARM -DNEON -DAUTOAIM)
+endif()
 set(GAME_SOURCE_FILES
 	code/cgame/FX_ATSTMain.cpp
 	code/cgame/FX_Blaster.cpp
@@ -147,8 +157,13 @@ set(GAME_SOURCE_FILES
 	code/ui/gameinfo.cpp
 )
 
-add_library(jk2gamex86 SHARED ${GAME_SOURCE_FILES})
-set_target_properties(jk2gamex86 PROPERTIES PREFIX "")
+if(PANDORA)
+	add_library(jk2gamearm SHARED ${GAME_SOURCE_FILES})
+	set_target_properties(jk2gamearm PROPERTIES PREFIX "")
+else()
+	add_library(jk2gamex86 SHARED ${GAME_SOURCE_FILES})
+	set_target_properties(jk2gamex86 PROPERTIES PREFIX "")
+endif()
 
 set(STARWARS_SOURCE_FILES
 	code/client/cl_cgame.cpp
@@ -304,13 +319,28 @@ set(STARWARS_SOURCE_FILES
 
 set (EXTRA_LIBS ${EXTRA_LIBS} dl)
 set (EXTRA_LIBS ${EXTRA_LIBS} openal)
-set (EXTRA_LIBS ${EXTRA_LIBS} GL)
+if(PANDORA)
+	set(EXTRA_LIBS ${EXTRA_LIBS} GLES_CM EGL)
+	set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "-Ofast -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp")
+else(PANDORA)
+	set (EXTRA_LIBS ${EXTRA_LIBS} GL)
+	set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "-m32")
+endif(PANDORA)
 set (EXTRA_LIBS ${EXTRA_LIBS} X11)
 set (EXTRA_LIBS ${EXTRA_LIBS} Xxf86vm)
 set (EXTRA_LIBS ${EXTRA_LIBS} Xrandr)
 set (EXTRA_LIBS ${EXTRA_LIBS} rt)
 set (EXTRA_LIBS ${EXTRA_LIBS} pthread)
-set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "-m32")
+
+if(PANDORA)
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -fpermissive -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp")
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Ofast -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp")
+	add_definitions(-mcpu=cortex-a8)
+	add_definitions(-mfpu=neon)
+	add_definitions(-mfloat-abi=softfp)
+	add_definitions(-march=armv7-a)
+	add_definitions(-ftree-vectorize)
+endif(PANDORA)
 
 add_executable(jk2sp ${STARWARS_SOURCE_FILES})
 target_link_libraries (jk2sp  ${EXTRA_LIBS})

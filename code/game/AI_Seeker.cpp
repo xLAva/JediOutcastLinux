@@ -187,7 +187,7 @@ void Seeker_Strafe( void )
 		if ( tr.fraction > 0.9f )
 		{
 			VectorSubtract( tr.endpos, NPC->currentOrigin, dir );
-			dir[2] *= 0.25; // do less upward change
+			dir[2] *= 0.25f; // do less upward change
 			float dis = VectorNormalize( dir );
 
 			// Try to move the desired enemy side
@@ -390,8 +390,8 @@ void Seeker_FollowPlayer( void )
 	if ( dis < MIN_DISTANCE_SQR )
 	{
 		// generally circle the player closely till we take an enemy..this is our target point
-		pt[0] = g_entities[0].currentOrigin[0] + cos( level.time * 0.001f + NPC->random ) * 56;
-		pt[1] = g_entities[0].currentOrigin[1] + sin( level.time * 0.001f + NPC->random ) * 56;
+		pt[0] = g_entities[0].currentOrigin[0] + cosf( level.time * 0.001f + NPC->random ) * 56;
+		pt[1] = g_entities[0].currentOrigin[1] + sinf( level.time * 0.001f + NPC->random ) * 56;
 		pt[2] = g_entities[0].currentOrigin[2] + 40;
 
 		VectorSubtract( pt, NPC->currentOrigin, dir );

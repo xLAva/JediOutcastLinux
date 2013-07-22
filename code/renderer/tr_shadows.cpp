@@ -108,12 +108,22 @@ void R_RenderShadowEdges( void ) {
 			// if it doesn't share the edge with another front facing
 			// triangle, it is a sil edge
 			if ( hit[ 1 ] == 0 ) {
+				#ifdef HAVE_GLES
+				GLfloat vtx[3*4];
+				memcpy(vtx, tess.xyz[i], sizeof(GLfloat)*3);
+				memcpy(vtx+3, tess.xyz[i+tess.numVertexes], sizeof(GLfloat)*3);
+				memcpy(vtx+6, tess.xyz[i2], sizeof(GLfloat)*3);
+				memcpy(vtx+9, tess.xyz[i2+tess.numVertexes], sizeof(GLfloat)*3);
+				qglVertexPointer (3, GL_FLOAT, 0, vtx);
+				qglDrawArrays(GL_TRIANGLE_STRIP, 0, 4);				
+				#else
 				qglBegin( GL_TRIANGLE_STRIP );
 				qglVertex3fv( tess.xyz[ i ] );
 				qglVertex3fv( tess.xyz[ i + tess.numVertexes ] );
 				qglVertex3fv( tess.xyz[ i2 ] );
 				qglVertex3fv( tess.xyz[ i2 + tess.numVertexes ] );
 				qglEnd();
+				#endif
 				c_edges++;
 			} else {
 				c_rejected++;
@@ -265,12 +275,23 @@ void RB_ShadowFinish( void ) {
 	//Following line makes a kind of flashlight instead of shadows, should multiply though
 	//GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_DST_COLOR  | GLS_DSTBLEND_ONE );
 
+	#ifdef HAVE_GLES
+	GLfloat vtx[] = {
+	 -100,  100, -10,
+	  100,  100, -10,
+	  100, -100, -10,
+	 -100, -100, -10
+	};
+	qglVertexPointer  ( 3, GL_FLOAT, 0, vtx );
+	qglDrawArrays( GL_TRIANGLE_FAN, 0, 4 );
+	#else
 	qglBegin( GL_QUADS );
 	qglVertex3f( -100, 100, -10 );
 	qglVertex3f( 100, 100, -10 );
 	qglVertex3f( 100, -100, -10 );
 	qglVertex3f( -100, -100, -10 );
 	qglEnd ();
+	#endif
 
 	qglColor4f(1,1,1,1);
 	qglDisable( GL_STENCIL_TEST );
@@ -304,12 +325,12 @@ void RB_ProjectionShadowDeform( void ) {
 	VectorCopy( backEnd.currentEntity->lightDir, lightDir );
 	d = DotProduct( lightDir, ground );
 	// don't let the shadows get too long or go negative
-	if ( d < 0.5 ) 
+	if ( d < 0.5f ) 
 	{
-		VectorMA( lightDir, (0.5 - d), ground, lightDir );
+		VectorMA( lightDir, (0.5f - d), ground, lightDir );
 		d = DotProduct( lightDir, ground );
 	}
-	d = 1.0 / d;
+	d = 1.0f / d;
 
 	light[0] = lightDir[0] * d;
 	light[1] = lightDir[1] * d;

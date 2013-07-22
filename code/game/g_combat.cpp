@@ -767,7 +767,7 @@ void G_MakeTeamVulnerable( void )
 
 void G_StartMatrixEffect( gentity_t *ent, qboolean falling = qfalse, int length = 1000 )
 {//FIXME: only do this if no other enemies around?
-	if ( g_timescale->value != 1.0 )
+	if ( g_timescale->value != 1.0f )
 	{//already in some slow-mo mode
 		return;
 	}
@@ -1316,39 +1316,39 @@ int G_GetHitLocation ( gentity_t *target, vec3_t ppoint )
 
 	//Get bottom to top (Vertical) position index
 	udot = DotProduct(up, point_dir);
-	if(udot>.800)
+	if(udot>.800f)
 		Vertical = 4;
-	else if(udot>.400)
+	else if(udot>.400f)
 		Vertical = 3;
-	else if(udot>-.333)
+	else if(udot>-.333f)
 		Vertical = 2;
-	else if(udot>-.666)
+	else if(udot>-.666f)
 		Vertical = 1;
 	else
 		Vertical = 0;
 
 	//Get back to front (Forward) position index
 	fdot = DotProduct(forward, point_dir);
-	if(fdot>.666)
+	if(fdot>.666f)
 		Forward = 4;
-	else if(fdot>.333)
+	else if(fdot>.333f)
 		Forward = 3;
-	else if(fdot>-.333)
+	else if(fdot>-.333f)
 		Forward = 2;
-	else if(fdot>-.666)
+	else if(fdot>-.666f)
 		Forward = 1;
 	else
 		Forward = 0;
 
 	//Get left to right (Lateral) position index
 	rdot = DotProduct(right, point_dir);
-	if(rdot>.666)
+	if(rdot>.666f)
 		Lateral = 4;
-	else if(rdot>.333)
+	else if(rdot>.333f)
 		Lateral = 3;
-	else if(rdot>-.333)
+	else if(rdot>-.333f)
 		Lateral = 2;
-	else if(rdot>-.666)
+	else if(rdot>-.666f)
 		Lateral = 1;
 	else
 		Lateral = 0;
@@ -1407,17 +1407,17 @@ int G_GetHitLocation ( gentity_t *target, vec3_t ppoint )
 	}
 	else
 	{
-		if ( udot < 0.3 )
+		if ( udot < 0.3f )
 		{
 			return HL_WAIST;
 		}
 		else if ( fdot < 0 )
 		{
-			if ( rdot > 0.4 )
+			if ( rdot > 0.4f )
 			{
 				return HL_BACK_RT;
 			}
-			else if ( rdot < -0.4 )
+			else if ( rdot < -0.4f )
 			{
 				return HL_BACK_LT;
 			}
@@ -1428,11 +1428,11 @@ int G_GetHitLocation ( gentity_t *target, vec3_t ppoint )
 		}
 		else
 		{
-			if ( rdot > 0.3 )
+			if ( rdot > 0.3f )
 			{
 				return HL_CHEST_RT;
 			}
-			else if ( rdot < -0.3 )
+			else if ( rdot < -0.3f )
 			{
 				return HL_CHEST_LT;
 			}
@@ -2155,7 +2155,7 @@ static qboolean G_Dismemberable( gentity_t *self, int hitLoc )
 			}
 
 			//check probability of this happening on this npc
-			if ( floor((Q_flrand( 1, 100 )*g_dismemberProbabilities->value)) > dismemberProb*2.0f )//probabilities seemed really really low, had to crank them up
+			if ( floorf((Q_flrand( 1, 100 )*g_dismemberProbabilities->value)) > dismemberProb*2.0f )//probabilities seemed really really low, had to crank them up
 			{	
 				return qfalse;
 			}
@@ -3905,7 +3905,7 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 					dot = DotProduct(forward, throwdir);
 					if ( thrown > 100 ) 
 					{
-						if ( dot > 0.3 )
+						if ( dot > 0.3f )
 						{//falling forward
 							if ( cliff_fall == 2 && PM_HasAnimation( self, BOTH_FALLDEATH1 ) )
 							{
@@ -3947,7 +3947,7 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 								}
 							}
 						}
-						else if ( dot < -0.3 ) 
+						else if ( dot < -0.3f ) 
 						{
 							if ( thrown >= 250 && !Q_irand( 0, 3 ) )
 							{
@@ -4579,8 +4579,8 @@ void G_ApplyKnockback( gentity_t *targ, vec3_t newDir, float knockback )
 
 	if ( g_gravity->value > 0 )
 	{
-		VectorScale( newDir, g_knockback->value * (float)knockback / mass * 0.8, kvel );
-		kvel[2] = newDir[2] * ( g_knockback->value * (float)knockback ) / ( mass * 1.5 ) + 20;
+		VectorScale( newDir, g_knockback->value * (float)knockback / mass * 0.8f, kvel );
+		kvel[2] = newDir[2] * ( g_knockback->value * (float)knockback ) / ( mass * 1.5f ) + 20;
 	}
 	else
 	{
@@ -4637,7 +4637,7 @@ static int G_CheckForLedge( gentity_t *self, vec3_t fallCheckDir, float checkDis
 	{
 		return 0;
 	}
-	if ( tr.fraction >= 1.0 )
+	if ( tr.fraction >= 1.0f )
 	{
 		return (start[2]-tr.endpos[2]);
 	}
@@ -5446,41 +5446,41 @@ qboolean CanDamage (gentity_t *targ, vec3_t origin) {
 	// use the midpoint of the bounds instead of the origin, because
 	// bmodels may have their origin at 0,0,0
 	VectorAdd (targ->absmin, targ->absmax, midpoint);
-	VectorScale (midpoint, 0.5, midpoint);
+	VectorScale (midpoint, 0.5f, midpoint);
 
 	VectorCopy (midpoint, dest);
 	gi.trace ( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, (EG2_Collision)0, 0);
-	if (( tr.fraction == 1.0 && !(targ->contents & MASK_SOLID)) || tr.entityNum == targ->s.number ) // if we also test the entitynum's we can bust up bbrushes better!
+	if (( tr.fraction == 1.0f && !(targ->contents & MASK_SOLID)) || tr.entityNum == targ->s.number ) // if we also test the entitynum's we can bust up bbrushes better!
 		return qtrue;
 
 	// this should probably check in the plane of projection, 
 	// rather than in world coordinate, and also include Z
 	VectorCopy (midpoint, dest);
-	dest[0] += 15.0;
-	dest[1] += 15.0;
+	dest[0] += 15.0f;
+	dest[1] += 15.0f;
 	gi.trace ( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, (EG2_Collision)0, 0);
-	if (( tr.fraction == 1.0 && !(targ->contents & MASK_SOLID)) || tr.entityNum == targ->s.number )
+	if (( tr.fraction == 1.0f && !(targ->contents & MASK_SOLID)) || tr.entityNum == targ->s.number )
 		return qtrue;
 
 	VectorCopy (midpoint, dest);
-	dest[0] += 15.0;
-	dest[1] -= 15.0;
+	dest[0] += 15.0f;
+	dest[1] -= 15.0f;
 	gi.trace ( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, (EG2_Collision)0, 0);
-	if (( tr.fraction == 1.0 && !(targ->contents & MASK_SOLID)) || tr.entityNum == targ->s.number )
+	if (( tr.fraction == 1.0f && !(targ->contents & MASK_SOLID)) || tr.entityNum == targ->s.number )
 		return qtrue;
 
 	VectorCopy (midpoint, dest);
-	dest[0] -= 15.0;
-	dest[1] += 15.0;
+	dest[0] -= 15.0f;
+	dest[1] += 15.0f;
 	gi.trace ( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, (EG2_Collision)0, 0);
-	if (( tr.fraction == 1.0 && !(targ->contents & MASK_SOLID)) || tr.entityNum == targ->s.number )
+	if (( tr.fraction == 1.0f && !(targ->contents & MASK_SOLID)) || tr.entityNum == targ->s.number )
 		return qtrue;
 
 	VectorCopy (midpoint, dest);
-	dest[0] -= 15.0;
-	dest[1] -= 15.0;
+	dest[0] -= 15.0f;
+	dest[1] -= 15.0f;
 	gi.trace ( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, (EG2_Collision)0, 0);
-	if (( tr.fraction == 1.0 && !(targ->contents & MASK_SOLID)) || tr.entityNum == targ->s.number )
+	if (( tr.fraction == 1.0f && !(targ->contents & MASK_SOLID)) || tr.entityNum == targ->s.number )
 		return qtrue;
 
 
@@ -5541,7 +5541,7 @@ void G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, float ra
 			continue;
 		}
 
-		points = damage * ( 1.0 - dist / radius );
+		points = damage * ( 1.0f - dist / radius );
 
 		if (CanDamage (ent, origin)) 
 		{//FIXME: still do a little damage in in PVS and close?

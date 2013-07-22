@@ -109,7 +109,7 @@ worldSector_t *SV_CreateworldSector( int depth, vec3_t mins, vec3_t maxs ) {
 		anode->axis = 1;
 	}
 
-	anode->dist = 0.5 * (maxs[anode->axis] + mins[anode->axis]);
+	anode->dist = 0.5f * (maxs[anode->axis] + mins[anode->axis]);
 	VectorCopy (mins, mins1);	
 	VectorCopy (mins, mins2);	
 	VectorCopy (maxs, maxs1);	
@@ -870,7 +870,7 @@ Ghoul2 Insert End
 	//ignore all ents past this endpoint... perhaps need to check the entityNum in this
 	//BoxTrace or have it not clip against entity brushes here.
 	CM_BoxTrace( &clip.trace, start, end, mins, maxs, 0, contentmask );
-	clip.trace.entityNum = clip.trace.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
+	clip.trace.entityNum = clip.trace.fraction != 1.0f ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	if ( clip.trace.fraction == 0 ) 
 	{// blocked immediately by the world
 		*results = clip.trace;

@@ -1328,7 +1328,7 @@ float NPC_MaxDistSquaredForWeapon (void)
 	case WP_SABER:
 		if ( NPC->client && NPC->client->ps.saberLength )
 		{//FIXME: account for whether enemy and I are heading towards each other!
-			return (NPC->client->ps.saberLength + NPC->maxs[0]*1.5)*(NPC->client->ps.saberLength + NPC->maxs[0]*1.5);
+			return (NPC->client->ps.saberLength + NPC->maxs[0]*1.5f)*(NPC->client->ps.saberLength + NPC->maxs[0]*1.5f);
 		}
 		else
 		{
@@ -1492,7 +1492,7 @@ gentity_t *NPC_PickEnemy( gentity_t *closestTo, int enemyTeam, qboolean checkVis
 											float	dot;
 											VectorNormalize( diff );
 											dot = DotProduct( newenemy->client->hiddenDir, diff ); 
-											if ( dot > 0.5 )
+											if ( dot > 0.5f )
 											{//I'm not looking in the right dir toward them to see them 
 												failed = qtrue;
 											}
@@ -1634,7 +1634,7 @@ gentity_t *NPC_PickEnemy( gentity_t *closestTo, int enemyTeam, qboolean checkVis
 
 									VectorNormalize( diff );
 									dot = DotProduct( newenemy->client->hiddenDir, diff ); 
-									if ( dot > 0.5 )
+									if ( dot > 0.5f )
 									{//I'm not looking in the right dir toward them to see them 
 										continue;
 									}
@@ -1780,7 +1780,7 @@ gentity_t *NPC_PickAlly ( qboolean facingEachOther, float range, qboolean ignore
 							VectorNormalize(vf);
 							dot = DotProduct(diff, vf);
 
-							if ( dot < 0.5 )
+							if ( dot < 0.5f )
 							{//Not facing in dir to me
 								continue;
 							}
@@ -1789,7 +1789,7 @@ gentity_t *NPC_PickAlly ( qboolean facingEachOther, float range, qboolean ignore
 							VectorNormalize(vf);
 							dot = DotProduct(diff, vf);
 
-							if ( dot > -0.5 )
+							if ( dot > -0.5f )
 							{//I'm not facing opposite of dir to me
 								continue;
 							}
@@ -2296,7 +2296,7 @@ qboolean NPC_CheckCanAttack (float attack_scale, qboolean stationary)
 			}
 			else
 			{
-				attack_scale *= 0.5;
+				attack_scale *= 0.5f;
 				if(NPC->client->playerTeam)
 				{
 					if(traceEnt && traceEnt->client && traceEnt->client->playerTeam)
@@ -2344,7 +2344,7 @@ qboolean NPC_CheckCanAttack (float attack_scale, qboolean stationary)
 					aim_off = VectorLength(diff);
 					if(aim_off > randomLava() * max_aim_off)//FIXME: use aim value to allow poor aim?
 					{
-						attack_scale *= 0.75;
+						attack_scale *= 0.75f;
 						//see if where we're going to shoot is too far from his head
 						VectorSubtract(hitspot, enemy_org, diff);
 						aim_off = VectorLength(diff);
@@ -2438,7 +2438,7 @@ void SP_point_combat( gentity_t *self )
 		return;
 	}
 
-	self->s.origin[2] += 0.125;
+	self->s.origin[2] += 0.125f;
 	G_SetOrigin(self, self->s.origin);
 	gi.linkentity(self);
 
@@ -2674,7 +2674,7 @@ int NPC_FindCombatPoint( const vec3_t position, const vec3_t avoidPosition, vec3
 			const float	dot = DotProduct( eDir2Me, eDir2CP );
 			
 			//Not far enough behind enemy from current pos
-			if ( dot >= 0.4 )
+			if ( dot >= 0.4f )
 				continue;
 		}
 
@@ -2937,7 +2937,7 @@ void NPC_SetPickUpGoal( gentity_t *foundWeap )
 	//NPCInfo->goalEntity = foundWeap;
 	VectorCopy( foundWeap->currentOrigin, org );
 	org[2] += 24 - (foundWeap->mins[2]*-1);//adjust the origin so that I am on the ground
-	NPC_SetMoveGoal( NPC, org, foundWeap->maxs[0]*0.75, qfalse, -1, foundWeap );
+	NPC_SetMoveGoal( NPC, org, foundWeap->maxs[0]*0.75f, qfalse, -1, foundWeap );
 	NPCInfo->tempGoal->waypoint = foundWeap->waypoint;
 	NPCInfo->tempBehavior = BS_DEFAULT;
 	NPCInfo->squadState = SQUAD_TRANSITION;

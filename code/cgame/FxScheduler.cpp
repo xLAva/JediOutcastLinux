@@ -28,7 +28,7 @@ void CMediaHandles::operator=(const CMediaHandles &that )
 {
 	mMediaList.clear();
 
-	for ( int i = 0; i < that.mMediaList.size(); i++ )
+	for ( int i = 0; i < int(that.mMediaList.size()); i++ )
 	{
 		mMediaList.push_back( that.mMediaList[i] );
 	}
@@ -225,7 +225,7 @@ int CFxScheduler::RegisterEffect( const char *file, bool bHasCorrectPath /*= fal
 	}
 
 	// If we'll overflow our buffer, bail out--not a particularly elegant solution
-	if (len >= sizeof(data) - 1 )
+	if (len >= int(sizeof(data)) - 1 )
 	{
 		theFxHelper.CloseFile( fh );
 		return 0;
@@ -1409,7 +1409,7 @@ void CFxScheduler::CreateEffect( CPrimitiveTemplate *fx, vec3_t origin, vec3_t a
 		height = fx->mHeight.GetVal();
 
 		// calculate point on ellipse
-		VectorSet( temp, sin(x) * width * sin(y), cos(x) * width * sin(y), cos(y) * height ); // sinx * siny, cosx * siny, cosy
+		VectorSet( temp, sinf(x) * width * sinf(y), cosf(x) * width * sinf(y), cosf(y) * height ); // sinx * siny, cosx * siny, cosy
 		VectorAdd( org, temp, org );
 
 		if ( fx->mSpawnFlags & FX_AXIS_FROM_SPHERE )

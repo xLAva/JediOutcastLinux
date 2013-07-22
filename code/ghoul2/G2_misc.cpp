@@ -26,6 +26,10 @@
 
 #include "../server/server.h"
 
+#ifdef NEON
+#include "../game/neon_math.h"
+#endif
+
 extern mdxaBone_t		worldMatrix;
 extern mdxaBone_t		worldMatrixInv;
 
@@ -235,7 +239,7 @@ void R_TransformEachSurface( const mdxmSurface_t *surface, vec3_t scale, CMiniHe
 	mdxmVertexTexCoord_t *pTexCoords = (mdxmVertexTexCoord_t *) &v[numVerts];
 
 	// optimisation issue
-	if ((scale[0] != 1.0) || (scale[1] != 1.0) || (scale[2] != 1.0))
+	if ((scale[0] != 1.0f) || (scale[1] != 1.0f) || (scale[2] != 1.0f))
 	{
 		for ( j = 0; j < numVerts; j++ ) 
 		{
@@ -255,6 +259,10 @@ void R_TransformEachSurface( const mdxmSurface_t *surface, vec3_t scale, CMiniHe
 				float	fBoneWeight	= G2_GetVertBoneWeight( v, k, fTotalWeight, iNumWeights );
 
 				const mdxaBone_t &bone=EvalBoneCache(piBoneReferences[iBoneIndex],boneCache);
+				
+				#ifdef NEON
+				R_TransformBoneWeight(tempVert, tempNormal, fBoneWeight, v->vertCoords, v->normal, bone.matrix);
+				#else
 
 				tempVert[0] += fBoneWeight * ( DotProduct( bone.matrix[0], v->vertCoords ) + bone.matrix[0][3] );
 				tempVert[1] += fBoneWeight * ( DotProduct( bone.matrix[1], v->vertCoords ) + bone.matrix[1][3] );
@@ -263,6 +271,7 @@ void R_TransformEachSurface( const mdxmSurface_t *surface, vec3_t scale, CMiniHe
 				tempNormal[0] += fBoneWeight * DotProduct( bone.matrix[0], v->normal );
 				tempNormal[1] += fBoneWeight * DotProduct( bone.matrix[1], v->normal );
 				tempNormal[2] += fBoneWeight * DotProduct( bone.matrix[2], v->normal );
+				#endif
 			}
 			int pos = j * 5;
 
@@ -299,6 +308,9 @@ void R_TransformEachSurface( const mdxmSurface_t *surface, vec3_t scale, CMiniHe
 
 				const mdxaBone_t &bone=EvalBoneCache(piBoneReferences[iBoneIndex],boneCache);
 
+				#ifdef NEON
+				R_TransformBoneWeight(tempVert, tempNormal, fBoneWeight, v->vertCoords, v->normal, bone.matrix);
+				#else
 				tempVert[0] += fBoneWeight * ( DotProduct( bone.matrix[0], v->vertCoords ) + bone.matrix[0][3] );
 				tempVert[1] += fBoneWeight * ( DotProduct( bone.matrix[1], v->vertCoords ) + bone.matrix[1][3] );
 				tempVert[2] += fBoneWeight * ( DotProduct( bone.matrix[2], v->vertCoords ) + bone.matrix[2][3] );
@@ -306,6 +318,7 @@ void R_TransformEachSurface( const mdxmSurface_t *surface, vec3_t scale, CMiniHe
 				tempNormal[0] += fBoneWeight * DotProduct( bone.matrix[0], v->normal );
 				tempNormal[1] += fBoneWeight * DotProduct( bone.matrix[1], v->normal );
 				tempNormal[2] += fBoneWeight * DotProduct( bone.matrix[2], v->normal );
+				#endif
 			}
 
 			// copy tranformed verts into temp space
@@ -449,13 +462,13 @@ static void G2_BuildHitPointST( const vec3_t A, const float SA, const float TA,
 	*s=fmod(*s, 1);
 	if (*s< 0)
 	{
-		*s+= 1.0;
+		*s+= 1.0f;
 	}
 
 	*t=fmod(*t, 1);
 	if (*t< 0)
 	{
-		*t+= 1.0;
+		*t+= 1.0f;
 	}
 
 }
@@ -480,7 +493,7 @@ qboolean G2_SegmentTriangleTest( const vec3_t start, const vec3_t end,
 
 	*denom=DotProduct(ray, returnedNormal);
 	
-	if (fabs(*denom)<tiny||        // triangle parallel to ray
+	if (fabsf(*denom)<tiny||        // triangle parallel to ray
 		(!backFaces && *denom>0)||		// not accepting back faces
 		(!frontFaces && *denom<0))		//not accepting front faces
 	{
@@ -714,8 +727,8 @@ static bool G2_RadiusTracePolys(
 	VectorNormalize(basis1);
 	VectorNormalize(basis2);
 
-	const float c=cos(0);//theta
-	const float s=sin(0);//theta
+	const float c=cosf(0);//theta
+	const float s=sinf(0);//theta
 
 	VectorScale(basis1, 0.5f * c / TS.m_fRadius,taxis);
 	VectorMA(taxis,     0.5f * s / TS.m_fRadius,basis2,taxis);
@@ -728,10 +741,10 @@ static bool G2_RadiusTracePolys(
 	
 	int flags=63;
 	//rayDir/=lengthSquared(raydir);
-	const float f = VectorLengthSquared(v3RayDir); 
-	v3RayDir[0]/=f;
-	v3RayDir[1]/=f;
-	v3RayDir[2]/=f;
+	const float f = 1/VectorLengthSquared(v3RayDir); /*SEB*/
+	v3RayDir[0]*=f;
+	v3RayDir[1]*=f;
+	v3RayDir[2]*=f;
 
 	for ( j = 0; j < numVerts; j++ ) 
 	{
@@ -901,7 +914,7 @@ static void G2_TraceSurfaces(CTraceSurface &TS)
 	// if this surface is not off, try to hit it
 	if (!offFlags)
 	{
-		if (!(fabs(TS.m_fRadius) < 0.1))	// if not a point-trace
+		if (!(fabsf(TS.m_fRadius) < 0.1f))	// if not a point-trace
 		{
 			// .. then use radius check
 			//

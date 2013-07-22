@@ -4,8 +4,6 @@
 //
 #include "../server/exe_headers.h"
 
-
-
 #include "tr_local.h"
 #include "tr_stl.h"
 #include "tr_jpeg_interface.h"
@@ -320,7 +318,8 @@ vidmode_t r_vidModes[] =
     { "Mode  8: 1280x1024",		1280,	1024,	1 },
     { "Mode  9: 1600x1200",		1600,	1200,	1 },
     { "Mode 10: 2048x1536",		2048,	1536,	1 },
-    { "Mode 11: 856x480 (wide)",856,	480,	1 }
+    { "Mode 11: 800x480",		800,	480,	1 },
+    { "Mode 12: 856x480",		856,	480,	1 }
 };
 static int	s_numVidModes = ( sizeof( r_vidModes ) / sizeof( r_vidModes[0] ) );
 
@@ -397,10 +396,25 @@ void R_TakeScreenshot( int x, int y, int width, int height, char *fileName ) {
 	{
 		// JPG saver expects to be fed RGBA data, though it presumably ignores 'A'...
 		//
+		#ifdef HAVE_GLES
+		int p2width=1, p2height=1;
+		while (p2width<glConfig.vidWidth) p2width*=2;
+		while (p2height<glConfig.vidHeight) p2height*=2;
+		byte *source = (byte*) ri.Malloc( p2width * p2height * 4, TAG_TEMP_WORKSPACE, qfalse );
+		#endif
 		buffer = (unsigned char *) ri.Malloc(glConfig.vidWidth*glConfig.vidHeight*4, TAG_TEMP_WORKSPACE, qfalse);
 		
 		glPixelStorei(GL_PACK_ALIGNMENT,1);
+		#ifdef HAVE_GLES
+		qglReadPixels( 0, 0, p2width, p2height, GL_RGBA, GL_UNSIGNED_BYTE, source );
+		for (int yy=0; yy<height; yy++)
+			for (int xx=0; xx<width; xx++)
+				for (int aa=0; aa<4; aa++)
+					buffer[yy*width*4+xx*4+aa]=source[(yy+y)*p2width*4+(xx+x)*4+aa];
+		ri.Free(source);
+		#else
 		qglReadPixels( x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer ); 
+		#endif
 
 		// gamma correct
 		if ( tr.overbrightBits>0 && glConfig.deviceSupportsGamma ) {
@@ -423,6 +437,18 @@ void R_TakeScreenshot( int x, int y, int width, int height, char *fileName ) {
 		buffer[16] = 24;	// pixel size
 
 		glPixelStorei(GL_PACK_ALIGNMENT,1);
+		#ifdef HAVE_GLES
+		int p2width=1, p2height=1;
+		while (p2width<glConfig.vidWidth) p2width*=2;
+		while (p2height<glConfig.vidHeight) p2height*=2;
+		byte *source = (byte*) ri.Malloc( p2width * p2height * 4, TAG_TEMP_WORKSPACE, qfalse );
+		qglReadPixels( 0, 0, p2width, p2height, GL_RGBA, GL_UNSIGNED_BYTE, source );
+		for (int yy=0; yy<height; yy++)
+			for (int xx=0; xx<width; xx++)
+				for (int aa=0; aa<3; aa++)
+					buffer[18+yy*width*3+xx*3+aa]=source[(yy+y)*p2width*4+(xx+x)*4+(3-aa)];
+		ri.Free(source);
+		#else
 		qglReadPixels( x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer+18 ); 
 
 		// swap rgb to bgr
@@ -432,6 +458,7 @@ void R_TakeScreenshot( int x, int y, int width, int height, char *fileName ) {
 			buffer[i] = buffer[i+2];
 			buffer[i+2] = temp;
 		}
+		#endif
 
 		// gamma correct
 		if ( tr.overbrightBits>0 && glConfig.deviceSupportsGamma ) {
@@ -488,8 +515,16 @@ void R_LevelShot( void ) {
 	int			xx, yy;
 
 	sprintf( checkname, "levelshots/%s.tga", tr.world->baseName );
-
+	
+	//For GLES, grab pixel in a power of two dimension only !
+	#ifdef HAVE_GLES
+	int p2width=1, p2height=1;
+	while (p2width<glConfig.vidWidth) p2width*=2;
+	while (p2height<glConfig.vidHeight) p2height*=2;
+	source = (byte*) ri.Malloc( p2width * p2height * 4, TAG_TEMP_WORKSPACE, qfalse );
+	#else
 	source = (byte*) ri.Malloc( glConfig.vidWidth * glConfig.vidHeight * 3, TAG_TEMP_WORKSPACE, qfalse );
+	#endif
 
 	buffer = (byte*) ri.Malloc( LEVELSHOTSIZE * LEVELSHOTSIZE*3 + 18, TAG_TEMP_WORKSPACE, qfalse );
 	memset (buffer, 0, 18);
@@ -501,7 +536,11 @@ void R_LevelShot( void ) {
 	buffer[16] = 24;	// pixel size
 
 	glPixelStorei(GL_PACK_ALIGNMENT,1);
+	#ifdef HAVE_GLES
+	qglReadPixels( 0, 0,p2width, p2height, GL_RGBA, GL_UNSIGNED_BYTE, source ); 
+	#else
 	qglReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, source ); 
+	#endif
 
 	// resample from source
 	xScale = glConfig.vidWidth / (4.0*LEVELSHOTSIZE);
@@ -511,7 +550,11 @@ void R_LevelShot( void ) {
 			r = g = b = 0;
 			for ( yy = 0 ; yy < 3 ; yy++ ) {
 				for ( xx = 0 ; xx < 4 ; xx++ ) {
+					#ifdef HAVE_GLES
+					src = source + 4 * ( p2width * (int)( (y*3+yy)*yScale ) + (int)( (x*4+xx)*xScale ) );
+					#else
 					src = source + 3 * ( glConfig.vidWidth * (int)( (y*3+yy)*yScale ) + (int)( (x*4+xx)*xScale ) );
+					#endif
 					r += src[0];
 					g += src[1];
 					b += src[2];
@@ -682,6 +725,7 @@ void R_ScreenShotTGA_f (void) {
 */
 void GL_SetDefaultState( void )
 {
+//ri.Printf(PRINT_ALL, "GL_SetDefaultState()\n");
 	qglClearDepth( 1.0f );
 
 	qglCullFace(GL_FRONT);
@@ -714,12 +758,19 @@ void GL_SetDefaultState( void )
 	//
 	glState.glStateBits = GLS_DEPTHTEST_DISABLE | GLS_DEPTHMASK_TRUE;
 
+#ifndef HAVE_GLES
 	qglPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+#endif
 	qglDepthMask( GL_TRUE );
 	qglDisable( GL_DEPTH_TEST );
 	qglEnable( GL_SCISSOR_TEST );
 	qglDisable( GL_CULL_FACE );
 	qglDisable( GL_BLEND );
+	
+#ifdef HAVE_GLES
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+#endif
 
 #ifdef _NPATCH
 	// If n-patches are supported, make sure they are disabled for now
@@ -879,7 +930,7 @@ void R_FogDistance_f(void)
 //		}
 //		else
 		{
-			distance = 1.0 / (8.0 * tr.world->fogs[tr.world->globalFog].tcScale);
+			distance = 1.0f / (8.0f * tr.world->fogs[tr.world->globalFog].tcScale);
 		}
 
 		ri.Printf(PRINT_ALL, "R_FogDistance_f: Current Distance: %.0f\n", distance);
@@ -893,11 +944,11 @@ void R_FogDistance_f(void)
 	}
 
 	distance = atof(ri.Cmd_Argv(1));
-	if (distance < 1.0) 
+	if (distance < 1.0f) 
 	{
-		distance = 1.0;
+		distance = 1.0f;
 	}
-	tr.world->fogs[tr.world->globalFog].tcScale = 1.0 / ( distance * 8 );
+	tr.world->fogs[tr.world->globalFog].tcScale = 1.0f / ( distance * 8 );
 }
 
 /************************************************************************************************
@@ -1029,7 +1080,7 @@ void R_Register( void )
 	r_finish = ri.Cvar_Get ("r_finish", "0", CVAR_ARCHIVE);
 	r_textureMode = ri.Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	r_swapInterval = ri.Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
-#ifdef __MACOS__
+#if defined(__MACOS__) || defined(PANDORA)
 	r_gamma = ri.Cvar_Get( "r_gamma", "1.2", CVAR_ARCHIVE );
 #else
 	r_gamma = ri.Cvar_Get( "r_gamma", "1", CVAR_ARCHIVE );
@@ -1179,10 +1230,10 @@ void R_Init( void ) {
 	//
 	for ( i = 0; i < FUNCTABLE_SIZE; i++ )
 	{
-		tr.sinTable[i]		= sin( DEG2RAD( i * 360.0f / ( ( float ) ( FUNCTABLE_SIZE - 1 ) ) ) );
+		tr.sinTable[i]		= sinf( DEG2RAD( i * 360.0f / ( ( float ) ( FUNCTABLE_SIZE - 1 ) ) ) );
 		tr.squareTable[i]	= ( i < FUNCTABLE_SIZE/2 ) ? 1.0f : -1.0f;
 		tr.sawToothTable[i] = (float)i / FUNCTABLE_SIZE;
-		tr.inverseSawToothTable[i] = 1.0 - tr.sawToothTable[i];
+		tr.inverseSawToothTable[i] = 1.0f - tr.sawToothTable[i];
 
 		if ( i < FUNCTABLE_SIZE / 2 )
 		{
@@ -1288,9 +1339,11 @@ Touch all images to make sure they are resident
 extern qboolean Sys_LowPhysicalMemory();
 void	RE_EndRegistration( void ) {
 	R_SyncRenderThread();
+//	#ifndef PANDORA
 	if (!Sys_LowPhysicalMemory()) {
 		RB_ShowImages();
 	}
+//	#endif
 	qglClear( GL_COLOR_BUFFER_BIT );
 }
 

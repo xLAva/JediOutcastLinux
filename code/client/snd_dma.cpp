@@ -30,8 +30,8 @@ extern qboolean Sys_LowPhysicalMemory();
 //
 // vars for bgrnd music track...
 //
-const int iMP3MusicStream_DiskBytesToRead = 10000;//4096;
-const int iMP3MusicStream_DiskBufferSize = iMP3MusicStream_DiskBytesToRead*2; //*10;
+const int iMP3MusicStream_DiskBytesToRead = 10000;//4096;//10000;
+const int iMP3MusicStream_DiskBufferSize = iMP3MusicStream_DiskBytesToRead*2; //*10;//*2;
 
 typedef struct
 {	
@@ -185,7 +185,7 @@ loopSound_t	loopSounds[MAX_LOOP_SOUNDS];
 
 
 int			s_rawend;
-portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
+portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES*5];
 vec3_t		s_entityPosition[MAX_GENTITIES];
 int			s_entityWavVol[MAX_GENTITIES];
 int			s_entityWavVol_back[MAX_GENTITIES];
@@ -388,8 +388,10 @@ void S_Init( void ) {
 #if !(defined __linux__ && defined __i386__)
 #if	!id386
 #else
+#ifndef ARM
 	extern unsigned int uiMMXAvailable;
 	uiMMXAvailable = !!(s_CPUType->integer >= CPUID_INTEL_MMX);
+#endif
 #endif
 #endif
 
@@ -1944,7 +1946,7 @@ void S_RawSamples( int samples, int rate, int width, int s_channels, const byte 
 //Com_Printf ("%i < %i < %i\n", s_soundtime, s_paintedtime, s_rawend);
 	if (s_channels == 2 && width == 2)
 	{
-		if (scale == 1.0)
+		if (scale == 1.0f)
 		{	// optimized case
 			if (bFirstOrOnlyUpdateThisFrame)
 			{
@@ -5412,7 +5414,7 @@ bool EAX3ListenerInterpolate(LPEAXLISTENERPROPERTIES lpStart, LPEAXLISTENERPROPE
 	if (lpStart->flEnvironmentSize == lpFinish->flEnvironmentSize)
 		lpResult->flEnvironmentSize = lpStart->flEnvironmentSize;
 	else
-		lpResult->flEnvironmentSize = (float)exp( (log(lpStart->flEnvironmentSize) * flInvRatio) + (log(lpFinish->flEnvironmentSize) * flRatio) );
+		lpResult->flEnvironmentSize = (float)expf( (logf(lpStart->flEnvironmentSize) * flInvRatio) + (logf(lpFinish->flEnvironmentSize) * flRatio) );
 	
 	// Environment Diffusion
 	if (lpStart->flEnvironmentDiffusion == lpFinish->flEnvironmentDiffusion)
@@ -5442,19 +5444,19 @@ bool EAX3ListenerInterpolate(LPEAXLISTENERPROPERTIES lpStart, LPEAXLISTENERPROPE
 	if (lpStart->flDecayTime == lpFinish->flDecayTime)
 		lpResult->flDecayTime = lpStart->flDecayTime;
 	else
-		lpResult->flDecayTime = (float)exp( (log(lpStart->flDecayTime) * flInvRatio) + (log(lpFinish->flDecayTime) * flRatio) );
+		lpResult->flDecayTime = (float)expf( (logf(lpStart->flDecayTime) * flInvRatio) + (logf(lpFinish->flDecayTime) * flRatio) );
 	
 	// Decay HF Ratio
 	if (lpStart->flDecayHFRatio == lpFinish->flDecayHFRatio)
 		lpResult->flDecayHFRatio = lpStart->flDecayHFRatio;
 	else
-		lpResult->flDecayHFRatio = (float)exp( (log(lpStart->flDecayHFRatio) * flInvRatio) + (log(lpFinish->flDecayHFRatio) * flRatio) );
+		lpResult->flDecayHFRatio = (float)expf( (logf(lpStart->flDecayHFRatio) * flInvRatio) + (logf(lpFinish->flDecayHFRatio) * flRatio) );
 	
 	// Decay LF Ratio
 	if (lpStart->flDecayLFRatio == lpFinish->flDecayLFRatio)
 		lpResult->flDecayLFRatio = lpStart->flDecayLFRatio;
 	else
-		lpResult->flDecayLFRatio = (float)exp( (log(lpStart->flDecayLFRatio) * flInvRatio) + (log(lpFinish->flDecayLFRatio) * flRatio) );
+		lpResult->flDecayLFRatio = (float)expf( (logf(lpStart->flDecayLFRatio) * flInvRatio) + (logf(lpFinish->flDecayLFRatio) * flRatio) );
 	
 	// Reflections
 	if (lpStart->lReflections == lpFinish->lReflections)
@@ -5466,7 +5468,7 @@ bool EAX3ListenerInterpolate(LPEAXLISTENERPROPERTIES lpStart, LPEAXLISTENERPROPE
 	if (lpStart->flReflectionsDelay == lpFinish->flReflectionsDelay)
 		lpResult->flReflectionsDelay = lpStart->flReflectionsDelay;
 	else
-		lpResult->flReflectionsDelay = (float)exp( (log(lpStart->flReflectionsDelay+0.0001) * flInvRatio) + (log(lpFinish->flReflectionsDelay+0.0001) * flRatio) );
+		lpResult->flReflectionsDelay = (float)expf( (logf(lpStart->flReflectionsDelay+0.0001f) * flInvRatio) + (logf(lpFinish->flReflectionsDelay+0.0001f) * flRatio) );
 
 	// Reflections Pan
 
@@ -5502,7 +5504,7 @@ bool EAX3ListenerInterpolate(LPEAXLISTENERPROPERTIES lpStart, LPEAXLISTENERPROPE
 	if (lpStart->flReverbDelay == lpFinish->flReverbDelay)
 		lpResult->flReverbDelay = lpStart->flReverbDelay;
 	else
-		lpResult->flReverbDelay = (float)exp( (log(lpStart->flReverbDelay+0.0001) * flInvRatio) + (log(lpFinish->flReverbDelay+0.0001) * flRatio) );
+		lpResult->flReverbDelay = (float)expf( (logf(lpStart->flReverbDelay+0.0001f) * flInvRatio) + (logf(lpFinish->flReverbDelay+0.0001f) * flRatio) );
 	
 	// Reverb Pan
 
@@ -5532,7 +5534,7 @@ bool EAX3ListenerInterpolate(LPEAXLISTENERPROPERTIES lpStart, LPEAXLISTENERPROPE
 	if (lpStart->flEchoTime == lpFinish->flEchoTime)
 		lpResult->flEchoTime = lpStart->flEchoTime;
 	else
-		lpResult->flEchoTime = (float)exp( (log(lpStart->flEchoTime) * flInvRatio) + (log(lpFinish->flEchoTime) * flRatio) );
+		lpResult->flEchoTime = (float)expf( (logf(lpStart->flEchoTime) * flInvRatio) + (logf(lpFinish->flEchoTime) * flRatio) );
 	
 	// Echo Depth
 	if (lpStart->flEchoDepth == lpFinish->flEchoDepth)
@@ -5544,7 +5546,7 @@ bool EAX3ListenerInterpolate(LPEAXLISTENERPROPERTIES lpStart, LPEAXLISTENERPROPE
 	if (lpStart->flModulationTime == lpFinish->flModulationTime)
 		lpResult->flModulationTime = lpStart->flModulationTime;
 	else
-		lpResult->flModulationTime = (float)exp( (log(lpStart->flModulationTime) * flInvRatio) + (log(lpFinish->flModulationTime) * flRatio) );
+		lpResult->flModulationTime = (float)expf( (logf(lpStart->flModulationTime) * flInvRatio) + (logf(lpFinish->flModulationTime) * flRatio) );
 	
 	// Modulation Depth
 	if (lpStart->flModulationDepth == lpFinish->flModulationDepth)
@@ -5562,13 +5564,13 @@ bool EAX3ListenerInterpolate(LPEAXLISTENERPROPERTIES lpStart, LPEAXLISTENERPROPE
 	if (lpStart->flHFReference == lpFinish->flHFReference)
 		lpResult->flHFReference = lpStart->flHFReference;
 	else
-		lpResult->flHFReference = (float)exp( (log(lpStart->flHFReference) * flInvRatio) + (log(lpFinish->flHFReference) * flRatio) );
+		lpResult->flHFReference = (float)expf( (logf(lpStart->flHFReference) * flInvRatio) + (logf(lpFinish->flHFReference) * flRatio) );
 	
 	// LF Reference
 	if (lpStart->flLFReference == lpFinish->flLFReference)
 		lpResult->flLFReference = lpStart->flLFReference;
 	else
-		lpResult->flLFReference = (float)exp( (log(lpStart->flLFReference) * flInvRatio) + (log(lpFinish->flLFReference) * flRatio) );
+		lpResult->flLFReference = (float)expf( (logf(lpStart->flLFReference) * flInvRatio) + (logf(lpFinish->flLFReference) * flRatio) );
 	
 	// Room Rolloff Factor
 	if (lpStart->flRoomRolloffFactor == lpFinish->flRoomRolloffFactor)
@@ -5674,7 +5676,7 @@ void Clamp(EAXVECTOR *eaxVector)
 	float flMagnitude;
 	float flInvMagnitude;
 
-	flMagnitude = (float)sqrt((eaxVector->x*eaxVector->x) + (eaxVector->y*eaxVector->y) + (eaxVector->z*eaxVector->z));
+	flMagnitude = (float)sqrtf((eaxVector->x*eaxVector->x) + (eaxVector->y*eaxVector->y) + (eaxVector->z*eaxVector->z));
 
 	if (flMagnitude <= 1.0f)
 		return;

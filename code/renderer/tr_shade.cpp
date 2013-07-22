@@ -26,6 +26,7 @@ R_ArrayElementDiscrete
 This is just for OpenGL conformance testing, it should never be the fastest
 ================
 */
+#ifndef HAVE_GLES
 static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
 	qglColor4ubv( tess.svars.colors[ index ] );
 	if ( glState.currenttmu ) {
@@ -36,7 +37,7 @@ static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
 	}
 	qglVertex3fv( tess.xyz[ index ] );
 }
-
+#endif
 #ifdef _NPATCH
 // Version of R_ArrayElementDiscrete that also sends out normals
 static void APIENTRY R_ArrayElementDiscreteN( GLint index ) {
@@ -51,6 +52,14 @@ static void APIENTRY R_ArrayElementDiscreteN( GLint index ) {
 	qglVertex3fv( tess.xyz[ index ] );
 }
 #endif // _NPATCH
+#ifdef HAVE_GLES
+#define MAX_INDEX 4096
+glIndex_t sindexes[MAX_INDEX];
+int	  num_sindexed;
+void  AddIndexe(GLint idx) {
+	sindexes[num_sindexed++]=idx;
+}
+#endif
 
 /*
 ===================
@@ -64,8 +73,16 @@ static void R_DrawStripElements( int numIndexes, const glIndex_t *indexes, void 
 	int i;
 	int last[3] = { -1, -1, -1 };
 	qboolean even;
-
+	#ifdef HAVE_GLES
+	#define HYBRID 100
+	#ifdef HYBRID
+	int tri_start = 0;
+	int tri_numb = 0;
+	#endif
+	num_sindexed=0;
+	#else
 	qglBegin( GL_TRIANGLE_STRIP );
+	#endif
 	c_begins++;
 
 	if ( numIndexes <= 0 ) {
@@ -101,9 +118,31 @@ static void R_DrawStripElements( int numIndexes, const glIndex_t *indexes, void 
 			// a new one
 			else
 			{
+				#ifdef HAVE_GLES
+				#ifdef HYBRID
+				// check if it's worth the triangle strip...
+				if (num_sindexed>HYBRID) {
+					// yes, large strip here
+					// put the triangles that we were accumulating before
+					if (tri_numb)
+						glDrawElements( GL_TRIANGLES, tri_numb, GL_INDEX_TYPE, indexes+tri_start );
+					// draw strip
+					glDrawElements( GL_TRIANGLE_STRIP, num_sindexed, GL_UNSIGNED_SHORT, sindexes );
+					tri_start = i;
+					tri_numb = 0;
+				} else {
+					// nope, discard this little strip
+					tri_numb=(i-tri_start);
+				}
+				#else
+				glDrawElements( GL_TRIANGLE_STRIP, num_sindexed, GL_UNSIGNED_SHORT, sindexes );
+				#endif
+				num_sindexed = 0;
+				#else
 				qglEnd();
 
 				qglBegin( GL_TRIANGLE_STRIP );
+				#endif
 				c_begins++;
 
 				element( indexes[i+0] );
@@ -129,9 +168,31 @@ static void R_DrawStripElements( int numIndexes, const glIndex_t *indexes, void 
 			// a new one
 			else
 			{
+				#ifdef HAVE_GLES
+				#ifdef HYBRID
+				// check if it's worth the triangle strip...
+				if (num_sindexed>HYBRID) {
+					// yes, large strip here
+					// put the triangles that we were accumulating before
+					if (tri_numb)
+						glDrawElements( GL_TRIANGLES, tri_numb, GL_INDEX_TYPE, indexes+tri_start );
+					// draw strip
+					glDrawElements( GL_TRIANGLE_STRIP, num_sindexed, GL_UNSIGNED_SHORT, sindexes );
+					tri_start = i;
+					tri_numb = 0;
+				} else {
+					// nope, discard this little strip
+					tri_numb=(i-tri_start);
+				}
+				#else
+				glDrawElements( GL_TRIANGLE_STRIP, num_sindexed, GL_UNSIGNED_SHORT, sindexes );
+				#endif
+				num_sindexed = 0;
+				#else
 				qglEnd();
 
 				qglBegin( GL_TRIANGLE_STRIP );
+				#endif
 				c_begins++;
 
 				element( indexes[i+0] );
@@ -149,9 +210,20 @@ static void R_DrawStripElements( int numIndexes, const glIndex_t *indexes, void 
 		last[2] = indexes[i+2];
 	}
 
+	#ifdef HAVE_GLES
+	#ifdef HYBRID
+	// check if it's worth the triangle strip...
+	// put the triangles that we were accumulating before
+	if (tri_numb)
+		glDrawElements( GL_TRIANGLES, tri_numb, GL_INDEX_TYPE, indexes+tri_start );
+	// draw strip
+	#endif
+	glDrawElements( GL_TRIANGLE_STRIP, num_sindexed, GL_UNSIGNED_SHORT, sindexes );
+	num_sindexed = 0;
+	#else
 	qglEnd();
+	#endif
 }
-
 
 
 /*
@@ -167,30 +239,49 @@ static void R_DrawElements( int numIndexes, const glIndex_t *indexes ) {
 	int		primitives;
 
 	primitives = r_primitives->integer;
-
 	// default is to use triangles if compiled vertex arrays are present
+//#ifndef HAVE_GLES
 	if ( primitives == 0 ) {
+		#ifdef HAVE_GLES
+		#ifdef HYBRID
+		if (numIndexes<HYBRID) {
+			primitives = 2;
+		} else {
+			primitives = 1;
+		}
+		#else
+		primitives = 2;
+		#endif
+		#else
 		if ( qglLockArraysEXT ) {
 			primitives = 2;
 		} else {
 			primitives = 1;
 		}
+		#endif
 	}
-
-
+#ifdef HAVE_GLES
+	if ( (primitives == 2) || (primitives == 3)) {
+#else
 	if ( primitives == 2 ) {
+#endif
 		qglDrawElements( GL_TRIANGLES, 
 						numIndexes,
 						GL_INDEX_TYPE,
 						indexes );
+//#ifndef HAVE_GLES
 		return;
 	}
-
 	if ( primitives == 1 ) {
+#ifdef HAVE_GLES
+		R_DrawStripElements( numIndexes,  indexes, AddIndexe );
+#else
 		R_DrawStripElements( numIndexes,  indexes, qglArrayElement );
+#endif
 		return;
 	}
 	
+#ifndef HAVE_GLES
 	if ( primitives == 3 ) {
 #ifdef _NPATCH
 		if ( tess.npatched ) {
@@ -204,7 +295,7 @@ static void R_DrawElements( int numIndexes, const glIndex_t *indexes ) {
 #endif // _NPATCH
 		return;
 	}
-
+#endif
 	// anything else will cause no drawing
 }
 
@@ -331,13 +422,15 @@ static void DrawTris (shaderCommands_t *input)
 		qglColor3f( 1.0, 1.0, 1.0); //white
 	}
 
-	if ( r_showtris->integer == 2 )
+	if ( r_showtris->integer == 2 && false)
 	{
 		// tries to do non-xray style showtris
 		GL_State( GLS_POLYMODE_LINE );
 
+		#ifndef HAVE_GLES
 		qglEnable( GL_POLYGON_OFFSET_LINE );
 		qglPolygonOffset( -1, -2 );
+		#endif
 
 		qglDisableClientState( GL_COLOR_ARRAY );
 		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -374,7 +467,9 @@ static void DrawTris (shaderCommands_t *input)
 #endif
 #endif // _NPATCH
 
+		#ifndef HAVE_GLES
 		qglDisable( GL_POLYGON_OFFSET_LINE );
+		#endif
 	}
 	else
 	{
@@ -401,7 +496,14 @@ static void DrawTris (shaderCommands_t *input)
 			GLimp_LogComment( "glLockArraysEXT\n" );
 		}
 
+		#ifdef HAVE_GLES
+		qglDrawElements( GL_LINE_STRIP, 
+						input->numIndexes,
+						GL_INDEX_TYPE,
+						input->indexes );
+		#else
 		R_DrawElements( input->numIndexes, input->indexes );
+		#endif
 
 		if (qglUnlockArraysEXT) {
 			qglUnlockArraysEXT();
@@ -435,6 +537,9 @@ static void DrawNormals (shaderCommands_t *input) {
 	qglDepthRange( 0, 0 );	// never occluded
 	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
 
+	#ifdef HAVE_GLES
+	/*SEB *TODO* */
+	#else
 	qglBegin (GL_LINES);
 	for (i = 0 ; i < input->numVertexes ; i++) {
 		qglVertex3fv (input->xyz[i]);
@@ -442,6 +547,7 @@ static void DrawNormals (shaderCommands_t *input) {
 		qglVertex3fv (temp);
 	}
 	qglEnd ();
+	#endif
 
 	qglDepthRange( 0, 1 );
 }
@@ -696,7 +802,11 @@ static void ProjectDlightTexture( void ) {
 	byte	clipBits[SHADER_MAX_VERTEXES];
 	MAC_STATIC float	texCoordsArray[SHADER_MAX_VERTEXES][2];
 	byte	colorArray[SHADER_MAX_VERTEXES][4];
+	#ifdef HAVE_GLES
+	unsigned short	hitIndexes[SHADER_MAX_INDEXES];
+	#else
 	unsigned	hitIndexes[SHADER_MAX_INDEXES];
+	#endif
 	int		numIndexes;
 	float	scale;
 	float	radius;
@@ -736,8 +846,8 @@ static void ProjectDlightTexture( void ) {
 			backEnd.pc.c_dlightVertexes++;
 
 			VectorSubtract( origin, tess.xyz[i], dist );
-			texCoords[0] = 0.5 + dist[0] * scale;
-			texCoords[1] = 0.5 + dist[1] * scale;
+			texCoords[0] = 0.5f + dist[0] * scale;
+			texCoords[1] = 0.5f + dist[1] * scale;
 
 			clip = 0;
 			if ( texCoords[0] < 0 ) {
@@ -763,8 +873,8 @@ static void ProjectDlightTexture( void ) {
 				if ( dist[2] < 0 ) {
 					dist[2] = -dist[2];
 				}
-				if ( dist[2] < radius * 0.5 ) {
-					modulate = 1.0;
+				if ( dist[2] < radius * 0.5f ) {
+					modulate = 1.0f;
 				} else {
 					modulate = 2.0f * (radius - dist[2]) * scale;
 				}
@@ -778,7 +888,11 @@ static void ProjectDlightTexture( void ) {
 		// build a list of triangles that need light
 		numIndexes = 0;
 		for ( i = 0 ; i < tess.numIndexes ; i += 3 ) {
+			#ifdef HAVE_GLES
+			short	a, b, c;
+			#else
 			int		a, b, c;
+			#endif
 
 			a = tess.indexes[i];
 			b = tess.indexes[i+1];
@@ -823,13 +937,13 @@ Blends a fog texture on top of everything else
 static void RB_FogPass( void ) {
 	fog_t		*fog;
 	int			i;
-
+	#ifndef HAVE_GLES
 	qglEnableClientState( GL_COLOR_ARRAY );
 	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
 
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY);
 	qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[0] );
-
+	#endif
 	fog = tr.world->fogs + tess.fogNum;
 
 	for ( i = 0; i < tess.numVertexes; i++ ) {
@@ -846,6 +960,14 @@ static void RB_FogPass( void ) {
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	}
 
+	#ifdef HAVE_GLES
+	// do it after messing with the values
+	qglEnableClientState( GL_COLOR_ARRAY );
+	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
+
+	qglEnableClientState( GL_TEXTURE_COORD_ARRAY);
+	qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[0] );
+	#endif
 	R_DrawElements( tess.numIndexes, tess.indexes );
 }
 
@@ -1811,7 +1933,8 @@ void RB_EndSurface( void ) {
 		DrawTris (input);
 	}
 
-	if ( r_shownormals->integer ) {
+	if ( r_shownormals->integer ) 
+	{
 		DrawNormals (input);
 	}
 

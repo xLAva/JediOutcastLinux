@@ -537,7 +537,7 @@ qboolean CG_Credits_Draw( void )
 			//
 			iYpos += iFontHeight*2;	// skip blank line then move to main pos
 			//
-			for (int i=0; i<CreditCard.vstrText.size(); i++)
+			for (unsigned int i=0; i<CreditCard.vstrText.size(); i++)
 			{
 				StringAndSize_t &StringAndSize = CreditCard.vstrText[i];
 				iWidth = StringAndSize.GetPixelLength();
@@ -610,7 +610,7 @@ qboolean CG_Credits_Draw( void )
 
 						// now print any dotted members...
 						//
-						for (int i=0; i<CreditLine.vstrText.size(); i++)
+						for (unsigned int i=0; i<CreditLine.vstrText.size(); i++)
 						{
 							StringAndSize_t &StringAndSize = CreditLine.vstrText[i];
 							iWidth = StringAndSize.GetPixelLength();

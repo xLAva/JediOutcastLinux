@@ -101,7 +101,7 @@ static void AddSkyPolygon (int nump, vec3_t vecs)
 			dv = vecs[j - 1];
 		else
 			dv = -vecs[-j - 1];
-		if (dv < 0.001)
+		if (dv < 0.001f)
 			continue;	// don't divide by zero
 		j = vec_to_st[axis][0];
 		if (j < 0)
@@ -125,7 +125,7 @@ static void AddSkyPolygon (int nump, vec3_t vecs)
 	}
 }
 
-#define	ON_EPSILON		0.1			// point on plane side epsilon
+#define	ON_EPSILON		0.1f			// point on plane side epsilon
 #define	MAX_CLIP_VERTS	64
 /*
 ================
@@ -294,7 +294,7 @@ static void MakeSkyVec( float s, float t, int axis, float outSt[2], vec3_t outXY
 	int			j, k;
 	float	boxSize;
 
-	boxSize = backEnd.viewParms.zFar / 1.75;		// div sqrt(3)
+	boxSize = backEnd.viewParms.zFar / 1.75f;		// div sqrt(3)
 	b[0] = s*boxSize;
 	b[1] = t*boxSize;
 	b[2] = boxSize;
@@ -313,8 +313,8 @@ static void MakeSkyVec( float s, float t, int axis, float outSt[2], vec3_t outXY
 	}
 
 	// avoid bilerp seam
-	s = (s+1)*0.5;
-	t = (t+1)*0.5;
+	s = (s+1)*0.5f;
+	t = (t+1)*0.5f;
 	if (s < sky_min)
 	{
 		s = sky_min;
@@ -333,7 +333,7 @@ static void MakeSkyVec( float s, float t, int axis, float outSt[2], vec3_t outXY
 		t = sky_max;
 	}
 
-	t = 1.0 - t;
+	t = 1.0f - t;
 
 
 	if ( outSt )
@@ -352,21 +352,60 @@ static void DrawSkySide( struct image_s *image, const int mins[2], const int max
 
 	GL_Bind( image );
 
+	#ifdef HAVE_GLES
+	GLfloat vtx[3*1024];	// arbitrary sized
+	GLfloat tex[2*1024];
+	int idx;
+	#endif
+	
+	GLboolean text = qglIsEnabled(GL_TEXTURE_COORD_ARRAY);
+	GLboolean glcol = qglIsEnabled(GL_COLOR_ARRAY);
+	if (glcol)
+		qglDisableClientState(GL_COLOR_ARRAY);
+	if (!text)
+		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	for ( t = mins[1]+HALF_SKY_SUBDIVISIONS; t < maxs[1]+HALF_SKY_SUBDIVISIONS; t++ )
 	{
+		#ifdef HAVE_GLES
+		idx=0;
+		#else
 		qglBegin( GL_TRIANGLE_STRIP );
+		#endif
 
 		for ( s = mins[0]+HALF_SKY_SUBDIVISIONS; s <= maxs[0]+HALF_SKY_SUBDIVISIONS; s++ )
 		{
+			#ifdef HAVE_GLES
+			memcpy(tex+idx*2, s_skyTexCoords[t][s], sizeof(GLfloat)*2);
+			memcpy(vtx+idx*3, s_skyPoints[t][s], sizeof(GLfloat)*3);
+			idx++;
+			memcpy(tex+idx*2, s_skyTexCoords[t+1][s], sizeof(GLfloat)*2);
+			memcpy(vtx+idx*3, s_skyPoints[t+1][s], sizeof(GLfloat)*3);
+			idx++;
+			#else
 			qglTexCoord2fv( s_skyTexCoords[t][s] );
 			qglVertex3fv( s_skyPoints[t][s] );
 
 			qglTexCoord2fv( s_skyTexCoords[t+1][s] );
 			qglVertex3fv( s_skyPoints[t+1][s] );
+			#endif
 		}
 
+		#ifdef HAVE_GLES
+
+		qglVertexPointer (3, GL_FLOAT, 0, vtx);
+		qglTexCoordPointer(2, GL_FLOAT, 0, tex);
+		qglDrawArrays(GL_TRIANGLE_STRIP, 0, idx);
+		#else
 		qglEnd();
+		#endif
 	}
+	#ifdef HAVE_GLES
+	if (glcol)
+		qglEnableClientState(GL_COLOR_ARRAY);
+	if (!text)
+		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	#endif
+//ri.Printf(PRINT_ALL, "DrawSkySide, end idx=%i\n", idx);
 }
 
 static void DrawSkyBox( shader_t *shader )
@@ -596,8 +635,8 @@ void R_BuildCloudData( shaderCommands_t *input )
 
 	assert( shader->isSky );
 
-	sky_min = 1.0 / 256.0f;		// FIXME: not correct?
-	sky_max = 255.0 / 256.0f;
+	sky_min = 1.0f / 256.0f;		// FIXME: not correct?
+	sky_max = 255.0f / 256.0f;
 
 	// set up for drawing
 	tess.numIndexes = 0;
@@ -650,7 +689,7 @@ void R_InitSkyTexCoords( float heightCloud )
 				// compute parametric value 'p' that intersects with cloud layer
 				p = ( 1.0f / ( 2 * DotProduct( skyVec, skyVec ) ) ) *
 					( -2 * skyVec[2] * radiusWorld + 
-					   2 * sqrt( SQR( skyVec[2] ) * SQR( radiusWorld ) + 
+					   2 * sqrtf( SQR( skyVec[2] ) * SQR( radiusWorld ) + 
 					             2 * SQR( skyVec[0] ) * radiusWorld * heightCloud +
 								 SQR( skyVec[0] ) * SQR( heightCloud ) + 
 								 2 * SQR( skyVec[1] ) * radiusWorld * heightCloud +
@@ -667,8 +706,8 @@ void R_InitSkyTexCoords( float heightCloud )
 				// compute vector from world origin to intersection point 'v'
 				VectorNormalize( v );
 
-				sRad = acos( v[0] );
-				tRad = acos( v[1] );
+				sRad = acosf( v[0] );
+				tRad = acosf( v[1] );
 
 				s_cloudTexCoords[i][t][s][0] = sRad;
 				s_cloudTexCoords[i][t][s][1] = tRad;
@@ -697,8 +736,8 @@ void RB_DrawSun( void ) {
 	qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
 	qglTranslatef (backEnd.viewParms.orient.origin[0], backEnd.viewParms.orient.origin[1], backEnd.viewParms.orient.origin[2]);
 
-	dist = 	backEnd.viewParms.zFar / 1.75;		// div sqrt(3)
-	size = dist * 0.4;
+	dist = 	backEnd.viewParms.zFar / 1.75f;		// div sqrt(3)
+	size = dist * 0.4f;
 
 	VectorScale( tr.sunDirection, dist, origin );
 	PerpendicularVector( vec1, tr.sunDirection );
@@ -708,7 +747,7 @@ void RB_DrawSun( void ) {
 	VectorScale( vec2, size, vec2 );
 
 	// farthest depth range
-	qglDepthRange( 1.0, 1.0 );
+	qglDepthRange( 1.0f, 1.0f );
 
 	// FIXME: use quad stamp
 	RB_BeginSurface( tr.sunShader, tess.fogNum );

@@ -511,9 +511,9 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 					
 			index = es->eventParm;		// player predicted
 
-			if ( (char)index < 0 ) 
+			if ( (signed char)index < 0 ) 	/*SEB, added signed !*/
 			{
-				index = -(char)index;
+				index = - (signed char)index; /*SEB same here */
 				bHadItem = qtrue;
 			}
 

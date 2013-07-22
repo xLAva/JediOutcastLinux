@@ -760,7 +760,7 @@ void CG_ScrollText( const char *str, int iPixelWidth )
 			cg.printText[i][ strlen(cg.printText[i])-1 ] = '\0';	// kill the CR
 			i++;
 			assert (i < (sizeof(cg.printText)/sizeof(cg.printText[0])) );
-			if (i >= (sizeof(cg.printText)/sizeof(cg.printText[0])) )
+			if (i >= int((sizeof(cg.printText)/sizeof(cg.printText[0]))) )
 			{
 				break;
 			}
@@ -947,7 +947,7 @@ void CG_DrawCenterString( void )
 		//		
 		const char *psString = start;
 		int iOutIndex = 0;
-		for ( l = 0; l < sizeof(linebuffer)-1; l++ ) {
+		for ( l = 0; l < int(sizeof(linebuffer))-1; l++ ) {
 			unsigned int uiLetter = cgi_AnyLanguage_ReadCharFromString(&psString);
 			if (!uiLetter || uiLetter == '\n'){
 				break;

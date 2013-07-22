@@ -217,7 +217,7 @@ void Touch_Multi( gentity_t *self, gentity_t *other, trace_t *trace )
 			AngleVectors( other->currentAngles, forward, NULL, NULL );
 		}
 
-		if ( DotProduct( self->movedir, forward ) < 0.5 )
+		if ( DotProduct( self->movedir, forward ) < 0.5f )
 		{//Not Within 45 degrees
 			return;
 		}
@@ -761,7 +761,7 @@ void AimAtTarget( gentity_t *self )
 	{
 		gravity = 0;
 	}
-	time = sqrt( height / ( .5 * gravity ) );
+	time = sqrtf( height / ( .5f * gravity ) );
 	if ( !time ) {
 		G_FreeEntity( self );
 		return;
@@ -786,7 +786,7 @@ void trigger_push_checkclear( gentity_t *self )
 	self->nextthink = level.time + 500;
 
 	VectorAdd( self->absmin, self->absmax, center );
-	VectorScale( center, 0.5, center );
+	VectorScale( center, 0.5f, center );
 
 	gentity_t *target = G_Find( NULL, FOFS(targetname), self->target );
 	gi.trace( &trace, center, vec3_origin, vec3_origin, target->currentOrigin, ENTITYNUM_NONE, CONTENTS_SOLID, (EG2_Collision)0, 0 );

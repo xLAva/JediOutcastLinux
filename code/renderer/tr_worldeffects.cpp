@@ -50,6 +50,9 @@ float FloatRand(void)
 	return result;
 }
 
+#ifdef HAVE_GLES
+#define GLdouble GLfloat
+#endif
 void MYgluPerspective( GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar )
 {
 	GLdouble xmin, xmax, ymin, ymax;
@@ -470,7 +473,7 @@ CMistyFog::CMistyFog(int index, CWorldEffect *owner, bool buddy) :
 		AddSlave(new CMistyFog(index, this, true));
 	}
 
-	mSpeed = 90.0 + FloatRand() * 20.0;
+	mSpeed = 90.0f + FloatRand() * 20.0f;
 
 	CreateTextureCoords();
 }
@@ -495,10 +498,10 @@ void CMistyFog::Update(CWorldEffectsSystem *system, float elapseTime)
 	mTextureCoords[0][0] += rightWind / mSpeed;
 	mTextureCoords[1][0] += rightWind / mSpeed;
 
-	mTextureCoords[0][0] -= forwardWind / mSpeed / 4.0;
-	mTextureCoords[0][1] -= forwardWind / mSpeed / 4.0;
-	mTextureCoords[1][0] += forwardWind / mSpeed / 4.0;
-	mTextureCoords[1][1] += forwardWind / mSpeed / 4.0;
+	mTextureCoords[0][0] -= forwardWind / mSpeed / 4.0f;
+	mTextureCoords[0][1] -= forwardWind / mSpeed / 4.0f;
+	mTextureCoords[1][0] += forwardWind / mSpeed / 4.0f;
+	mTextureCoords[1][1] += forwardWind / mSpeed / 4.0f;
 
 /*	if (mTextureCoords[0][0] > mTextureCoords[1][0] ||
 		mTextureCoords[0][1] > mTextureCoords[1][1])
@@ -509,25 +512,25 @@ void CMistyFog::Update(CWorldEffectsSystem *system, float elapseTime)
 		mAlpha = -1.0;
 	}
 */
-	if ((fabs(mTextureCoords[0][0] - mTextureCoords[1][0]) < mMinSize ||
-		fabs(mTextureCoords[0][1] - mTextureCoords[1][1]) < mMinSize))// && forwardWind > 0.0)
+	if ((fabsf(mTextureCoords[0][0] - mTextureCoords[1][0]) < mMinSize ||
+		fabsf(mTextureCoords[0][1] - mTextureCoords[1][1]) < mMinSize))// && forwardWind > 0.0)
 	{
 		removeImage = true;
 	}
 
-	if ((fabs(mTextureCoords[0][0] - mTextureCoords[1][0]) > mMaxSize ||
-		fabs(mTextureCoords[0][1] - mTextureCoords[1][1]) > mMaxSize))// && forwardWind < 0.0)
+	if ((fabsf(mTextureCoords[0][0] - mTextureCoords[1][0]) > mMaxSize ||
+		fabsf(mTextureCoords[0][1] - mTextureCoords[1][1]) > mMaxSize))// && forwardWind < 0.0)
 	{
 		removeImage = true;
 	}
 
 	if (mTextureCoords[0][0] < mCurrentSize || mTextureCoords[0][1] < mCurrentSize ||
-		mTextureCoords[0][0] > 1.0-mCurrentSize || mTextureCoords[0][1] > 1.0-mCurrentSize)
+		mTextureCoords[0][0] > 1.0f-mCurrentSize || mTextureCoords[0][1] > 1.0f-mCurrentSize)
 	{
 //		mAlphaFade = true;
 	}
 	if (mTextureCoords[1][0] < mCurrentSize || mTextureCoords[1][1] < mCurrentSize ||
-		mTextureCoords[1][0] > 1.0-mCurrentSize || mTextureCoords[1][1] > 1.0-mCurrentSize)
+		mTextureCoords[1][0] > 1.0f-mCurrentSize || mTextureCoords[1][1] > 1.0f-mCurrentSize)
 	{
 //		mAlphaFade = true;
 	}
@@ -548,16 +551,16 @@ void CMistyFog::Update(CWorldEffectsSystem *system, float elapseTime)
 
 	if (mAlphaFade)
 	{
-		mAlpha += mAlphaDirection * 0.4;
-		if (mAlpha < 0.0)
+		mAlpha += mAlphaDirection * 0.4f;
+		if (mAlpha < 0.0f)
 		{
 			mRendering = false;
-			mAlpha = 0.0;
+			mAlpha = 0.0f;
 		}
-		else if (mAlpha >= 1.0)
+		else if (mAlpha >= 1.0f)
 		{
 			mAlphaFade = false;
-			mAlpha = 1.0;
+			mAlpha = 1.0f;
 		}
 	}
 }
@@ -637,31 +640,31 @@ void CMistyFog::CreateTextureCoords(void)
 	float	xStart, yStart;
 	float	forwardWind, rightWind;
 
-	mSpeed = 800.0 + FloatRand() * 2000.0;
-	mSpeed /= 4.0;
+	mSpeed = 800.0f + FloatRand() * 2000.0f;
+	mSpeed /= 4.0f;
 
 	forwardWind = DotProduct(mWindTransform, backEnd.viewParms.orient.axis[0]);
 	rightWind = DotProduct(mWindTransform, backEnd.viewParms.orient.axis[1]);
 
-	if (forwardWind > 0.5)
+	if (forwardWind > 0.5f)
 	{	// moving away, so make the size smaller
-		mCurrentSize = mMinSize + (FloatRand() * mMinSize * 0.01);
+		mCurrentSize = mMinSize + (FloatRand() * mMinSize * 0.01f);
 //		mCurrentSize = mMinSize / 3.0;
 	}
-	else if (forwardWind < -0.5)
+	else if (forwardWind < -0.5f)
 	{	// moving towards, so make bigger
 //		mCurrentSize = (mSize * 0.8) + (FloatRand() * mSize * 0.8);
 		mCurrentSize = mMaxSize - (FloatRand() * mMinSize);
 	}
 	else
 	{	// normal range
-		mCurrentSize = mMinSize * 1.5 + (FloatRand() * mSize);
+		mCurrentSize = mMinSize * 1.5f + (FloatRand() * mSize);
 	}
 
-	mCurrentSize /= 2.0;
+	mCurrentSize /= 2.0f;
 
-	xStart = (1.0 - mCurrentSize - 0.40) * FloatRand() + 0.20;
-	yStart = (1.0 - mCurrentSize - 0.40) * FloatRand() + 0.20;
+	xStart = (1.0f - mCurrentSize - 0.40f) * FloatRand() + 0.20f;
+	yStart = (1.0f - mCurrentSize - 0.40f) * FloatRand() + 0.20f;
 
 	mTextureCoords[0][0] = xStart - mCurrentSize;
 	mTextureCoords[0][1] = yStart - mCurrentSize;
@@ -722,13 +725,13 @@ CMistyFog2::CMistyFog2(void) :
 	{
 		for(x=0;x<MISTYFOG_WIDTH;x++)
 		{
-			mVerts[y][x][0] = -10 + (x * xStep) + ri.flrand(-xStep / 16.0, xStep / 16.0);
-			mVerts[y][x][1] = 10 - (y * yStep) + ri.flrand(-xStep / 16.0, xStep / 16.0);
+			mVerts[y][x][0] = -10 + (x * xStep) + ri.flrand(-xStep / 16.0f, xStep / 16.0f);
+			mVerts[y][x][1] = 10 - (y * yStep) + ri.flrand(-xStep / 16.0f, xStep / 16.0f);
 			mVerts[y][x][2] = -10;
 
-			mColors[y][x][0] = 1.0;
-			mColors[y][x][1] = 1.0;
-			mColors[y][x][2] = 1.0;
+			mColors[y][x][0] = 1.0f;
+			mColors[y][x][1] = 1.0f;
+			mColors[y][x][2] = 1.0f;
 
 			if (y < MISTYFOG_HEIGHT-1 && x < MISTYFOG_WIDTH-1)
 			{
@@ -775,23 +778,23 @@ void CMistyFog2::Update(CWorldEffectsSystem *system, float elapseTime)
 
 	if (originContents & CONTENTS_OUTSIDE && !(originContents & CONTENTS_WATER))
 	{
-		if (mFadeAlpha < 1.0)
+		if (mFadeAlpha < 1.0f)
 		{
-			mFadeAlpha += elapseTime / 2.0;
+			mFadeAlpha += elapseTime / 2.0f;
 		}
-		if (mFadeAlpha > 1.0)
+		if (mFadeAlpha > 1.0f)
 		{
-			mFadeAlpha = 1.0;
+			mFadeAlpha = 1.0f;
 		}
 	}
 	else
 	{
-		if (mFadeAlpha > 0.0)
+		if (mFadeAlpha > 0.0f)
 		{
-			mFadeAlpha -= elapseTime / 2.0;
+			mFadeAlpha -= elapseTime / 2.0f;
 		}
 
-		if (mFadeAlpha <= 0.0)
+		if (mFadeAlpha <= 0.0f)
 		{
 			return;
 		}
@@ -801,7 +804,7 @@ void CMistyFog2::Update(CWorldEffectsSystem *system, float elapseTime)
 	{
 		for(x=0;x<MISTYFOG_WIDTH;x++)
 		{
-			mColors[y][x][3] = 0.0;
+			mColors[y][x][3] = 0.0f;
 		}
 	}
 
@@ -826,7 +829,7 @@ void CMistyFog2::UpdateTexture(CMistyFog *fog)
 	int				width = fog->GetWidth();
 	int				height = fog->GetHeight();
 	int				andWidth, andHeight;
-	float			alpha = fog->GetAlpha() * mAlpha * (1.0/255.0) * mFadeAlpha;
+	float			alpha = fog->GetAlpha() * mAlpha * (1.0f/255.0f) * mFadeAlpha;
 	float			*color;
 
 	if (!fog->GetRendering())
@@ -859,7 +862,7 @@ void CMistyFog2::UpdateTexture(CMistyFog *fog)
 
 void CMistyFog2::Render(CWorldEffectsSystem *system)
 {
-	if (mFadeAlpha <= 0.0)
+	if (mFadeAlpha <= 0.0f)
 	{
 		return;
 	}
@@ -888,6 +891,11 @@ void CMistyFog2::Render(CWorldEffectsSystem *system)
 	qglVertexPointer( 3, GL_FLOAT, 0, mVerts );
 	qglEnableClientState(GL_VERTEX_ARRAY);
 
+	#ifdef HAVE_GLES
+	// have to draw each Quad one by one...
+	for (int i=0; i<(MISTYFOG_HEIGHT-1)*(MISTYFOG_WIDTH-1)*4; i+=4)
+		qglDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, mIndexes+i*3);
+	#else
 	if (qglLockArraysEXT) 
 	{
 		qglLockArraysEXT(0, MISTYFOG_HEIGHT*MISTYFOG_WIDTH);
@@ -897,6 +905,7 @@ void CMistyFog2::Render(CWorldEffectsSystem *system)
 	{
 		qglUnlockArraysEXT();
 	}
+	#endif
 
 	qglDisableClientState(GL_COLOR_ARRAY);
 //	qglDisableClientState(GL_VERTEX_ARRAY);	 backend doesn't ever re=enable this properly
@@ -1021,7 +1030,7 @@ void CWind::UpdateParms(vec3_t point, vec3_t velocity, vec3_t size, int duration
 
 	VectorCopy(point, mPoint);
 	VectorCopy(size, mSize);
-	mSize[0] /= 2.0;
+	mSize[0] /= 2.0f;
 	VectorScale(mSize, 2, mSize);
 	VectorCopy(velocity, mVelocity);
 
@@ -1044,9 +1053,9 @@ void CWind::UpdateParms(vec3_t point, vec3_t velocity, vec3_t size, int duration
 	mMaxDistance[mNumPlanes] = mSize[2];
 	mNumPlanes++;
 
-	mPlanes[0][3] -= (mSize[0] / 2.0);
-	mPlanes[1][3] -= (mSize[1] / 2.0);
-	mPlanes[2][3] -= (mSize[2] / 2.0);
+	mPlanes[0][3] -= (mSize[0] / 2.0f);
+	mPlanes[1][3] -= (mSize[1] / 2.0f);
+	mPlanes[2][3] -= (mSize[2] / 2.0f);
 
 	mAffectedDuration = duration;
 }
@@ -1064,12 +1073,12 @@ void CWind::Update(CWorldEffectsSystem *system, float elapseTime)
 	}
 
 	VectorSubtract(backEnd.viewParms.orient.origin, mPoint, difference);
-	if (VectorLength(difference) > 300.0)
+	if (VectorLength(difference) > 300.0f)
 	{
 		return;
 	}
 
-	calcDist[0] = 0.0;
+	calcDist[0] = 0.0f;
 	item = system->GetParticleVariable(WORLDEFFECT_PARTICLES);
 	affected = mAffectedCount;
 	for(i=system->GetIntVariable(WORLDEFFECT_PARTICLE_COUNT); i; i--)
@@ -1086,7 +1095,7 @@ void CWind::Update(CWorldEffectsSystem *system, float elapseTime)
 				{
 					dist = DotProduct(item->pos, mPlanes[j]) - mPlanes[j][3];
 
-					if (dist < 0.01 || dist > mMaxDistance[j])
+					if (dist < 0.01f || dist > mMaxDistance[j])
 					{
 						break;
 					}
@@ -1101,7 +1110,7 @@ void CWind::Update(CWorldEffectsSystem *system, float elapseTime)
 				}
 			}
 
-			float	scaleLength = 1.0 - (calcDist[0] / mMaxDistance[0]);
+			float	scaleLength = 1.0f - (calcDist[0] / mMaxDistance[0]);
 
 			(*affected) = mAffectedDuration * scaleLength;
 
@@ -1143,76 +1152,134 @@ void CWind::Render(CWorldEffectsSystem *system)
 	qglDisable(GL_CULL_FACE);
 	GL_State(GLS_ALPHA);
 
-	qglColor4f(1.0, 0.0, 0.0, 0.5);
+	qglColor4f(1.0f, 0.0f, 0.0f, 0.5f);
+	#ifdef HAVE_GLES
+	GLfloat vtx[3*4];
+	#else
 	qglBegin(GL_QUADS);
+	#endif
 	
-	VectorMA(mPoint, -(mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, -(mSize[1]/2.0), mPlanes[1], output);
-	VectorMA(output, -(mSize[2]/2.0), mPlanes[2], output);
+	VectorMA(mPoint, -(mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, -(mSize[1]/2.0f), mPlanes[1], output);
+	VectorMA(output, -(mSize[2]/2.0f), mPlanes[2], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*0, output, sizeof(GLfloat)*3);
+	#else
 	qglVertex3fv(output);
+	#endif
 
-	VectorMA(mPoint, -(mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, (mSize[1]/2.0), mPlanes[1], output);
-	VectorMA(output, -(mSize[2]/2.0), mPlanes[2], output);
+	VectorMA(mPoint, -(mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, (mSize[1]/2.0f), mPlanes[1], output);
+	VectorMA(output, -(mSize[2]/2.0f), mPlanes[2], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*1, output, sizeof(GLfloat)*3);
+	#else
 	qglVertex3fv(output);
+	#endif
 
-	VectorMA(mPoint, -(mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, (mSize[1]/2.0), mPlanes[1], output);
-	VectorMA(output, (mSize[2]/2.0), mPlanes[2], output);
+	VectorMA(mPoint, -(mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, (mSize[1]/2.0f), mPlanes[1], output);
+	VectorMA(output, (mSize[2]/2.0f), mPlanes[2], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*2, output, sizeof(GLfloat)*3);
+	#else
 	qglVertex3fv(output);
+	#endif
 
-	VectorMA(mPoint, -(mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, -(mSize[1]/2.0), mPlanes[1], output);
-	VectorMA(output, (mSize[2]/2.0), mPlanes[2], output);
+	VectorMA(mPoint, -(mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, -(mSize[1]/2.0f), mPlanes[1], output);
+	VectorMA(output, (mSize[2]/2.0f), mPlanes[2], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*3, output, sizeof(GLfloat)*3);
+	qglVertexPointer (3, GL_FLOAT, 0, vtx);
+	qglDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	#else
 	qglVertex3fv(output);
+	#endif
 
 	
 	
-	qglColor4f(0.0, 1.0, 0.0, 0.5);
-	VectorMA(mPoint, -(mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, -(mSize[1]/2.0), mPlanes[1], output);
-	VectorMA(output, -(mSize[2]/2.0), mPlanes[2], output);
+	qglColor4f(0.0f, 1.0f, 0.0f, 0.5f);
+	VectorMA(mPoint, -(mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, -(mSize[1]/2.0f), mPlanes[1], output);
+	VectorMA(output, -(mSize[2]/2.0f), mPlanes[2], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*0, output, sizeof(GLfloat)*3);
+	#else
 	qglVertex3fv(output);
+	#endif
 
-	VectorMA(mPoint, (mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, -(mSize[1]/2.0), mPlanes[1], output);
-	VectorMA(output, -(mSize[2]/2.0), mPlanes[2], output);
+	VectorMA(mPoint, (mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, -(mSize[1]/2.0f), mPlanes[1], output);
+	VectorMA(output, -(mSize[2]/2.0f), mPlanes[2], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*1, output, sizeof(GLfloat)*3);
+	#else
 	qglVertex3fv(output);
+	#endif
 
-	VectorMA(mPoint, (mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, -(mSize[1]/2.0), mPlanes[1], output);
-	VectorMA(output, (mSize[2]/2.0), mPlanes[2], output);
+	VectorMA(mPoint, (mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, -(mSize[1]/2.0f), mPlanes[1], output);
+	VectorMA(output, (mSize[2]/2.0f), mPlanes[2], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*2, output, sizeof(GLfloat)*3);
+	#else
 	qglVertex3fv(output);
+	#endif
 
-	VectorMA(mPoint, -(mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, -(mSize[1]/2.0), mPlanes[1], output);
-	VectorMA(output, (mSize[2]/2.0), mPlanes[2], output);
+	VectorMA(mPoint, -(mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, -(mSize[1]/2.0f), mPlanes[1], output);
+	VectorMA(output, (mSize[2]/2.0f), mPlanes[2], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*3, output, sizeof(GLfloat)*3);
+	qglVertexPointer (3, GL_FLOAT, 0, vtx);
+	qglDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	#else
 	qglVertex3fv(output);
+	#endif
 	
 
-	qglColor4f(0.0, 0.0, 1.0, 0.5);
-	VectorMA(mPoint, -(mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, -(mSize[2]/2.0), mPlanes[2], output);
-	VectorMA(output, -(mSize[1]/2.0), mPlanes[1], output);
+	qglColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+	VectorMA(mPoint, -(mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, -(mSize[2]/2.0f), mPlanes[2], output);
+	VectorMA(output, -(mSize[1]/2.0f), mPlanes[1], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*0, output, sizeof(GLfloat)*3);
+	#else
 	qglVertex3fv(output);
+	#endif
 
-	VectorMA(mPoint, (mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, -(mSize[2]/2.0), mPlanes[2], output);
-	VectorMA(output, -(mSize[1]/2.0), mPlanes[1], output);
+	VectorMA(mPoint, (mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, -(mSize[2]/2.0f), mPlanes[2], output);
+	VectorMA(output, -(mSize[1]/2.0f), mPlanes[1], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*1, output, sizeof(GLfloat)*3);
+	#else
 	qglVertex3fv(output);
+	#endif
 
-	VectorMA(mPoint, (mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, -(mSize[2]/2.0), mPlanes[2], output);
-	VectorMA(output, (mSize[1]/2.0), mPlanes[1], output);
+	VectorMA(mPoint, (mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, -(mSize[2]/2.0f), mPlanes[2], output);
+	VectorMA(output, (mSize[1]/2.0f), mPlanes[1], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*2, output, sizeof(GLfloat)*3);
+	#else
 	qglVertex3fv(output);
+	#endif
 
-	VectorMA(mPoint, -(mSize[0]/2.0), mPlanes[0], output);
-	VectorMA(output, -(mSize[2]/2.0), mPlanes[2], output);
-	VectorMA(output, (mSize[1]/2.0), mPlanes[1], output);
+	VectorMA(mPoint, -(mSize[0]/2.0f), mPlanes[0], output);
+	VectorMA(output, -(mSize[2]/2.0f), mPlanes[2], output);
+	VectorMA(output, (mSize[1]/2.0f), mPlanes[1], output);
+	#ifdef HAVE_GLES
+	memcpy(vtx+3*3, output, sizeof(GLfloat)*3);
+	qglVertexPointer (3, GL_FLOAT, 0, vtx);
+	qglDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	#else
 	qglVertex3fv(output);
 	
 	
 	qglEnd();
+	#endif
 
 	qglEnable(GL_CULL_FACE);
 	qglEnable(GL_TEXTURE_2D);
@@ -1480,9 +1547,9 @@ void CSnowSystem::Update(float elapseTime)
 	mWindChange--;
 	if (mWindChange < 0)
 	{
-		mWindDirection[0] = 1.0 - (FloatRand() * 2.0);
-		mWindDirection[1] = 1.0 - (FloatRand() * 2.0);
-		mWindDirection[2] = 0.0;
+		mWindDirection[0] = 1.0f - (FloatRand() * 2.0f);
+		mWindDirection[1] = 1.0f - (FloatRand() * 2.0f);
+		mWindDirection[2] = 0.0f;
 		VectorNormalize(mWindDirection);
 		VectorScale(mWindDirection, 0.025f, mWindSpeed);
 
@@ -1500,7 +1567,7 @@ void CSnowSystem::Update(float elapseTime)
 	VectorCopy(backEnd.viewParms.orient.origin, origin);
 
 	mNextWindGust -= elapseTime;
-	if (mNextWindGust < 0.0)
+	if (mNextWindGust < 0.0f)
 	{
 		mWindGust->SetVariable(CWorldEffect::WORLDEFFECT_ENABLED, false);
 	}
@@ -1521,8 +1588,8 @@ void CSnowSystem::Update(float elapseTime)
 		mWindGust->SetVariable(CWorldEffect::WORLDEFFECT_ENABLED, true);
 		mWindGust->UpdateParms(windPos, windDirection, mWindSize, 0);
 
-		mNextWindGust = ri.flrand(mWindDuration, mWindDuration*2.0);
-		mWindLowSize = -ri.flrand(mWindLow, mWindLow*3.0);
+		mNextWindGust = ri.flrand(mWindDuration, mWindDuration*2.0f);
+		mWindLowSize = -ri.flrand(mWindLow, mWindLow*3.0f);
 	}
 
 	newMins[0] = mMinSpread[0] + origin[0];
@@ -1537,7 +1604,7 @@ void CSnowSystem::Update(float elapseTime)
 	for(i=0;i<3;i++)
 	{
 		difference[i] = newMaxs[i] - mMaxs[i];
-		if (difference[i] >= 0.0)
+		if (difference[i] >= 0.0f)
 		{
 			if (difference[i] > newMaxs[i]-newMins[i])
 			{
@@ -1559,7 +1626,7 @@ void CSnowSystem::Update(float elapseTime)
 //	contentsStart[1] = (((origin[1] + mMinSpread[1]) / mContentsSize[1])) * mContentsSize[1];
 //	contentsStart[2] = (((origin[2] + mMinSpread[2]) / mContentsSize[2])) * mContentsSize[2];
 
-	if (fabs(difference[0]) > 25.0 || fabs(difference[1]) > 25.0 || fabs(difference[2]) > 25.0)
+	if (fabsf(difference[0]) > 25.0f || fabsf(difference[1]) > 25.0f || fabsf(difference[2]) > 25.0f)
 	{
 		vec3_t		pos;
 		int			*store;
@@ -1661,7 +1728,7 @@ void CSnowSystem::Update(float elapseTime)
 			}
 			if (item->velocity[2] > mMinVelocity[2])
 			{
-				item->velocity[2] -= mVelocityStabilize*2.0;
+				item->velocity[2] -= mVelocityStabilize*2.0f;
 			}
 		}
 		VectorMA(item->pos, elapseTime, item->velocity);
@@ -1740,7 +1807,9 @@ void CSnowSystem::Render(void)
 //	GL_State(GLS_SRCBLEND_SRC_ALPHA|GLS_DSTBLEND_ONE);
 	GL_State(GLS_ALPHA);
 	qglDisable(GL_TEXTURE_2D);
-
+#ifdef HAVE_GLES
+	qglPointSize(2.0);
+#else
 	if (qglPointParameterfEXT)
 	{
 		qglPointSize(10.0);
@@ -1753,18 +1822,30 @@ void CSnowSystem::Render(void)
 	{
 		qglPointSize(2.0);
 	}
-
+#endif
 	item = mSnowList;
+	#ifdef HAVE_GLES
+	GLfloat vtx[3];
+	#else
 	qglBegin(GL_POINTS);
+	#endif
 	for(i=mMaxSnowflakes;i;i--)
 	{
 		if (item->flags & PARTICLE_FLAG_RENDER)
 		{
+			#ifdef HAVE_GLES
+			vtx[0]=item->pos[0]; vtx[1]=item->pos[1]; vtx[2]=item->pos[2];
+			qglVertexPointer  ( 3, GL_FLOAT, 0, vtx );
+			qglDrawArrays( GL_POINTS, 0, 1 );
+			#else
 			qglVertex3fv(item->pos);
+			#endif
 		}
 		item++;
 	}
+	#ifndef HAVE_GLES
 	qglEnd();
+	#endif
 	qglEnable(GL_TEXTURE_2D);
 }
 
@@ -1804,7 +1885,7 @@ CRainSystem::CRainSystem(int maxRain) :
 	int				width, height;
 	int				x, y;
 
-	mSpread[0] = (float)(M_PI*2.0);		// angle spread
+	mSpread[0] = (float)(M_PI*2.0f);		// angle spread
 	mSpread[1] = 20.0f;			// radius spread
 	mSpread[2] = 20.0f;			// z spread
 
@@ -1812,8 +1893,8 @@ CRainSystem::CRainSystem(int maxRain) :
 	mMaxVelocity[0] = -0.1f;
 	mMinVelocity[1] = 0.1f;
 	mMaxVelocity[1] = -0.1f;
-	mMinVelocity[2] = -60.0;
-	mMaxVelocity[2] = -50.0;
+	mMinVelocity[2] = -60.0f;
+	mMaxVelocity[2] = -50.0f;
 
 	mWindDuration = 15;
 	mWindLow = 50;
@@ -1900,10 +1981,10 @@ float CRainSystem::GetFloatVariable(int which)
 	switch(which)
 	{
 		case CRainSystem::RAINSYSTEM_WIND_SPEED:
-			return mWindAngle * 75.0;		// pat scaled
+			return mWindAngle * 75.0f;		// pat scaled
 	}
 
-	return 0.0;
+	return 0.0f;
 }
 
 float *CRainSystem::GetVecVariable(int which) 
@@ -1987,9 +2068,9 @@ void CRainSystem::Update(float elapseTime)
 
 	if (mWindChange < 0)
 	{
-		mNewWindDirection[0] = 1.0 - (FloatRand() * 2.0);
-		mNewWindDirection[1] = 1.0 - (FloatRand() * 2.0);
-		mNewWindDirection[2] = 0.0;
+		mNewWindDirection[0] = 1.0f - (FloatRand() * 2.0f);
+		mNewWindDirection[1] = 1.0f - (FloatRand() * 2.0f);
+		mNewWindDirection[2] = 0.0f;
 		VectorNormalize(mNewWindDirection);
 		VectorScale(mNewWindDirection, 0.025f, mWindSpeed);
 
@@ -2007,24 +2088,24 @@ void CRainSystem::Update(float elapseTime)
 	if (originContents & CONTENTS_OUTSIDE && !(originContents & CONTENTS_WATER))
 	{
 		mIsRaining = true;
-		if (mFadeAlpha < 1.0)
+		if (mFadeAlpha < 1.0f)
 		{
-			mFadeAlpha += elapseTime / 2.0;
+			mFadeAlpha += elapseTime / 2.0f;
 		}
-		if (mFadeAlpha > 1.0)
+		if (mFadeAlpha > 1.0f)
 		{
-			mFadeAlpha = 1.0;
+			mFadeAlpha = 1.0f;
 		}
 	}
 	else
 	{
 		mIsRaining = false;
-		if (mFadeAlpha > 0.0)
+		if (mFadeAlpha > 0.0f)
 		{
-			mFadeAlpha -= elapseTime / 2.0;
+			mFadeAlpha -= elapseTime / 2.0f;
 		}
 
-		if (mFadeAlpha <= 0.0)
+		if (mFadeAlpha <= 0.0f)
 		{
 			return;
 		}
@@ -2063,7 +2144,7 @@ void CRainSystem::Render(void)
 
 	CWorldEffectsSystem::Render();
 
-	if (mFadeAlpha <= 0.0)
+	if (mFadeAlpha <= 0.0f)
 	{
 		return;
 	}
@@ -2085,7 +2166,14 @@ void CRainSystem::Render(void)
     qglTranslatef (backEnd.viewParms.orient.origin[0], backEnd.viewParms.orient.origin[1],  backEnd.viewParms.orient.origin[2]);
 
 	item = mRainList;
+	#ifdef HAVE_GLES
+	GLfloat vtx[3*mMaxRain];
+	GLfloat col[4*mMaxRain];
+	GLfloat tex[2*mMaxRain];
+	int idx=0;
+	#else
 	qglBegin(GL_TRIANGLES );
+	#endif
 	for(i=mMaxRain;i;i--)
 	{
 /*		percent = (item->pos[1] -(-20.0)) / (20.0 - (-20.0));
@@ -2099,7 +2187,7 @@ void CRainSystem::Render(void)
 			radius = 10 * (1.0 - percent);
 		}*/
 		radius = item->pos[1];
-		if (item->pos[2] < 0.0)
+		if (item->pos[2] < 0.0f)
 		{
 //			radius *= 1.0 - (item->pos[2] / 40.0);
 			float alpha = mAlpha * (item->pos[1] / -item->pos[2]);
@@ -2108,18 +2196,39 @@ void CRainSystem::Render(void)
 			{
 				alpha = mAlpha;
 			}
+			#ifdef HAVE_GLES
+			col[idx*4+0] = 1.0f; col[idx*4+1] = 1.0f; col[idx*4+2] = 1.0f; col[idx*4+3] = alpha * mFadeAlpha;
+			#else
 			qglColor4f(1.0, 1.0, 1.0, alpha * mFadeAlpha);
+			#endif
 		}
 		else
 		{
+			#ifdef HAVE_GLES
+			col[idx*4+0] = 1.0f; col[idx*4+1] = 1.0f; col[idx*4+2] = 1.0f; col[idx*4+3] = mAlpha * mFadeAlpha;
+			#else
 			qglColor4f(1.0, 1.0, 1.0, mAlpha * mFadeAlpha);
+			#endif
 //			radius *= 1.0 + (item->pos[2] / 20.0);
 		}
 
-		pos[0] = sin(item->pos[0]) * radius + (item->pos[2] * mWindDirection[0] * mWindAngle);
-		pos[1] = cos(item->pos[0]) * radius + (item->pos[2] * mWindDirection[1] * mWindAngle);
+		pos[0] = sinf(item->pos[0]) * radius + (item->pos[2] * mWindDirection[0] * mWindAngle);
+		pos[1] = cosf(item->pos[0]) * radius + (item->pos[2] * mWindDirection[1] * mWindAngle);
 		pos[2] = item->pos[2];
 
+		#ifdef HAVE_GLES
+		tex[idx*2+0]=1.0f;tex[idx*2+1]=0.0f;
+		vtx[idx*3+0] = pos[0]; vtx[idx*3+1] = pos[1]; vtx[idx*3+2] = pos[2];
+		idx++;
+		memcpy(col+idx*4, col+idx*4-4, sizeof(GLfloat)*4);
+		tex[idx*2+0]=0.0f;tex[idx*2+1]=0.0f;
+		vtx[idx*3+0] = pos[0] + left[0]; vtx[idx*3+1] = pos[1] + left[1]; vtx[idx*3+2] = pos[2] + left[2];
+		idx++;
+		memcpy(col+idx*4, col+idx*4-4, sizeof(GLfloat)*4);
+		tex[idx*2+0]=0.0f;tex[idx*2+1]=1.0f;
+		vtx[idx*3+0] = pos[0] + down[0] + left[0]; vtx[idx*3+1] = pos[1] + down[1] + left[1]; vtx[idx*3+2] = pos[2] + down[2] + left[2];
+		idx++;
+		#else
 		qglTexCoord2f(1.0, 0.0);
 		qglVertex3f(pos[0],
 					pos[1],
@@ -2134,9 +2243,27 @@ void CRainSystem::Render(void)
 		qglVertex3f(pos[0] + down[0] + left[0],
 					pos[1] + down[1] + left[1],
 					pos[2] + down[2] + left[2]);
+		#endif
 		item++;
 	}
+	#ifdef HAVE_GLES
+	GLboolean text = qglIsEnabled(GL_TEXTURE_COORD_ARRAY);
+	GLboolean glcol = qglIsEnabled(GL_COLOR_ARRAY);
+	if (!text)
+		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	if (!glcol)
+		qglEnableClientState( GL_COLOR_ARRAY );
+	qglColorPointer( 4, GL_FLOAT, 0, col );
+	qglTexCoordPointer( 2, GL_FLOAT, 0, tex );
+	qglVertexPointer  ( 3, GL_FLOAT, 0, vtx );
+	qglDrawArrays( GL_TRIANGLES, 0, idx );
+	if (!glcol)
+		qglDisableClientState( GL_COLOR_ARRAY );
+	if (!text)
+		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	#else
 	qglEnd();
+	#endif
 
 	qglEnable(GL_CULL_FACE);
 

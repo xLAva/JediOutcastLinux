@@ -178,7 +178,7 @@ extern	vec3_t	listener_up;
 extern	dma_t	dma;
 
 #define	MAX_RAW_SAMPLES	16384
-extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
+extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES*5];
 portable_samplepair_t *S_GetRawSamplePointer();	// TA added this, but it just returns the s_rawsamples[] array above. Oh well...
 
 extern cvar_t	*s_volume;

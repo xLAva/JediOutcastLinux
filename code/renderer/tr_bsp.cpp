@@ -207,7 +207,7 @@ static	void R_LoadLightmaps( lump_t *l, const char *psMapName ) {
 				float intensity;
 				float out[3];
 
-				intensity = 0.33f * r + 0.685 * g + 0.063f * b;
+				intensity = 0.33f * r + 0.685f * g + 0.063f * b;
 
 				if ( intensity > 255 )
 					intensity = 1.0f;
@@ -217,14 +217,14 @@ static	void R_LoadLightmaps( lump_t *l, const char *psMapName ) {
 				if ( intensity > maxIntensity )
 					maxIntensity = intensity;
 
-				HSVtoRGB( intensity, 1.00, 0.50, out );
+				HSVtoRGB( intensity, 1.00f, 0.50f, out );
 
 				image[j*4+0] = out[0] * 255;
 				image[j*4+1] = out[1] * 255;
 				image[j*4+2] = out[2] * 255;
 				image[j*4+3] = 255;
 
-				sumIntensity += intensity;
+				sumIntensity += (double)intensity;
 			}
 		} else {
 			for ( j = 0 ; j < LIGHTMAP_SIZE*LIGHTMAP_SIZE ; j++ ) {
@@ -1019,10 +1019,10 @@ static	void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump ) {
 		out->parms = shader->fogParms;
 		out->colorInt = ColorBytes4 ( shader->fogParms.color[0] * tr.identityLight, 
 			shader->fogParms.color[1] * tr.identityLight, 
-			shader->fogParms.color[2] * tr.identityLight, 1.0 );
+			shader->fogParms.color[2] * tr.identityLight, 1.0f );
 		
 		d = shader->fogParms.depthForOpaque < 1 ? 1 : shader->fogParms.depthForOpaque;
-		out->tcScale = 1.0 / ( d * 8 );
+		out->tcScale = 1.0f / ( d * 8 );
 		
 		// set the gradient vector
 		sideNum = LittleLong( fogs->visibleSide );
@@ -1070,16 +1070,16 @@ void R_LoadLightGrid( lump_t *l ) {
 
 	w = &s_worldData;
 
-	w->lightGridInverseSize[0] = 1.0 / w->lightGridSize[0];
-	w->lightGridInverseSize[1] = 1.0 / w->lightGridSize[1];
-	w->lightGridInverseSize[2] = 1.0 / w->lightGridSize[2];
+	w->lightGridInverseSize[0] = 1.0f / w->lightGridSize[0];
+	w->lightGridInverseSize[1] = 1.0f / w->lightGridSize[1];
+	w->lightGridInverseSize[2] = 1.0f / w->lightGridSize[2];
 
 	wMins = w->bmodels[0].bounds[0];
 	wMaxs = w->bmodels[0].bounds[1];
 
 	for ( i = 0 ; i < 3 ; i++ ) {
-		w->lightGridOrigin[i] = w->lightGridSize[i] * ceil( wMins[i] / w->lightGridSize[i] );
-		maxs[i] = w->lightGridSize[i] * floor( wMaxs[i] / w->lightGridSize[i] );
+		w->lightGridOrigin[i] = w->lightGridSize[i] * ceilf( wMins[i] / w->lightGridSize[i] );
+		maxs[i] = w->lightGridSize[i] * floorf( wMaxs[i] / w->lightGridSize[i] );
 		w->lightGridBounds[i] = (maxs[i] - w->lightGridOrigin[i])/w->lightGridSize[i] + 1;
 	}
 

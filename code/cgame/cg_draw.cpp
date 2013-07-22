@@ -129,13 +129,13 @@ void CG_DrawHead( float x, float y, float w, float h, int speaker_i, vec3_t head
 	// offset the origin y and z to center the head
 	cgi_R_ModelBounds( hm, mins, maxs );
 
-	origin[2] = -0.5 * ( mins[2] + maxs[2] );
-	origin[1] = 0.5 * ( mins[1] + maxs[1] );
+	origin[2] = -0.5f * ( mins[2] + maxs[2] );
+	origin[1] = 0.5f * ( mins[1] + maxs[1] );
 
 	// calculate distance so the head nearly fills the box
 	// assume heads are taller than wide
-	len = 0.7 * ( maxs[2] - mins[2] );		
-	origin[0] = len / 0.268;	// len / tan( fov/2 )
+	len = 0.7f * ( maxs[2] - mins[2] );		
+	origin[0] = len / 0.268f;	// len / tan( fov/2 )
 
 	CG_Draw3DModel( x, y, w, h, hm, hs, origin, headAngles );
 }
@@ -183,7 +183,7 @@ static void CG_DrawTalk(centity_t	*cent)
 		CG_DrawPic( 55, y, 16, 16, cgs.media.bracketld );
 		CG_DrawPic( 616,y, 16, 16, cgs.media.bracketrd );
 */
-		size = ICON_SIZE * 1.5;
+		size = ICON_SIZE * 1.5f;
 		VectorClear( angles );
 		angles[YAW] = 180;
 
@@ -283,7 +283,7 @@ static void CG_DrawForcePower(centity_t *cent,int x,int y)
 		if ( extra )
 		{//supercharged
 			memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
-			percent = 0.75f + (sin( cg.time * 0.005f )*((extra/cent->gent->client->ps.forcePowerMax)*0.25f));
+			percent = 0.75f + (sinf( cg.time * 0.005f )*((extra/cent->gent->client->ps.forcePowerMax)*0.25f));
 			calcColor[0] *= percent;
 			calcColor[1] *= percent;
 			calcColor[2] *= percent;
@@ -948,7 +948,7 @@ static void CG_DrawZoomMask( void )
 
 		if ( power )
 		{
-			color1[0] = sin( cg.time * 0.01f ) * 0.5f + 0.5f;
+			color1[0] = sinf( cg.time * 0.01f ) * 0.5f + 0.5f;
 			color1[0] = color1[0] * color1[0];
 			color1[1] = color1[0];
 			color1[2] = color1[0];
@@ -1039,7 +1039,7 @@ static void CG_DrawZoomMask( void )
 			color1[0] = 1.0f; 
 			color1[1] = 1.0f;
 			color1[2] = 1.0f;
-			color1[3] = 0.7f + sin( cg.time * 0.01f ) * 0.3f;
+			color1[3] = 0.7f + sinf( cg.time * 0.01f ) * 0.3f;
 
 			cgi_R_SetColor( color1 );
 		}
@@ -1084,8 +1084,8 @@ static void CG_DrawZoomMask( void )
 
 		for ( float i = 18.5f; i <= 18.5f + max; i+= 3 ) // going from 15 to 45 degrees, with 5 degree increments
 		{
-			cx = 320 + sin( (i+90.0f)/57.296f ) * 190;
-			cy = 240 + cos( (i+90.0f)/57.296f ) * 190;
+			cx = 320 + sinf( (i+90.0f)/57.296f ) * 190;
+			cy = 240 + cosf( (i+90.0f)/57.296f ) * 190;
 
 			CG_DrawRotatePic2( cx, cy, 12, 24, 90 - i, cgs.media.disruptorInsertTick );
 		}
@@ -1128,7 +1128,7 @@ static void CG_DrawZoomMask( void )
 			}
 
 			float pos1 = 220 + light;
-			float pos2 = 220 + cos( cg.time * 0.0004f + light * 0.05f ) * 40 + sin( cg.time * 0.0013f + 1 ) * 20 + sin( cg.time * 0.0021f ) * 5;
+			float pos2 = 220 + cosf( cg.time * 0.0004f + light * 0.05f ) * 40 + sinf( cg.time * 0.0013f + 1 ) * 20 + sinf( cg.time * 0.0021f ) * 5;
 
 			// Flickery color
 			color1[0] = 0.7f + crandom() * 0.2f;
@@ -1157,7 +1157,7 @@ static void CG_DrawZoomMask( void )
 			CG_DrawPic( 247.0f, 362.5f, charge * 143.0f, 6, cgs.media.whiteShader );
 
 			// pulsing dot bit
-			color1[0] = sin( cg.time * 0.01f ) * 0.5f + 0.5f;
+			color1[0] = sinf( cg.time * 0.01f ) * 0.5f + 0.5f;
 			color1[0] = color1[0] * color1[0];
 			color1[1] = color1[0];
 			color1[2] = color1[0];
@@ -1292,6 +1292,9 @@ CROSSHAIR
 CG_DrawCrosshair
 =================
 */
+#ifdef AUTOAIM
+extern short cg_crossHairStatus;
+#endif
 static void CG_DrawCrosshair( vec3_t worldPoint ) 
 {
 	float		w, h;
@@ -1312,6 +1315,9 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 		return;
 	}
 
+#ifdef AUTOAIM
+	cg_crossHairStatus = 0;
+#endif
 	//set color based on what kind of ent is under crosshair
 	if ( g_crosshairEntNum >= ENTITYNUM_WORLD )
 	{
@@ -1353,6 +1359,9 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 			}
 			else
 			{
+#ifdef AUTOAIM
+				cg_crossHairStatus = 1;
+#endif
 				//Enemies are red
 				ecolor[0] = 1.0f;//R
 				ecolor[1] = 0.1f;//G
@@ -1371,6 +1380,9 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 			}
 			else
 			{
+#ifdef AUTOAIM
+				cg_crossHairStatus = 1;
+#endif
 				// hostile ones are red
 				ecolor[0] = 1.0;//R
 				ecolor[1] = 0.0;//G
@@ -1379,6 +1391,9 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 		}
 		else if ( crossEnt->s.weapon == WP_TRIP_MINE )
 		{
+#ifdef AUTOAIM
+				cg_crossHairStatus = 1;
+#endif
 			// tripmines are red
 			ecolor[0] = 1.0;//R
 			ecolor[1] = 0.0;//G
@@ -1504,14 +1519,14 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 	{
 		hShader = cgs.media.crosshairShader[ cg_drawCrosshair.integer % NUM_CROSSHAIRS ];
 
-		cgi_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (640 - w), 
-			y + cg.refdef.y + 0.5 * (480 - h), 
+		cgi_R_DrawStretchPic( x + cg.refdef.x + 0.5f * (640 - w), 
+			y + cg.refdef.y + 0.5f * (480 - h), 
 			w, h, 0, 0, 1, 1, hShader );	
 	}
 
 	if ( cg.forceCrosshairStartTime && cg_crosshairForceHint.integer ) // drawing extra bits
 	{
-		ecolor[0] = ecolor[1] = ecolor[2] = (1 - ecolor[3]) * ( sin( cg.time * 0.001f ) * 0.08f + 0.35f ); // don't draw full color
+		ecolor[0] = ecolor[1] = ecolor[2] = (1 - ecolor[3]) * ( sinf( cg.time * 0.001f ) * 0.08f + 0.35f ); // don't draw full color
 		ecolor[3] = 1.0f;
 
 		cgi_R_SetColor( ecolor );
@@ -1551,13 +1566,13 @@ qboolean CG_WorldCoordToScreenCoordFloat(vec3_t worldCoord, float *x, float *y)
 	transformed[2] = DotProduct(local,vfwd);		
 
 	// Make sure Z is not negative.
-	if(transformed[2] < 0.01)
+	if(transformed[2] < 0.01f)
 	{
 		return qfalse;
 	}
 	// Simple convert to screen coords.
-	float xzi = xcenter / transformed[2] * (90.0/cg.refdef.fov_x);
-	float yzi = ycenter / transformed[2] * (90.0/cg.refdef.fov_y);
+	float xzi = xcenter / transformed[2] * (90.0f/cg.refdef.fov_x);
+	float yzi = ycenter / transformed[2] * (90.0f/cg.refdef.fov_y);
 
 	*x = xcenter + xzi * transformed[0];
 	*y = ycenter - yzi * transformed[1];
@@ -2020,7 +2035,7 @@ static void CG_DrawRocketLocking( int lockEntNum, int lockTime )
 		// we are locked and loaded baby
 		if ( dif == 8 )
 		{
-			color[0] = color[1] = color[2] = sin( cg.time * 0.05f ) * 0.5f + 0.5f;
+			color[0] = color[1] = color[2] = sinf( cg.time * 0.05f ) * 0.5f + 0.5f;
 			color[3] = 1.0f; // this art is additive, so the alpha value does nothing
 
 			cgi_R_SetColor( color );

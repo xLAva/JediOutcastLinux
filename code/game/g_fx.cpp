@@ -574,7 +574,7 @@ void fx_target_beam_fire( gentity_t *ent )
 		VectorCopy( trace.endpos, end );
 	}
 
-	if ( trace.fraction < 1.0 )
+	if ( trace.fraction < 1.0f )
 	{
 		if ( trace.entityNum < ENTITYNUM_WORLD )
 		{

@@ -1111,7 +1111,7 @@ static void Z_Details_f(void)
 			//
 			float	fSize		= (float)(iThisSize) / 1024.0f / 1024.0f;
 			int		iSize		= fSize;
-			int		iRemainder 	= 100.0f * (fSize - floor(fSize));
+			int		iRemainder 	= 100.0f * (fSize - floorf(fSize));
 			Com_Printf("%20s %9d (%2d.%02dMB) in %6d blocks (%9d average)\n", 
 					    psTagStrings[i], 
 							  iThisSize, 
@@ -1780,7 +1780,7 @@ static void Com_Freeze_f (void) {
 
 	while ( 1 ) {
 		now = Com_Milliseconds();
-		if ( ( now - start ) * 0.001 > s ) {
+		if ( ( now - start ) * 0.001f > s ) {
 			break;
 		}
 	}

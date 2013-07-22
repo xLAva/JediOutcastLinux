@@ -370,7 +370,7 @@ void RB_SurfaceAnim( md4Surface_t *surface ) {
 		frontlerp = 1;
 	} else  {
 		backlerp = backEnd.currentEntity->e.backlerp;
-		frontlerp = 1.0 - backlerp;
+		frontlerp = 1.0f - backlerp;
 	}
 	header = (md4Header_t *)((byte *)surface + surface->ofsHeader);
 

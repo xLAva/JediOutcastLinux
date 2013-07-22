@@ -28,7 +28,7 @@ extern	cvar_t		*d_asynchronousGroupAI;
 #define	MAX_VIEW_DIST		1024
 #define MAX_VIEW_SPEED		250
 #define	MAX_LIGHT_INTENSITY 255
-#define	MIN_LIGHT_THRESHOLD	0.1
+#define	MIN_LIGHT_THRESHOLD	0.1f
 #define	ST_MIN_LIGHT_THRESHOLD 30
 #define	ST_MAX_LIGHT_THRESHOLD 180
 #define	DISTANCE_THRESHOLD	0.075f
@@ -41,7 +41,7 @@ extern	cvar_t		*d_asynchronousGroupAI;
 #define	TURNING_SCALE		0.25f	//
 
 #define	REALIZE_THRESHOLD	0.6f
-#define CAUTIOUS_THRESHOLD	( REALIZE_THRESHOLD * 0.75 )
+#define CAUTIOUS_THRESHOLD	( REALIZE_THRESHOLD * 0.75f )
 
 #define MIN_ROCKET_DIST_SQUARED 16384//128*128
 
@@ -555,7 +555,7 @@ qboolean NPC_CheckEnemyStealth( gentity_t *target )
 		int		target_crouching	= ( target->client->usercmd.upmove < 0 );
 		float	dist_rating			= ( target_dist / maxViewDist );
 		float	speed_rating		= ( target_speed / MAX_VIEW_SPEED );
-		float	turning_rating		= AngleDelta( target->client->ps.viewangles[PITCH], target->lastAngles[PITCH] )/180.0f + AngleDelta( target->client->ps.viewangles[YAW], target->lastAngles[YAW] )/180.0f;
+		float	turning_rating		= AngleDelta( target->client->ps.viewangles[PITCH], target->lastAngles[PITCH] )*(1.0f/180.0f) + AngleDelta( target->client->ps.viewangles[YAW], target->lastAngles[YAW] )*(1.0f/180.0f);
 		float	light_level			= ( target->lightLevel / MAX_LIGHT_INTENSITY );
 		float	FOV_perc			= 1.0f - ( hAngle_perc + vAngle_perc ) * 0.5f;	//FIXME: Dunno about the average...
 		float	vis_rating			= 0.0f;
@@ -924,7 +924,7 @@ static void ST_LookAround( void )
 	float	perc = (float) ( level.time - NPCInfo->pauseTime ) / (float) NPCInfo->investigateDebounceTime;
 
 	//Keep looking at the spot
-	if ( perc < 0.25 )
+	if ( perc < 0.25f )
 	{
 		VectorCopy( NPCInfo->investigateGoal, lookPos );
 	}
@@ -2334,7 +2334,7 @@ void ST_Commander( void )
 								dot = DotProduct( eDir2Me, eDir2CP );
 							}
 							
-							if ( dot < 0.4 )
+							if ( dot < 0.4f )
 							{//flanking!
 								NPC_ST_StoreMovementSpeech( SPEECH_OUTFLANK, -1 );
 							}

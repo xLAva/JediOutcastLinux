@@ -27,7 +27,7 @@
    else no check is done (which is less robust)
 */
 #define USE_EPSILON_TEST 1
-#define EPSILON 0.000001
+#define EPSILON 0.000001f
 
 
 /* some macros */
@@ -146,9 +146,9 @@
   b=-(U0[i0]-U2[i0]);                       \
   c=-a*U2[i0]-b*U2[i1];                     \
   d2=a*V0[i0]+b*V0[i1]+c;                   \
-  if(d0*d1>0.0)                             \
+  if(d0*d1>0.0f)                             \
   {                                         \
-    if(d0*d2>0.0) return 1;                 \
+    if(d0*d2>0.0f) return 1;                 \
   }                                         \
 }
 
@@ -159,9 +159,9 @@ qboolean coplanar_tri_tri(vec3_t N,vec3_t V0,vec3_t V1,vec3_t V2,
    short i0,i1;
    /* first project onto an axis-aligned plane, that maximizes the area */
    /* of the triangles, compute indices: i0,i1. */
-   A[0]=fabs(N[0]);
-   A[1]=fabs(N[1]);
-   A[2]=fabs(N[2]);
+   A[0]=fabsf(N[0]);
+   A[1]=fabsf(N[1]);
+   A[2]=fabsf(N[2]);
    if(A[0]>A[1])
    {
       if(A[0]>A[2])  
@@ -230,9 +230,9 @@ qboolean tri_tri_intersect(vec3_t V0,vec3_t V1,vec3_t V2,
 
   /* coplanarity robustness check */
 #if USE_EPSILON_TEST
-  if(fabs(du0)<EPSILON) du0=0.0;
-  if(fabs(du1)<EPSILON) du1=0.0;
-  if(fabs(du2)<EPSILON) du2=0.0;
+  if(fabsf(du0)<EPSILON) du0=0.0f;
+  if(fabsf(du1)<EPSILON) du1=0.0f;
+  if(fabsf(du2)<EPSILON) du2=0.0f;
 #endif
   du0du1=du0*du1;
   du0du2=du0*du2;
@@ -253,9 +253,9 @@ qboolean tri_tri_intersect(vec3_t V0,vec3_t V1,vec3_t V2,
   dv2=DOT(N2,V2)+d2;
 
 #if USE_EPSILON_TEST
-  if(fabs(dv0)<EPSILON) dv0=0.0;
-  if(fabs(dv1)<EPSILON) dv1=0.0;
-  if(fabs(dv2)<EPSILON) dv2=0.0;
+  if(fabsf(dv0)<EPSILON) dv0=0.0f;
+  if(fabsf(dv1)<EPSILON) dv1=0.0f;
+  if(fabsf(dv2)<EPSILON) dv2=0.0f;
 #endif
 
   dv0dv1=dv0*dv1;
@@ -270,8 +270,8 @@ qboolean tri_tri_intersect(vec3_t V0,vec3_t V1,vec3_t V2,
   /* compute and index to the largest component of D */
   max=fabs(D[0]);
   index=0;
-  b=fabs(D[1]);
-  c=fabs(D[2]);
+  b=fabsf(D[1]);
+  c=fabsf(D[2]);
   if(b>max) max=b,index=1;
   if(c>max) max=c,index=2;
 
@@ -324,7 +324,7 @@ float LineSegmentDistance( vec3_t a, vec3_t b, vec3_t c, vec3_t d )
 	VectorSubtract( d, a, v3 );
 
 	//distance is dot product of that new vector and the normalized cross product
-	float dist = fabs( DotProduct( v3, cross ) );
+	float dist = fabsf( DotProduct( v3, cross ) );
 
 	return dist;
 }
@@ -359,7 +359,7 @@ float ShortestLineSegBewteen2LineSegs( vec3_t start1, vec3_t end1, vec3_t start2
 	float denom = (v1v2 * v1v2) - (v1v1 * v2v2);
 
 	//if denom is small, then skip all this and jump to the section marked below
-	if ( fabs(denom) > 0.001f )
+	if ( fabsf(denom) > 0.001f )
 	{
 		float s = -( (v2v2*DotProduct( v1, start_dif )) - (v1v2*DotProduct( v2, start_dif )) ) / denom;
 		float t = ( (v1v1*DotProduct( v2, start_dif )) - (v1v2*DotProduct( v1, start_dif )) ) / denom;
