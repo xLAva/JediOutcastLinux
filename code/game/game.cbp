@@ -28,7 +28,7 @@
 					<Add option="-fPIC" />
 					<Add option="-ffast-math" />
 					<Add option="-DLINUX" />
-					<Add option="-DDEBUG" />
+					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-m32" />
