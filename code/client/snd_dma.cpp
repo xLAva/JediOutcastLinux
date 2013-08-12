@@ -436,9 +436,10 @@ void S_Init( void ) {
 		if (alcGetError(ALCDevice) != ALC_NO_ERROR)
 			return;
 		
-		printf("OpenAL vendor string: %s\n", alGetString(AL_VENDOR));
-		printf("OpenAL renderer string: %s\n", alGetString(AL_RENDERER));
-		printf("OpenAL version string: %s\n", alGetString(AL_VERSION));
+
+		ri.Printf( PRINT_ALL, "OpenAL vendor string: %s\n", alGetString(AL_VENDOR));
+		ri.Printf( PRINT_ALL, "OpenAL renderer string: %s\n", alGetString(AL_RENDERER));
+		ri.Printf( PRINT_ALL, "OpenAL version string: %s\n", alGetString(AL_VERSION));
 
 		
 		s_soundStarted = 1;
