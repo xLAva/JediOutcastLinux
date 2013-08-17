@@ -24,3 +24,6 @@ This fork is aimed at OpenPandra, so get:
  
 For the Pandora version, I used only the CMake  make files, I didn't update the codeblock project file. I use the Code::Blocks PND to compile.
 
+
+For more info on the OpenPandora go here: http://boards.openpandora.org/
+Specific thread for Jedi Academy on the OpenPandora here: http://boards.openpandora.org/index.php/topic/13621-jedi-knight-ii-jedi-outcast/
