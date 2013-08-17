@@ -314,8 +314,8 @@ void Remote_Attack( void )
 //	distance_e	distRate	= ( distance > MIN_MELEE_RANGE_SQR ) ? DIST_LONG : DIST_MELEE;
 	qboolean	visible		= NPC_ClearLOS( NPC->enemy );
 	float		idealDist	= MIN_DISTANCE_SQR+(MIN_DISTANCE_SQR*Q_flrand( 0, 1 ));
-	qboolean	advance		= (qboolean)(distance > idealDist*1.25);
-	qboolean	retreat		= (qboolean)(distance < idealDist*0.75);
+	qboolean	advance		= (qboolean)(distance > idealDist*1.25f);
+	qboolean	retreat		= (qboolean)(distance < idealDist*0.75f);
 
 	// If we cannot see our target, move to see it
 	if ( visible == qfalse )

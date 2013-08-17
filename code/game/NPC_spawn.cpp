@@ -1170,7 +1170,7 @@ void NPC_Spawn_Go( gentity_t *ent )
 		VectorCopy( ent->currentOrigin, bottom );
 		bottom[2] = MIN_WORLD_COORD;
 		gi.trace( &tr, ent->currentOrigin, ent->mins, ent->maxs, bottom, ent->s.number, MASK_NPCSOLID, (EG2_Collision)0, 0 );
-		if ( !tr.allsolid && !tr.startsolid && tr.fraction < 1.0 )
+		if ( !tr.allsolid && !tr.startsolid && tr.fraction < 1.0f )
 		{
 			G_SetOrigin( ent, tr.endpos );
 		}

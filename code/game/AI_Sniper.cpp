@@ -679,7 +679,7 @@ void NPC_BSSniper_Attack( void )
 			{//use primary fire
 				trace_t	trace;
 				gi.trace ( &trace, NPC->enemy->currentOrigin, NPC->enemy->mins, NPC->enemy->maxs, NPC->currentOrigin, NPC->enemy->s.number, NPC->enemy->clipmask, (EG2_Collision)0, 0 );
-				if ( !trace.allsolid && !trace.startsolid && (trace.fraction == 1.0 || trace.entityNum == NPC->s.number ) )
+				if ( !trace.allsolid && !trace.startsolid && (trace.fraction == 1.0f || trace.entityNum == NPC->s.number ) )
 				{//he can get right to me
 					NPCInfo->scriptFlags &= ~SCF_ALT_FIRE;
 					//reset fire-timing variables

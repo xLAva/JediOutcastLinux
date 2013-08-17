@@ -7,6 +7,9 @@
 
 #include "tr_local.h"
 
+#ifdef NEON
+#include <arm_neon.h>
+#endif
 /*
 
   THIS ENTIRE FILE IS BACK END
@@ -62,7 +65,11 @@ RB_AddQuadStampExt
 */
 void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte *color, float s1, float t1, float s2, float t2 ) {
 	vec3_t		normal;
-	int			ndx;
+	#ifdef HAVE_GLES
+	short	ndx;
+	#else
+	int	ndx;
+	#endif
 
 	RB_CHECKOVERFLOW( 4, 6 );
 
@@ -154,8 +161,8 @@ static void RB_SurfaceSprite( void ) {
 		float	ang;
 		
 		ang = M_PI * backEnd.currentEntity->e.rotation / 180;
-		s = sin( ang );
-		c = cos( ang );
+		s = sinf( ang );
+		c = cosf( ang );
 
 		VectorScale( backEnd.viewParms.orient.axis[1], c * radius, left );
 		VectorMA( left, -s * radius, backEnd.viewParms.orient.axis[2], left );
@@ -196,8 +203,8 @@ static void RB_SurfaceOrientedQuad( void )
 		float	ang;
 		
 		ang = M_PI * backEnd.currentEntity->e.rotation / 180;
-		s = sin( ang );
-		c = cos( ang );
+		s = sinf( ang );
+		c = cosf( ang );
 
 		// Use a temp so we don't trash the values we'll need later
 		VectorScale( left, c * radius, tempLeft );
@@ -240,7 +247,11 @@ RB_SurfaceLine
 static void DoLine( const vec3_t start, const vec3_t end, const vec3_t up, float spanWidth )
 {
 	float		spanWidth2;
+	#ifdef HAVE_GLES
+	short		vbase;
+	#else
 	int			vbase;
+	#endif
 
 	RB_CHECKOVERFLOW( 4, 6 );
 
@@ -296,7 +307,11 @@ static void DoLine( const vec3_t start, const vec3_t end, const vec3_t up, float
 
 static void DoLine2( const vec3_t start, const vec3_t end, const vec3_t up, float spanWidth, float spanWidth2, const float tcStart, const float tcEnd )
 {
+	#ifdef HAVE_GLES
+	short		vbase;
+	#else
 	int			vbase;
+	#endif
 
 	RB_CHECKOVERFLOW( 4, 6 );
 
@@ -378,7 +393,11 @@ RB_SurfaceCylinder
 ==============
 */
 
+#ifdef PANDORA
+#define NUM_CYLINDER_SEGMENTS 16
+#else
 #define NUM_CYLINDER_SEGMENTS 40
+#endif
 
 // e->origin holds the bottom point
 // e->oldorigin holds the top point
@@ -457,7 +476,11 @@ static void RB_SurfaceCone( void )
 
 	RB_CHECKOVERFLOW( 2 * (segments+1), 3 * segments ); // this isn't 100% accurate
 
+	#ifdef HAVE_GLES
+	short vbase = tess.numVertexes;
+	#else
 	int vbase = tess.numVertexes;
+	#endif
 
 	for ( i = 0; i < segments; i++ )
 	{
@@ -581,7 +604,11 @@ static void RB_SurfaceCylinder( void )
 
 	RB_CHECKOVERFLOW( 2 * (segments+1), 6 * segments ); // this isn't 100% accurate
 
+	#ifdef HAVE_GLES
+	short vbase = tess.numVertexes;
+	#else
 	int vbase = tess.numVertexes;
+	#endif
 
 	for ( i = 0; i < segments; i++ )
 	{
@@ -1094,12 +1121,32 @@ void RB_SurfaceBeam( void )
 		break;
 	}
 
+	#ifdef HAVE_GLES
+	GLfloat vtx[NUM_BEAM_SEGS*6+6];
+	GLboolean text = qglIsEnabled(GL_TEXTURE_COORD_ARRAY);
+	GLboolean glcol = qglIsEnabled(GL_COLOR_ARRAY);
+	if (glcol)
+		qglDisableClientState(GL_COLOR_ARRAY);
+	if (text)
+		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	for ( i = 0; i <= NUM_BEAM_SEGS; i++ ) {
+		memcpy(vtx+i*6, start_points[ i % NUM_BEAM_SEGS], sizeof(GLfloat)*3);
+		memcpy(vtx+i*6+3, end_points[ i % NUM_BEAM_SEGS], sizeof(GLfloat)*3);
+	}
+	qglVertexPointer (3, GL_FLOAT, 0, vtx);
+	qglDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_BEAM_SEGS*2+2);
+	if (glcol)
+		qglEnableClientState(GL_COLOR_ARRAY);
+	if (text)
+		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	#else
 	qglBegin( GL_TRIANGLE_STRIP );
 	for ( i = 0; i <= NUM_BEAM_SEGS; i++ ) {
 		qglVertex3fv( start_points[ i % NUM_BEAM_SEGS] );
 		qglVertex3fv( end_points[ i % NUM_BEAM_SEGS] );
 	}
 	qglEnd();
+	#endif
 }
 
 
@@ -1113,8 +1160,8 @@ static void DoSprite( vec3_t origin, float radius, float rotation )
 	vec3_t	left, up;
 	
 	ang = M_PI * rotation / 180.0f;
-	s = sin( ang );
-	c = cos( ang );
+	s = sinf( ang );
+	c = cosf( ang );
 
 	VectorScale( backEnd.viewParms.orient.axis[1], c * radius, left );
 	VectorMA( left, -s * radius, backEnd.viewParms.orient.axis[2], left );
@@ -1175,8 +1222,8 @@ static void LerpMeshVertexes (md3Surface_t *surf, float backlerp)
 		+ (backEnd.currentEntity->e.frame * surf->numVerts * 4);
 	newNormals = newXyz + 3;
 
-	newXyzScale = MD3_XYZ_SCALE * (1.0 - backlerp);
-	newNormalScale = 1.0 - backlerp;
+	newXyzScale = MD3_XYZ_SCALE * (1.0f - backlerp);
+	newNormalScale = 1.0f - backlerp;
 
 	numVerts = surf->numVerts;
 
@@ -1188,10 +1235,13 @@ static void LerpMeshVertexes (md3Surface_t *surf, float backlerp)
 			newXyz += 4, newNormals += 4,
 			outXyz += 4, outNormal += 4) 
 		{
-
+			#ifdef NEON
+			vst1q_f32(outXyz, vmulq_n_f32(vcvtq_f32_s32(vmovl_s16(vld1_s16(newXyz))), newXyzScale));
+			#else
 			outXyz[0] = newXyz[0] * newXyzScale;
 			outXyz[1] = newXyz[1] * newXyzScale;
 			outXyz[2] = newXyz[2] * newXyzScale;
+			#endif
 
 			lat = ( newNormals[0] >> 8 ) & 0xff;
 			lng = ( newNormals[0] & 0xff );
@@ -1224,9 +1274,14 @@ static void LerpMeshVertexes (md3Surface_t *surf, float backlerp)
 			vec3_t uncompressedOldNormal, uncompressedNewNormal;
 
 			// interpolate the xyz
+			#ifdef NEON
+			vst1q_f32(outXyz, vaddq_f32(vmulq_n_f32(vcvtq_f32_s32(vmovl_s16(vld1_s16(newXyz))), newXyzScale),
+										vmulq_n_f32(vcvtq_f32_s32(vmovl_s16(vld1_s16(oldXyz))), oldXyzScale)));
+			#else
 			outXyz[0] = oldXyz[0] * oldXyzScale + newXyz[0] * newXyzScale;
 			outXyz[1] = oldXyz[1] * oldXyzScale + newXyz[1] * newXyzScale;
 			outXyz[2] = oldXyz[2] * oldXyzScale + newXyz[2] * newXyzScale;
+			#endif
 
 			// FIXME: interpolate lat/long instead?
 			lat = ( newNormals[0] >> 8 ) & 0xff;
@@ -1309,11 +1364,20 @@ RB_SurfaceFace
 */
 void RB_SurfaceFace( srfSurfaceFace_t *surf ) {
 	int			i, k;
+	#ifdef HAVE_GLES
+	unsigned 	*indices;
+	unsigned short	*tessIndexes;
+	#else
 	unsigned	*indices, *tessIndexes;
+	#endif
 	float		*v;
 	float		*normal;
 	int			ndx;
+	#ifdef HAVE_GLES
+	unsigned short		Bob;
+	#else
 	int			Bob;
+	#endif
 	int			numPoints;
 	int			dlightBits;
 
@@ -1571,9 +1635,14 @@ inline void Vector2Copy(vec2_t src,vec2_t dst)
 	dst[1] = src[1];
 }
 
+#ifdef PANDORA
+#define LATHE_SEG_STEP	60
+#define BEZIER_STEP		0.50f	// must be in the range of 0 to 1
+#else
 #define LATHE_SEG_STEP	10
 #define BEZIER_STEP		0.05f	// must be in the range of 0 to 1
-
+#endif
+#define MAX_LATHE		50
 // FIXME: This function is horribly expensive
 static void RB_SurfaceLathe()
 {
@@ -1581,10 +1650,18 @@ static void RB_SurfaceLathe()
 	vec2_t		pt, oldpt, l_oldpt;
 	vec2_t		pt2, oldpt2, l_oldpt2; 
 	float		bezierStep, latheStep;
-    float		temp, mu, mum1;
-	float		mum13, mu3, group1, group2;
+    float		temp, mu/*, mum1*/;
+	//float		mum13, mu3, group1, group2;
+	int 		mm;
 	float		s, c, d = 1.0f, pain = 0.0f;
 	int			i, t, vbase;
+	
+	static float mus[MAX_LATHE];
+	static float mum13[MAX_LATHE];
+	static float mu3[MAX_LATHE];
+	static float group1[MAX_LATHE];
+	static float group2[MAX_LATHE];
+	static int mu_number = 0;
 
 	e = &backEnd.currentEntity->e;
 
@@ -1610,21 +1687,38 @@ static void RB_SurfaceLathe()
 	}
 	bezierStep = BEZIER_STEP * lod;
 	latheStep = LATHE_SEG_STEP * lod;
-
-	// Do bezier profile strip, then lathe this around to make a 3d model
+	
+	if (!mu_number) 
 	for ( mu = 0.0f; mu <= 1.01f * d; mu += bezierStep )
 	{
+		float mum1;
 		// Four point curve
+		mus[mu_number]=mu;
 		mum1	= 1 - mu;
+		mum13[mu_number]	= mum1 * mum1 * mum1;
+		mu3[mu_number]		= mu * mu * mu;
+		group1[mu_number]	= 3 * mu * mum1 * mum1;
+		group2[mu_number]	= 3 * mu * mu *mum1;
+		mu_number++;
+	}
+
+	// Do bezier profile strip, then lathe this around to make a 3d model
+	//for ( mu = 0.0f; mu <= 1.01f * d; mu += bezierStep )
+	for (mm = 0; mm<mu_number; mm++)
+	{
+		// Four point curve
+/*		mum1	= 1 - mu;
 		mum13	= mum1 * mum1 * mum1;
 		mu3		= mu * mu * mu;
 		group1	= 3 * mu * mum1 * mum1;
-		group2	= 3 * mu * mu *mum1;
+		group2	= 3 * mu * mu *mum1;*/
+		mu = mus[mm];
 
 		// Calc the current point on the curve
 		for ( i = 0; i < 2; i++ )
 		{
-			l_oldpt2[i] = mum13 * e->axis[0][i] + group1 * e->axis[1][i] + group2 * e->axis[2][i] + mu3 * e->oldorigin[i];
+			l_oldpt2[i] = mum13[mm] * e->axis[0][i] + group1[mm] * e->axis[1][i] + group2[mm] * e->axis[2][i] + mu3[mm] * e->oldorigin[i];
+//			l_oldpt2[i] = mum13 * e->axis[0][i] + group1 * e->axis[1][i] + group2 * e->axis[2][i] + mu3 * e->oldorigin[i];
 		}
 
 		Vector2Set( oldpt, l_oldpt[0], 0 );
@@ -1636,8 +1730,8 @@ static void RB_SurfaceLathe()
 			Vector2Set( pt, l_oldpt[0], 0 );
 			Vector2Set( pt2, l_oldpt2[0], 0 );
 
-			s = sin( DEG2RAD( t ));
-			c = cos( DEG2RAD( t ));
+			s = sinf( DEG2RAD( t ));
+			c = cosf( DEG2RAD( t ));
 
 			// rotate lathe points
 //c -s 0
@@ -1660,7 +1754,7 @@ static void RB_SurfaceLathe()
 			VectorNormalize( tess.normal[tess.numVertexes] );
 			i = oldpt[0] * 0.1f + oldpt[1] * 0.1f;
 			tess.texCoords[tess.numVertexes][0][0] = (t-latheStep)/360.0f;
-			tess.texCoords[tess.numVertexes][0][1] = mu-bezierStep + cos( i + backEnd.refdef.floatTime ) * pain;
+			tess.texCoords[tess.numVertexes][0][1] = mu-bezierStep + cosf( i + backEnd.refdef.floatTime ) * pain;
 			tess.vertexColors[tess.numVertexes][0] = e->shaderRGBA[0];
 			tess.vertexColors[tess.numVertexes][1] = e->shaderRGBA[1];
 			tess.vertexColors[tess.numVertexes][2] = e->shaderRGBA[2];
@@ -1672,7 +1766,7 @@ static void RB_SurfaceLathe()
 			VectorNormalize( tess.normal[tess.numVertexes] );
 			i = oldpt2[0] * 0.1f + oldpt2[1] * 0.1f;
 			tess.texCoords[tess.numVertexes][0][0] = (t-latheStep) / 360.0f;
-			tess.texCoords[tess.numVertexes][0][1] = mu + cos( i + backEnd.refdef.floatTime ) * pain;
+			tess.texCoords[tess.numVertexes][0][1] = mu + cosf( i + backEnd.refdef.floatTime ) * pain;
 			tess.vertexColors[tess.numVertexes][0] = e->shaderRGBA[0];
 			tess.vertexColors[tess.numVertexes][1] = e->shaderRGBA[1];
 			tess.vertexColors[tess.numVertexes][2] = e->shaderRGBA[2];
@@ -1684,7 +1778,7 @@ static void RB_SurfaceLathe()
 			VectorNormalize( tess.normal[tess.numVertexes] );
 			i = pt[0] * 0.1f + pt[1] * 0.1f;
 			tess.texCoords[tess.numVertexes][0][0] = t/360.0f;
-			tess.texCoords[tess.numVertexes][0][1] = mu-bezierStep + cos( i + backEnd.refdef.floatTime ) * pain;
+			tess.texCoords[tess.numVertexes][0][1] = mu-bezierStep + cosf( i + backEnd.refdef.floatTime ) * pain;
 			tess.vertexColors[tess.numVertexes][0] = e->shaderRGBA[0];
 			tess.vertexColors[tess.numVertexes][1] = e->shaderRGBA[1];
 			tess.vertexColors[tess.numVertexes][2] = e->shaderRGBA[2];
@@ -1696,7 +1790,7 @@ static void RB_SurfaceLathe()
 			VectorNormalize( tess.normal[tess.numVertexes] );
 			i = pt2[0] * 0.1f + pt2[1] * 0.1f;
 			tess.texCoords[tess.numVertexes][0][0] = t/360.0f;
-			tess.texCoords[tess.numVertexes][0][1] = mu + cos( i + backEnd.refdef.floatTime ) * pain;
+			tess.texCoords[tess.numVertexes][0][1] = mu + cosf( i + backEnd.refdef.floatTime ) * pain;
 			tess.vertexColors[tess.numVertexes][0] = e->shaderRGBA[0];
 			tess.vertexColors[tess.numVertexes][1] = e->shaderRGBA[1];
 			tess.vertexColors[tess.numVertexes][2] = e->shaderRGBA[2];
@@ -1812,8 +1906,8 @@ static void RB_SurfaceClouds()
 				VectorCopy( oldpt, pt );
 				VectorCopy( oldpt2, pt2 );
 
-				s = sin( DEG2RAD( latheStep ));
-				c = cos( DEG2RAD( latheStep ));
+				s = sinf( DEG2RAD( latheStep ));
+				c = cosf( DEG2RAD( latheStep ));
 
 				// rotate lathe points
 				temp = c * pt[0] - s * pt[1];	// c -s 0
@@ -1906,6 +2000,37 @@ Draws x/y/z lines from the origin for orientation debugging
 void RB_SurfaceAxis( void ) {
 	GL_Bind( tr.whiteImage );
 	qglLineWidth( 3 );
+	#ifdef HAVE_GLES
+	 GLfloat col[] = {
+	  1,0,0, 1,
+	  1,0,0, 1,
+	  0,1,0, 1,
+	  0,1,0, 1,
+	  0,0,1, 1,
+	  0,0,1, 1
+	 };
+	 GLfloat vtx[] = {
+	  0,0,0,
+	  16,0,0,
+	  0,0,0,
+	  0,16,0,
+	  0,0,0,
+	  0,0,16
+	 };
+	GLboolean text = qglIsEnabled(GL_TEXTURE_COORD_ARRAY);
+	GLboolean glcol = qglIsEnabled(GL_COLOR_ARRAY);
+	if (text)
+		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	if (!glcol)
+		qglEnableClientState( GL_COLOR_ARRAY);
+	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, col );
+	qglVertexPointer (3, GL_FLOAT, 0, vtx);
+	qglDrawArrays(GL_LINES, 0, 6);
+	if (text)
+		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	if (!glcol)
+		qglDisableClientState( GL_COLOR_ARRAY);
+	#else
 	qglBegin( GL_LINES );
 	qglColor3f( 1,0,0 );
 	qglVertex3f( 0,0,0 );
@@ -1917,6 +2042,7 @@ void RB_SurfaceAxis( void ) {
 	qglVertex3f( 0,0,0 );
 	qglVertex3f( 0,0,16 );
 	qglEnd();
+	#endif
 	qglLineWidth( 1 );
 }
 
@@ -1980,7 +2106,7 @@ This is called at surface tesselation time
 qboolean RB_TestZFlare( vec3_t point, vec3_t color, vec3_t normal) {
 	int				i;
 	vec4_t			eye, clip, normalized, window;
-
+ri.Printf(PRINT_ALL, "RB_TestZFlare\n");
 	// if the point is off the screen, don't bother adding it
 	// calculate screen coordinates and depth
 	R_TransformModelToClip( point, backEnd.orient.modelMatrix, 
@@ -2001,7 +2127,7 @@ qboolean RB_TestZFlare( vec3_t point, vec3_t color, vec3_t normal) {
 	}
 
 //do test
-	float			depth;
+	float			depth=-1;
 	qboolean		visible;
 	float			screenZ;
 
@@ -2011,7 +2137,10 @@ qboolean RB_TestZFlare( vec3_t point, vec3_t color, vec3_t normal) {
 
 	// read back the z buffer contents
 	glPixelStorei(GL_PACK_ALIGNMENT,1); 
+	#ifndef HAVE_GLES
+	/*SEB* TODO, no reading of depth buffer on OpenGLES it seems... How to make that work ??? */
 	qglReadPixels( backEnd.viewParms.viewportX + window[0],backEnd.viewParms.viewportY + window[1], 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth );
+	#endif
 
 	screenZ = backEnd.viewParms.projectionMatrix[14] / 
 		( ( 2*depth - 1 ) * backEnd.viewParms.projectionMatrix[11] - backEnd.viewParms.projectionMatrix[10] );
@@ -2073,7 +2202,11 @@ void RB_SurfaceFlare( srfFlare_t *surf ) {
 void RB_SurfaceDisplayList( srfDisplayList_t *surf ) {
 	// all apropriate state must be set in RB_BeginSurface
 	// this isn't implemented yet...
+	#ifdef HAVE_GLES
+	assert(0);
+	#else
 	qglCallList( surf->listNum );
+	#endif
 }
 
 void RB_SurfaceSkip( void *surf ) {

@@ -131,6 +131,8 @@ void Sys_PumpEvents( void );
 #define	CPUSTRING	"linux-i386"
 #elif defined __axp__
 #define	CPUSTRING	"linux-alpha"
+#elif defined ARM
+#define	CPUSTRING	"linux-arm"
 #else
 #define	CPUSTRING	"linux-other"
 #endif
@@ -151,6 +153,7 @@ char* strlwr(char* s);
 
 #include <math.h>
 #define _isnan isnan
+
 
 #endif
 
@@ -308,9 +311,11 @@ typedef	int	fixed4_t;
 typedef	int	fixed8_t;
 typedef	int	fixed16_t;
 
-#ifndef M_PI
-#define M_PI		3.14159265358979323846	// matches value in gcc v2 math.h
+#ifdef M_PI
+#undef M_PI
 #endif
+#define M_PI		3.14159265358979323846f	// matches value in gcc v2 math.h *seb* reduced precision to float only
+//#endif
 
 #define NUMVERTEXNORMALS	162
 extern	vec3_t	bytedirs[NUMVERTEXNORMALS];
@@ -478,8 +483,42 @@ extern	const vec3_t	axisDefault[3];
 
 float Q_fabs( float f );
 float Q_rsqrt( float f );		// reciprocal square root
+#ifdef NEON
+inline float Q_rsqrt( float f ) {
+ float ret;
+/* 	float32x2_t a,b;
+	float res[2];
+	a=vdup_n_f32(number);
+	b=a;
+	a=vrsqrte_f32(a);
+	a=vmul_f32(a,vrsqrts_f32(b, vmul_f32(a,a)));
+//	b=vmul_f32(a,vrsqrts_f32(b, vmul_f32(a,a)));
 
+	vst1_f32(res, a);
+	return res[0];*/
+ asm volatile (
+	"vmov.32		s0, %1		\n\t"
+	"vdup.32		d0, d0[0]	\n\t"
+	"vmov.64		d1, d0		\n\t"
+	"vrsqrte.f32	d0, d0		\n\t"
+	"vmul.f32		d2, d0, d0	\n\t"
+	"vrsqrts.f32	d1, d1, d2	\n\t"
+	"vmul.f32		d0, d0, d1	\n\t"
+	
+	"vmov.32		%0, s0		\n\t"
+	:"+&r" (ret), "+&r" (f)
+	:
+	:"d0", "d1", "d2"
+ );
+ return ret;
+}
+float SQRTFAST( float x );
+//inline float32x4_t to_neon(const vec3_t a) {return (float32x4_t){ a[0], a[1], a[2], 0 };};
+//inline vec3_t from_neon(const float32x4_t a) {return *(vec3_t*)&a;};
+//#define from_neon(a) ((neon_f32)(a).f)
+#else
 #define SQRTFAST( x ) ( 1.0f / Q_rsqrt( x ) )
+#endif
 
 signed char ClampChar( int i );
 signed short ClampShort( int i );
@@ -506,7 +545,6 @@ typedef struct {
 #define VectorCopy(a,b)	*(vec3struct_t *)b=*(vec3struct_t *)a;
 #endif
 #endif
-
 #define VectorClear(a)			((a)[0]=(a)[1]=(a)[2]=0)
 #define VectorNegate(a,b)		((b)[0]=-(a)[0],(b)[1]=-(a)[1],(b)[2]=-(a)[2])
 #define VectorSet(v, x, y, z)	((v)[0]=(x), (v)[1]=(y), (v)[2]=(z))
@@ -514,22 +552,91 @@ typedef struct {
 
 #define	SnapVector(v) {v[0]=(int)v[0];v[1]=(int)v[1];v[2]=(int)v[2];}
 
+
 // just in case you do't want to use the macros
+#ifdef NEON
+inline void VectorMA( const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc) {
+        asm volatile (
+        "vld1.32                {d0}, [%0]                  \n\t"   //d0={x0,y0}
+        "flds                   s2, [%0, #8]	            		\n\t"   //d1[0]={z0}
+        "vld1.32                {d2}, [%2]                      \n\t"   //d2={x1,y1}
+        "flds                   s6, [%2, #8] 	  				\n\t"   //d3[0]={z1}
+		"vmov.32				s8, %1							\n\t"
+        "vdup.f32				d4, d4[0]						\n\t"	//d4=scale
+        
+        "vmla.f32				d0, d2, d4						\n\t"
+        "vmla.f32				d1, d3, d4						\n\t"
+        "vst1.32				d0, [%3]						\n\t"
+        "fsts                   s2, [%3, #8]                       \n\t"   //
+		: "+&r"(veca), "+&r"(scale), "+&r"(vecb), "+&r" (vecc):
+		: "d0", "d1", "d2", "d3", "d4", "memory"        
+		);
+#else
 inline void VectorMA( const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc) {
 	vecc[0] = veca[0] + scale*vecb[0];
 	vecc[1] = veca[1] + scale*vecb[1];
 	vecc[2] = veca[2] + scale*vecb[2];
+#endif
 }
 
+#ifdef NEON0
+inline vec_t DotProduct( vec3_t v1, vec3_t v2 ) {
+vec_t ret;
+        asm volatile (
+        "vld1.32                {d2}, [%1]                      \n\t"   //d2={x0,y0}
+        "flds                   s6, [%1, #8]            		\n\t"   //d3[0]={z0}
+        "vld1.32                {d4}, [%2]                      \n\t"   //d4={x1,y1}
+        "flds                   s10, [%2, #8]   				\n\t"   //d5[0]={z1}
+
+        "vmul.f32               d0, d2, d4                      \n\t"   //d0= d2*d4
+        "vpadd.f32              d0, d0, d0                      \n\t"   //d0 = d[0] + d[1]
+        "vmla.f32               d0, d3, d5                      \n\t"   //d0 = d0 + d3*d5 
+        "vmov.f32				%0, s0							\n\t"
+//		"fsts					s0, [%0]						\n\t"
+        : [ret] "+&r" (ret), "+&r"(v1), "+&r"(v2) : 
+		: "d0","d1","d2","d3","d4","d5", "memory"
+        );      
+        return ret;
+	
+}
+#else
 inline vec_t DotProduct( const vec3_t v1, const vec3_t v2 ) {
 	return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
 }
+#endif
 
 inline void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross ) {
+#ifdef NEON
+        asm volatile (
+        "flds                   s3, [%0]                        \n\t"   //d1[1]={x0}
+        "add                    %0, %0, #4                      \n\t"   //
+        "vld1.32                {d0}, [%0]                      \n\t"   //d0={y0,z0}
+        "vmov.f32               s2, s1                          \n\t"   //d1[0]={z0}
+
+        "flds                   s5, [%1]                        \n\t"   //d2[1]={x1}
+        "add                    %1, %1, #4                      \n\t"   //
+        "vld1.32                {d3}, [%1]                      \n\t"   //d3={y1,z1}
+        "vmov.f32               s4, s7                          \n\t"   //d2[0]=d3[1]
+        
+        "vmul.f32               d4, d0, d2                      \n\t"   //d4=d0*d2
+        "vmls.f32               d4, d1, d3                      \n\t"   //d4-=d1*d3
+        
+        "vmul.f32               d5, d3, d1[1]           		\n\t"   //d5=d3*d1[1]
+        "vmls.f32               d5, d0, d2[1]          		 	\n\t"   //d5-=d0*d2[1]
+        
+        "vst1.32                d4, [%2]                        \n\t"   //
+        "fsts                   s10, [%2, #8]                       \n\t"   //
+        
+        : "+&r"(v1), "+&r"(v2), "+&r"(cross):
+		: "d0", "d1", "d2", "d3", "d4", "d5", "memory"
+        );      
+}
+#else
 	cross[0] = v1[1]*v2[2] - v1[2]*v2[1];
 	cross[1] = v1[2]*v2[0] - v1[0]*v2[2];
 	cross[2] = v1[0]*v2[1] - v1[1]*v2[0];
 }
+#endif
 
 inline void VectorSubtract( const vec3_t veca, const vec3_t vecb, vec3_t out ) {
 	out[0] = veca[0]-vecb[0];
@@ -605,7 +712,7 @@ inline int VectorCompare2( const vec3_t v1, const vec3_t v2 ) {
 	return 1;
 }
 inline vec_t VectorLength( const vec3_t v ) {
-	return (vec_t)sqrt (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+	return (vec_t)sqrtf (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 }
 
 inline vec_t VectorLengthSquared( const vec3_t v ) {
@@ -629,6 +736,35 @@ inline vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 ) {
 // fast vector normalize routine that does not check to make sure
 // that length != 0, nor does it return length, uses rsqrt approximation
 inline void VectorNormalizeFast( vec3_t v )
+#ifdef NEON
+{
+        asm volatile (
+        "vld1.32                {d4}, [%0]                      \n\t"   //d4={x0,y0}
+        "flds                   s10, [%0, #8]                   \n\t"   //d5[0]={z0}
+
+        "vmul.f32               d0, d4, d4                      \n\t"   //d0= d4*d4
+        "vpadd.f32              d0, d0                          \n\t"   //d0 = d[0] + d[1]
+        "vmla.f32               d0, d5, d5                      \n\t"   //d0 = d0 + d5*d5 
+        
+        "vmov.f32               d1, d0                          \n\t"   //d1 = d0
+        "vrsqrte.f32    		d0, d0                          \n\t"   //d0 = ~ 1.0 / sqrt(d0)
+        "vmul.f32               d2, d0, d1                      \n\t"   //d2 = d0 * d1
+        "vrsqrts.f32    		d3, d2, d0                      \n\t"   //d3 = (3 - d0 * d2) / 2        
+        "vmul.f32               d0, d0, d3                      \n\t"   //d0 = d0 * d3
+        "vmul.f32               d2, d0, d1                      \n\t"   //d2 = d0 * d1  
+        "vrsqrts.f32    		d3, d2, d0                      \n\t"   //d4 = (3 - d0 * d3) / 2        
+        "vmul.f32               d0, d0, d3                      \n\t"   //d0 = d0 * d4  
+
+        "vmul.f32               q2, q2, d0[0]                   \n\t"   //d0= d2*d4
+        "vst1.32                d4, [%0]                      	\n\t"   //
+        "fsts                   s10, [%0, #8]                   \n\t"   //
+        
+        :"+&r"(v): 
+    : "d0", "d1", "d2", "d3", "d4", "d5", "memory"
+        );      
+}
+#else
+
 {
 	float ilength;
 
@@ -638,6 +774,7 @@ inline void VectorNormalizeFast( vec3_t v )
 	v[1] *= ilength;
 	v[2] *= ilength;
 }
+#endif
 
 inline void VectorInverse( vec3_t v ){
 	v[0] = -v[0];
@@ -657,7 +794,7 @@ inline vec_t VectorNormalize( vec3_t v ) {
 	float	length, ilength;
 
 	length = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
-	length = sqrt (length);
+	length = sqrtf (length);
 
 	if ( length ) {
 		ilength = 1/length;
@@ -675,8 +812,7 @@ inline vec_t VectorNormalize2( const vec3_t v, vec3_t out) {
 	float	length, ilength;
 
 	length = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
-	length = sqrt (length);
-
+	length = sqrtf (length);
 	if (length)
 	{
 		ilength = 1/length;
@@ -702,7 +838,7 @@ inline float Q_random( int *seed ) {
 }
 
 inline float Q_crandom( int *seed ) {
-	return 2.0F * ( Q_random( seed ) - 0.5f );
+	return 2.0f * ( Q_random( seed ) - 0.5f );
 }
 
 //  Returns a float min <= x < max (exclusive; will get max - 0.00001; but never max
@@ -735,12 +871,12 @@ inline float randomLava() { //LAvaPort -> change all random calls
 	//return (rand() / ((float)0x7fff));
 	//float r = (rand() / ((float)RAND_MAX));
   //printf("randomLava: r=%f\n",r);
-  return (rand() / ((float)RAND_MAX));
+  return (rand() * (1.0f/(float)RAND_MAX));
 }
 
 //returns a float between -1 and 1.0
 inline float crandom() {
-	return (2.0F * (randomLava() - 0.5F));
+	return (2.0f * (randomLava() - 0.5f));
 }
 
 float erandom( float mean );
@@ -852,7 +988,7 @@ returns angle normalized to the range [0 <= angle < 360]
 =================
 */
 inline float AngleNormalize360 ( float angle ) {
-	return (360.0 / 65536) * ((int)(angle * (65536 / 360.0)) & 65535);
+	return (360.0f / 65536) * ((int)(angle * (65536 / 360.0f)) & 65535);
 }
 
 /*
@@ -864,8 +1000,8 @@ returns angle normalized to the range [-180 < angle <= 180]
 */
 inline float AngleNormalize180 ( float angle ) {
 	angle = AngleNormalize360( angle );
-	if ( angle > 180.0 ) {
-		angle -= 360.0;
+	if ( angle > 180.0f ) {
+		angle -= 360.0f;
 	}
 	return angle;
 }
@@ -1179,7 +1315,7 @@ typedef struct {
 */
 
 #define	ANGLE2SHORT(x)	((int)((x)*65536/360) & 65535)
-#define	SHORT2ANGLE(x)	((x)*(360.0/65536))
+#define	SHORT2ANGLE(x)	((x)*(360.0f/65536))
 
 #define	SNAPFLAG_RATE_DELAYED	1
 #define	SNAPFLAG_NOT_ACTIVE		2	// snapshot used during connection and for zombies

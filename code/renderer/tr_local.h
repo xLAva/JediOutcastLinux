@@ -7,16 +7,31 @@
 #include "tr_public.h"
 #include "mdx_format.h"
 #include "qgl.h"
+#ifdef HAVE_GLES
+#include "GLES/glext.h"
+#ifndef GL_RGBA4
+#define GL_RGBA4				0x8056
+#endif
+#ifndef GL_RGB5
+#define GL_RGB5					0x8050
+#endif
+#else
 #include "glext.h"
+#endif
 
+#ifdef HAVE_GLES
+#define GL_INDEX_TYPE		GL_UNSIGNED_SHORT
+typedef unsigned short glIndex_t;
+#else
 #define GL_INDEX_TYPE		GL_UNSIGNED_INT
 typedef unsigned int glIndex_t;
+#endif
 
 // number of possible facial extensions
 #define NUM_SKIN_EXTENSIONS 9
 
 // fast float to int conversion
-#if id386 && !(defined __linux__ && defined __i386__)
+#if (id386 && !(defined __linux__ && defined __i386__)) && !(ARM)
 long myftol( float f );
 #else
 #define	myftol(x) ((int)(x))
@@ -664,7 +679,7 @@ typedef struct {
 
 	// triangle definitions
 	int				numIndexes;
-	int				*indexes;
+	int				*indexes;		//*SEB*
 
 	int				numVerts;
 	drawVert_t		*verts;

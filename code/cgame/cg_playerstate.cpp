@@ -116,7 +116,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage ) {
 	if ( health < 40 ) {
 		scale = 1;
 	} else {
-		scale = 40.0 / health;
+		scale = 40.0f / health;
 	}
 	kick = damage * scale;
 
@@ -133,8 +133,8 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage ) {
 		cg.v_dmg_pitch = -kick;
 	} else {
 		// positional
-		pitch = pitchByte / 255.0 * 360;
-		yaw = yawByte / 255.0 * 360;
+		pitch = pitchByte / 255.0f * 360;
+		yaw = yawByte / 255.0f * 360;
 
 		angles[PITCH] = pitch;
 		angles[YAW] = yaw;
@@ -151,7 +151,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage ) {
 		dir[1] = left;
 		dir[2] = 0;
 		dist = VectorLength( dir );
-		if ( dist < 0.1 ) {
+		if ( dist < 0.1f ) {
 			dist = 0.1f;
 		}
 
@@ -159,7 +159,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage ) {
 		
 		cg.v_dmg_pitch = -kick * front;
 
-		if ( front <= 0.1 ) {
+		if ( front <= 0.1f ) {
 			front = 0.1f;
 		}
 		cg.damageX = -left / front;
@@ -167,18 +167,18 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage ) {
 	}
 
 	// clamp the position
-	if ( cg.damageX > 1.0 ) {
-		cg.damageX = 1.0;
+	if ( cg.damageX > 1.0f ) {
+		cg.damageX = 1.0f;
 	}
-	if ( cg.damageX < - 1.0 ) {
-		cg.damageX = -1.0;
+	if ( cg.damageX < - 1.0f ) {
+		cg.damageX = -1.0f;
 	}
 
-	if ( cg.damageY > 1.0 ) {
-		cg.damageY = 1.0;
+	if ( cg.damageY > 1.0f ) {
+		cg.damageY = 1.0f;
 	}
-	if ( cg.damageY < - 1.0 ) {
-		cg.damageY = -1.0;
+	if ( cg.damageY < - 1.0f ) {
+		cg.damageY = -1.0f;
 	}
 
 	// don't let the screen flashes vary as much

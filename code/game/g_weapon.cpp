@@ -469,6 +469,217 @@ void FireSeeker( gentity_t *owner, gentity_t *target, vec3_t origin, vec3_t dir 
 	PLAYER WEAPONS
 ----------------------------------------------
 */
+#ifdef AUTOAIM	// Auto-aim
+
+static float VectorDistanceSquared(vec3_t p1, vec3_t p2)
+{
+	vec3_t dir;
+	VectorSubtract(p2, p1, dir);
+	return VectorLengthSquared(dir);
+}
+
+int WP_FindClosestBodyPart(gentity_t *ent, gentity_t *other, vec3_t point, vec3_t out, int c = 0)
+{
+	int shortestLen = 509999;
+	char where = -1;
+	int len;
+	renderInfo_t *ri = NULL;
+	
+	ri = &ent->client->renderInfo;
+
+	if (ent->client)
+	{
+		if (c > 0)
+		{
+			where = c - 1;		// Fail safe, set to torso
+		}
+		else
+		{
+			len = VectorDistanceSquared(point, ri->eyePoint);
+			if (len < shortestLen) {
+				shortestLen = len;		where = 0;
+			}
+
+			len = VectorDistanceSquared(point, ri->headPoint);
+			if (len < shortestLen) {
+				shortestLen = len;		where = 1;
+			}
+
+			len = VectorDistanceSquared(point, ri->handRPoint);
+			if (len < shortestLen) {
+				shortestLen = len;		where = 2;
+			}
+
+			len = VectorDistanceSquared(point, ri->handLPoint);
+			if (len < shortestLen) {
+				shortestLen = len;		where = 3;
+			}
+
+			len = VectorDistanceSquared(point, ri->crotchPoint);
+			if (len < shortestLen)	{
+				shortestLen = len;		where = 4;
+			}
+
+			len = VectorDistanceSquared(point, ri->footRPoint);
+			if (len < shortestLen) {
+				shortestLen = len;		where = 5;
+			}
+
+			len = VectorDistanceSquared(point, ri->footLPoint);
+			if (len < shortestLen)	{
+				shortestLen = len;		where = 6;
+			}
+
+			len = VectorDistanceSquared(point, ri->torsoPoint);
+			if (len < shortestLen)	{
+				shortestLen = len;		where = 7;
+			}
+		}
+
+		if (where < 2 && c == 0) 
+		{
+			if (randomLava() < .75f)		// 25% chance to actualy hit the head or eye
+				where = 7;
+		}
+
+		switch (where)
+		{
+		case 0:
+			VectorCopy(ri->eyePoint, out);
+			break;
+		case 1:
+			VectorCopy(ri->headPoint, out);
+			break;
+		case 2:
+			VectorCopy(ri->handRPoint, out);
+			break;
+		case 3:
+			VectorCopy(ri->handLPoint, out);
+			break;
+		case 4:
+			VectorCopy(ri->crotchPoint, out);
+			break;
+		case 5:
+			VectorCopy(ri->footRPoint, out);
+			break;
+		case 6:
+			VectorCopy(ri->footLPoint, out);
+			break;
+		case 7:
+			VectorCopy(ri->torsoPoint, out);
+			break;
+		}
+	}
+	else
+	{
+		VectorCopy(ent->s.pos.trBase, out);
+		// Really bad hack
+		if (strcmp(ent->classname, "misc_turret") == 0)
+		{
+			out[2] = point[2];	
+		}
+		
+	}
+
+	if (ent && ent->client && ent->client->NPC_class == CLASS_MINEMONSTER)
+	{
+		out[2] -= 24;		// not a clue???
+		return shortestLen;	// mine critters are too small to randomize
+	}
+
+	if (ent->NPC_type && !Q_stricmp(ent->NPC_type, "atst"))
+	{
+		// Dont randomize those atst's they have some pretty small legs
+		return shortestLen;
+	}
+
+	if (c == 0)
+	{
+		// Add a bit of chance to the actual location
+		float r = randomLava() * 8.0f - 4.0f;
+		float r2 = randomLava() * 8.0f - 4.0f;
+		float r3 = randomLava() * 10.0f - 5.0f;
+
+		out[0] += r;
+		out[1] += r2;
+		out[2] += r3;
+	}
+
+	return shortestLen;
+}
+#endif // Auto-aim
+
+//extern cvar_t *cv_autoAim;
+#ifdef AUTOAIM // Auto-aim
+static bool cv_autoAim = qtrue;
+#endif // Auto-aim
+bool WP_MissileTargetHint(gentity_t* shooter, vec3_t start, vec3_t out)
+{
+#ifdef AUTOAIM
+	extern short cg_crossHairStatus;
+	extern int g_crosshairEntNum;
+//	int allow = 0;
+//	allow = Cvar_VariableIntegerValue("cv_autoAim");
+
+//	if ((!cg.snap) || !allow ) return false;
+	if ((!cg.snap) || !cv_autoAim ) return false;
+	if (shooter->s.clientNum != 0) return false;		// assuming shooter must be client, using 0 for cg_entities[0] a few lines down if you change this
+//	if (cg_crossHairStatus != 1 || cg_crosshairEntNum < 0 || cg_crosshairEntNum >= ENTITYNUM_WORLD) return false;
+	if (cg_crossHairStatus != 1 || g_crosshairEntNum < 0 || g_crosshairEntNum >= ENTITYNUM_WORLD) return false;
+	
+	gentity_t* traceEnt = &g_entities[g_crosshairEntNum];
+
+	vec3_t		d_f, d_rt, d_up;
+	vec3_t		end;
+	trace_t		trace;
+
+	// Calculate the end point
+	AngleVectors( cg_entities[0].lerpAngles, d_f, d_rt, d_up );			
+	VectorMA( start, 8192, d_f, end );//4028 is max for mind trick
+
+	// This will get a detailed trace
+	gi.trace( &trace, start, vec3_origin, vec3_origin, end, cg.snap->ps.clientNum, MASK_OPAQUE|CONTENTS_SHOTCLIP|CONTENTS_BODY|CONTENTS_ITEM, G2_COLLIDE, 10);
+	// If the trace came up with a different entity then our crosshair, then you are not actualy over the enemy
+	if (trace.entityNum != g_crosshairEntNum)
+	{
+		// Must trace again to find out where the crosshair will end up
+		gi.trace( &trace, start, vec3_origin, vec3_origin, end, cg.snap->ps.clientNum, MASK_OPAQUE|CONTENTS_SHOTCLIP|CONTENTS_BODY|CONTENTS_ITEM, G2_NOCOLLIDE, 10 );
+	
+		// Find the closest body part to the trace
+		WP_FindClosestBodyPart(traceEnt, shooter, trace.endpos, out);
+
+		// Compute the direction vector between the shooter and the guy being shot
+		VectorSubtract(out,	start, out);
+		VectorNormalize(out);
+
+		for (int i = 1; i < 8; i++)		/// do this 7 times to make sure we get it
+		{
+			/// Where will this direction end up?
+			VectorMA( start, 8192, out, end );//4028 is max for mind trick
+
+			// Try it one more time, ??? are we trying to shoot through solid space??
+			gi.trace( &trace, start, vec3_origin, vec3_origin, end, cg.snap->ps.clientNum, MASK_OPAQUE|CONTENTS_SHOTCLIP|CONTENTS_BODY|CONTENTS_ITEM, G2_COLLIDE, 10);
+			if (trace.entityNum != g_crosshairEntNum)
+			{
+				// Find the closest body part to the trace
+				WP_FindClosestBodyPart(traceEnt, shooter, trace.endpos, out, i);
+
+				// Computer the direction vector between the shooter and the guy being shot
+				VectorSubtract(out,	start, out);
+				VectorNormalize(out);	
+			}
+			else
+			{
+				break;	/// a hit wahoo
+			}
+		}
+	} 
+
+	return true;
+#else // Auto-aim
+	return false;
+#endif
+}
 
 //---------------
 //	Bryar Pistol
@@ -503,6 +714,8 @@ static void WP_FireBryarPistol( gentity_t *ent, qboolean alt_fire )
 
 		AngleVectors( angs, forward, NULL, NULL );
 	}
+
+	WP_MissileTargetHint(ent, start, forward);
 
 	gentity_t	*missile = CreateMissile( start, forward, BRYAR_PISTOL_VEL, 10000, ent, alt_fire );
 
@@ -577,6 +790,8 @@ static void WP_FireBlasterMissile( gentity_t *ent, vec3_t start, vec3_t dir, qbo
 	}
 
 	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+
+	WP_MissileTargetHint(ent, start, dir);
 
 	gentity_t *missile = CreateMissile( start, dir, velocity, 10000, ent, altFire );
 
@@ -728,6 +943,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 //		damage *= 2;
 //	}
 
+	WP_MissileTargetHint(ent, start, forward);
 	VectorMA( start, shotRange, forward, end );
 
 	int ignore = ent->s.number;
@@ -1056,6 +1272,7 @@ static void WP_BowcasterMainFire( gentity_t *ent )
 //		damage *= 2;
 //	}
 
+	WP_MissileTargetHint(ent, start, forward);
 	for ( int i = 0; i < count; i++ )
 	{
 		// create a range of different velocities
@@ -1109,6 +1326,8 @@ static void WP_BowcasterAltFire( gentity_t *ent )
 
 	VectorCopy( muzzle, start );
 	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+
+	WP_MissileTargetHint(ent, start, forward);
 
 	gentity_t *missile = CreateMissile( start, forward, BOWCASTER_VELOCITY, 10000, ent, qtrue );
 
@@ -1182,6 +1401,8 @@ static void WP_RepeaterMainFire( gentity_t *ent, vec3_t dir )
 	VectorCopy( muzzle, start );
 	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
 
+	WP_MissileTargetHint(ent, start, dir);
+
 	gentity_t *missile = CreateMissile( start, dir, REPEATER_VELOCITY, 10000, ent );
 
 	missile->classname = "repeater_proj";
@@ -1237,6 +1458,7 @@ static void WP_RepeaterAltFire( gentity_t *ent )
 	}
 	else
 	{
+		WP_MissileTargetHint(ent, start, forward);
 		missile = CreateMissile( start, forward, REPEATER_ALT_VELOCITY, 10000, ent, qtrue );
 	}
 
@@ -1336,6 +1558,8 @@ static void WP_DEMP2_MainFire( gentity_t *ent )
 
 	VectorCopy( muzzle, start );
 	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+
+	WP_MissileTargetHint(ent, start, forward);
 
 	gentity_t *missile = CreateMissile( start, forward, DEMP2_VELOCITY, 10000, ent );
 
@@ -1514,6 +1738,7 @@ static void WP_DEMP2_AltFire( gentity_t *ent )
 
 	// the shot can travel a whopping 4096 units in 1 second. Note that the shot will auto-detonate at 4096 units...we'll see if this looks cool or not
 
+	WP_MissileTargetHint(ent, start, forward);
 	gentity_t *missile = CreateMissile( start, forward, DEMP2_ALT_RANGE, 1000, ent, qtrue );
 
 	// letting it know what the charge size is.
@@ -1596,6 +1821,8 @@ static void WP_FlechetteMainFire( gentity_t *ent )
 		}
 
 		AngleVectors( angs, fwd, NULL, NULL );
+
+		WP_MissileTargetHint(ent, start, fwd);
 
 		missile = CreateMissile( start, fwd, vel, 10000, ent );
 
@@ -1874,7 +2101,7 @@ void rocketThink( gentity_t *ent )
 			}
 
 			// Yeah we've adjusted horizontally, but let's split the difference vertically, so we kinda try to move towards it.
-			newdir[2] = ( targetdir[2] + ent->movedir[2] ) * 0.5;
+			newdir[2] = ( targetdir[2] + ent->movedir[2] ) * 0.5f;
 
 			// slowing down coupled with fairly tight turns can lead us to orbit an enemy..looks bad so don't do it!
 //			vel *= 0.5f;
@@ -2535,7 +2762,7 @@ qboolean WP_LobFire( gentity_t *self, vec3_t start, vec3_t target, vec3_t mins, 
 
 		VectorScale( targetDir, shotSpeed, shotVel );
 		travelTime = targetDist/shotSpeed;
-		shotVel[2] += travelTime * 0.5 * g_gravity->value;
+		shotVel[2] += travelTime * 0.5f * g_gravity->value;
 
 		if ( !hitCount )		
 		{//save the first (ideal) one as the failCase (fallback value)
@@ -2577,7 +2804,7 @@ qboolean WP_LobFire( gentity_t *self, vec3_t start, vec3_t target, vec3_t mins, 
 					{//hit the enemy, that's perfect!
 						break;
 					}
-					else if ( trace.plane.normal[2] > 0.7 && DistanceSquared( trace.endpos, target ) < 4096 )//hit within 64 of desired location, should be okay
+					else if ( trace.plane.normal[2] > 0.7f && DistanceSquared( trace.endpos, target ) < 4096 )//hit within 64 of desired location, should be okay
 					{//close enough!
 						break;
 					}
@@ -2867,6 +3094,8 @@ void WP_EmplacedFire( gentity_t *ent )
 	float damage = EMPLACED_DAMAGE * ( ent->NPC ? 0.1f : 1.0f );
 	float vel = EMPLACED_VEL * ( ent->NPC ? 0.4f : 1.0f );
 
+	WP_MissileTargetHint(ent, muzzle, forward);
+
 	gentity_t	*missile = CreateMissile( muzzle, forward, vel, 10000, ent );
 
 	missile->classname = "emplaced_proj";
@@ -2904,6 +3133,8 @@ void WP_ATSTMainFire( gentity_t *ent )
 		// player shoots faster
 		vel *= 1.6f;
 	}
+
+	WP_MissileTargetHint(ent, muzzle, forward);
 
 	gentity_t	*missile = CreateMissile( muzzle, forward, vel, 10000, ent );
 

@@ -453,7 +453,7 @@ void NPC_Probe_Pain( gentity_t *self, gentity_t *inflictor, gentity_t *other, ve
 				G_PlayEffect( "env/med_explode2", origin );
 				self->client->clientInfo.headModel = 0;
 				self->NPC->stats.moveType = MT_RUNJUMP;
-				self->client->ps.gravity = g_gravity->value*.1;
+				self->client->ps.gravity = g_gravity->value*.1f;
 			}
 			
 			if ( (mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT) && other )

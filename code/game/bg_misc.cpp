@@ -403,7 +403,7 @@ void EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result ) {
 		break;
 	case TR_SINE:
 		deltaTime = ( atTime - tr->trTime ) / (float) tr->trDuration;
-		phase = (float)sin( deltaTime * M_PI * 2 );
+		phase = (float)sinf( deltaTime * M_PI * 2 );
 		VectorMA( tr->trBase, phase, tr->trDelta, result );
 		break;
 	case TR_LINEAR_STOP:
@@ -431,7 +431,7 @@ void EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result ) {
 		}
 		else
 		{//FIXME: maybe scale this somehow?  So that it starts out faster and stops faster?
-			deltaTime = tr->trDuration*0.001f*((float)cos( DEG2RAD(90.0f - (90.0f*((float)atTime-tr->trTime)/(float)tr->trDuration)) ));
+			deltaTime = tr->trDuration*0.001f*((float)cosf( DEG2RAD(90.0f - (90.0f*((float)atTime-tr->trTime)/(float)tr->trDuration)) ));
 		}
 		VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 		break;
@@ -467,8 +467,8 @@ void EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result 
 		break;
 	case TR_SINE:
 		deltaTime = ( atTime - tr->trTime ) / (float) tr->trDuration;
-		phase = (float)cos( deltaTime * M_PI * 2 );	// derivative of sin = cos
-		phase *= 0.5;
+		phase = (float)cosf( deltaTime * M_PI * 2 );	// derivative of sin = cos
+		phase *= 0.5f;
 		VectorScale( tr->trDelta, phase, result );
 		break;
 	case TR_LINEAR_STOP:
@@ -485,7 +485,7 @@ void EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result 
 			VectorClear( result );
 			return;
 		}
-		deltaTime = tr->trDuration*0.001f*((float)cos( DEG2RAD(90.0f - (90.0f*((float)atTime-tr->trTime)/(float)tr->trDuration)) ));
+		deltaTime = tr->trDuration*0.001f*((float)cosf( DEG2RAD(90.0f - (90.0f*((float)atTime-tr->trTime)/(float)tr->trDuration)) ));
 		VectorScale( tr->trDelta, deltaTime, result );
 		break;
 	case TR_GRAVITY:
@@ -607,7 +607,7 @@ void PlayerStateToEntityState( playerState_t *ps, entityState_t *s ) {
 
 		side = DotProduct (ps->velocity, right);
 		sign = side < 0 ? -1 : 1;
-		side = fabs(side);
+		side = fabsf(side);
 		
 		value = 2;	// g_rollangle->value;
 

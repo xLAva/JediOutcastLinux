@@ -10,6 +10,19 @@
 */
 #include <float.h>
 #include "../renderer/tr_local.h"
+#ifdef HAVE_GLES
+void QGL_Shutdown( void )
+{
+	ri.Printf( PRINT_ALL, "...shutting down QGL(GLES)\n" );
+}
+qboolean QGL_Init( const char *dllname )
+{
+	qglLockArraysEXT = NULL;
+	qglUnlockArraysEXT = NULL;
+	ri.Printf( PRINT_ALL, "Starting QGL(GLES)...\n" );
+	return qtrue;
+}
+#else
 #include "linux_glw.h"
  #include <unistd.h>
 #include <sys/types.h>
@@ -373,6 +386,7 @@ void ( APIENTRY * qglVertex4s )(GLshort x, GLshort y, GLshort z, GLshort w);
 void ( APIENTRY * qglVertex4sv )(const GLshort *v);
 void ( APIENTRY * qglVertexPointer )(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
 void ( APIENTRY * qglViewport )(GLint x, GLint y, GLsizei width, GLsizei height);
+#endif //HAVE_GLES
 
 void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
 void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
@@ -383,6 +397,7 @@ void ( APIENTRY * qglUnlockArraysEXT) ( void );
 
 void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
 void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, GLfloat *value );
+#ifndef HAVE_GLES
 void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
 void ( APIENTRY * qgl3DfxSetPaletteEXT)( GLuint * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
@@ -4285,7 +4300,7 @@ void QGL_EnableLogging( qboolean enable )
 		qglViewport                  = 	dllViewport                  ;
 	}
 }
-
+#endif //HAVE_GLES
 
 
 

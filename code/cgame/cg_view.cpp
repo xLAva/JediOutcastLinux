@@ -406,7 +406,7 @@ static void CG_CalcIdealThirdPersonViewTarget(void)
 			VectorCopy(cameraFocusLoc, nudgepos);
 			nudgepos[2]+=CAMERA_CROUCH_NUDGE;
 			CG_Trace(&trace, cameraFocusLoc, cameramins, cameramaxs, nudgepos, cg.predicted_player_state.clientNum, MASK_CAMERACLIP);
-			if (trace.fraction < 1.0)
+			if (trace.fraction < 1.0f)
 			{
 				VectorCopy(trace.endpos, cameraFocusLoc);
 			}
@@ -463,13 +463,13 @@ static void CG_ResetThirdPersonViewDamp(void)
 	trace_t trace;
 
 	// Cap the pitch within reasonable limits
-	if (cameraFocusAngles[PITCH] > 89.0)
+	if (cameraFocusAngles[PITCH] > 89.0f)
 	{
-		cameraFocusAngles[PITCH] = 89.0;
+		cameraFocusAngles[PITCH] = 89.0f;
 	}
-	else if (cameraFocusAngles[PITCH] < -89.0)
+	else if (cameraFocusAngles[PITCH] < -89.0f)
 	{
-		cameraFocusAngles[PITCH] = -89.0;
+		cameraFocusAngles[PITCH] = -89.0f;
 	}
 
 	AngleVectors(cameraFocusAngles, camerafwd, NULL, cameraup);
@@ -486,14 +486,14 @@ static void CG_ResetThirdPersonViewDamp(void)
 
 	// First thing we do is trace from the first person viewpoint out to the new target location.
 	CG_Trace(&trace, cameraFocusLoc, cameramins, cameramaxs, cameraCurTarget, cg.predicted_player_state.clientNum, MASK_CAMERACLIP);
-	if (trace.fraction <= 1.0)
+	if (trace.fraction <= 1.0f)
 	{
 		VectorCopy(trace.endpos, cameraCurTarget);
 	}
 
 	// Now we trace from the new target location to the new view location, to make sure there is nothing in the way.
 	CG_Trace(&trace, cameraCurTarget, cameramins, cameramaxs, cameraCurLoc, cg.predicted_player_state.clientNum, MASK_CAMERACLIP);
-	if (trace.fraction <= 1.0)
+	if (trace.fraction <= 1.0f)
 	{
 		VectorCopy(trace.endpos, cameraCurLoc);
 	}
@@ -518,19 +518,19 @@ static void CG_UpdateThirdPersonTargetDamp(void)
 	{//if moving on a plat, camera is *tight*
 		VectorCopy(cameraIdealTarget, cameraCurTarget);
 	}
-	else if (cg_thirdPersonTargetDamp.value>=1.0)//||cg.thisFrameTeleport)
+	else if (cg_thirdPersonTargetDamp.value>=1.0f)//||cg.thisFrameTeleport)
 	{	// No damping.
 		VectorCopy(cameraIdealTarget, cameraCurTarget);
 	}
-	else if (cg_thirdPersonTargetDamp.value>=0.0)
+	else if (cg_thirdPersonTargetDamp.value>=0.0f)
 	{	
 		// Calculate the difference from the current position to the new one.
 		VectorSubtract(cameraIdealTarget, cameraCurTarget, targetdiff);
 
 		// Now we calculate how much of the difference we cover in the time allotted.
 		// The equation is (Damp)^(time)
-		dampfactor = 1.0-cg_thirdPersonTargetDamp.value;	// We must exponent the amount LEFT rather than the amount bled off
-		dtime = (float)(cg.time-cameraLastFrame) * (1.0/cg_timescale.value) * (1.0/(float)CAMERA_DAMP_INTERVAL);	// Our dampfactor is geared towards a time interval equal to "1".
+		dampfactor = 1.0f-cg_thirdPersonTargetDamp.value;	// We must exponent the amount LEFT rather than the amount bled off
+		dtime = (float)(cg.time-cameraLastFrame) * (1.0f/cg_timescale.value) * (1.0f/(float)CAMERA_DAMP_INTERVAL);	// Our dampfactor is geared towards a time interval equal to "1".
 
 		// Note that since there are a finite number of "practical" delta millisecond values possible, 
 		// the ratio should be initialized into a chart ultimately.
@@ -545,7 +545,7 @@ static void CG_UpdateThirdPersonTargetDamp(void)
 
 	// First thing we do is trace from the first person viewpoint out to the new target location.
 	CG_Trace(&trace, cameraFocusLoc, cameramins, cameramaxs, cameraCurTarget, cg.predicted_player_state.clientNum, MASK_CAMERACLIP);
-	if (trace.fraction < 1.0)
+	if (trace.fraction < 1.0f)
 	{
 		VectorCopy(trace.endpos, cameraCurTarget);
 	}
@@ -578,51 +578,59 @@ static void CG_UpdateThirdPersonCameraDamp(void)
 	{
 		if ( cg.overrides.thirdPersonCameraDamp != 0.0f )
 		{
+			#ifdef ARM
+			float pitch;
+			#else
 			double pitch;
+			#endif
 
 			// Note that the camera pitch has already been capped off to 89.
 			pitch = Q_fabs(cameraFocusAngles[PITCH]);
 
 			// The higher the pitch, the larger the factor, so as you look up, it damps a lot less.
-			pitch /= 89.0;	
-			dampfactor = (1.0-cg.overrides.thirdPersonCameraDamp)*(pitch*pitch);
+			pitch /= 89.0f;	
+			dampfactor = (1.0f-cg.overrides.thirdPersonCameraDamp)*(pitch*pitch);
 
 			dampfactor += cg.overrides.thirdPersonCameraDamp;
 		}
 	}
 	else if ( cg_thirdPersonCameraDamp.value != 0.0f )
 	{
+		#ifdef ARM
+		float pitch;
+		#else
 		double pitch;
+		#endif
 
 		// Note that the camera pitch has already been capped off to 89.
 		pitch = Q_fabs(cameraFocusAngles[PITCH]);
 
 		// The higher the pitch, the larger the factor, so as you look up, it damps a lot less.
-		pitch /= 89.0;	
-		dampfactor = (1.0-cg_thirdPersonCameraDamp.value)*(pitch*pitch);
+		pitch /= 89.0f;	
+		dampfactor = (1.0f-cg_thirdPersonCameraDamp.value)*(pitch*pitch);
 
 		dampfactor += cg_thirdPersonCameraDamp.value;
 
 		// Now we also multiply in the stiff factor, so that faster yaw changes are stiffer.
 		if (cameraStiffFactor > 0.0f)
 		{	// The cameraStiffFactor is how much of the remaining damp below 1 should be shaved off, i.e. approach 1 as stiffening increases.
-			dampfactor += (1.0-dampfactor)*cameraStiffFactor;
+			dampfactor += (1.0f-dampfactor)*cameraStiffFactor;
 		}
 	}
 
-	if (dampfactor>=1.0)//||cg.thisFrameTeleport)
+	if (dampfactor>=1.0f)//||cg.thisFrameTeleport)
 	{	// No damping.
 		VectorCopy(cameraIdealLoc, cameraCurLoc);
 	}
-	else if (dampfactor>=0.0)
+	else if (dampfactor>=0.0f)
 	{	
 		// Calculate the difference from the current position to the new one.
 		VectorSubtract(cameraIdealLoc, cameraCurLoc, locdiff);
 
 		// Now we calculate how much of the difference we cover in the time allotted.
 		// The equation is (Damp)^(time)
-		dampfactor = 1.0-dampfactor;	// We must exponent the amount LEFT rather than the amount bled off
-		dtime = (float)(cg.time-cameraLastFrame) * (1.0/cg_timescale.value) * (1.0/(float)CAMERA_DAMP_INTERVAL);	// Our dampfactor is geared towards a time interval equal to "1".
+		dampfactor = 1.0f-dampfactor;	// We must exponent the amount LEFT rather than the amount bled off
+		dtime = (float)(cg.time-cameraLastFrame) * (1.0f/cg_timescale.value) * (1.0f/(float)CAMERA_DAMP_INTERVAL);	// Our dampfactor is geared towards a time interval equal to "1".
 
 		// Note that since there are a finite number of "practical" delta millisecond values possible, 
 		// the ratio should be initialized into a chart ultimately.
@@ -687,7 +695,7 @@ static void CG_OffsetThirdPersonView( void )
 	float deltayaw;
 
 	camWaterAdjust = 0;
-	cameraStiffFactor = 0.0;
+	cameraStiffFactor = 0.0f;
 
 	// Set camera viewing direction.
 	VectorCopy( cg.refdefViewAngles, cameraFocusAngles );
@@ -737,7 +745,7 @@ static void CG_OffsetThirdPersonView( void )
 		// FIXME: use something network-friendly
 		vec3_t	org, viewDir;
 		VectorCopy( cg_entities[0].gent->client->renderInfo.eyePoint, org );
-		float blend = 1.0f - fabs(cg.refdefViewAngles[PITCH])/90.0f;
+		float blend = 1.0f - fabsf(cg.refdefViewAngles[PITCH])/90.0f;
 		AngleVectors( cg.refdefViewAngles, viewDir, NULL, NULL );
 		VectorMA( org, -8, viewDir, org );
 		VectorScale( org, 1.0f - blend, org );
@@ -754,13 +762,13 @@ static void CG_OffsetThirdPersonView( void )
 	else
 	{
 		// Cap the pitch within reasonable limits
-		if (cameraFocusAngles[PITCH] > 89.0)
+		if (cameraFocusAngles[PITCH] > 89.0f)
 		{
-			cameraFocusAngles[PITCH] = 89.0;
+			cameraFocusAngles[PITCH] = 89.0f;
 		}
-		else if (cameraFocusAngles[PITCH] < -89.0)
+		else if (cameraFocusAngles[PITCH] < -89.0f)
 		{
-			cameraFocusAngles[PITCH] = -89.0;
+			cameraFocusAngles[PITCH] = -89.0f;
 		}
 
 		AngleVectors(cameraFocusAngles, camerafwd, NULL, cameraup);
@@ -771,13 +779,13 @@ static void CG_OffsetThirdPersonView( void )
 			deltayaw = fabs(deltayaw - 360.0f);
 		}
 		cameraStiffFactor = deltayaw / (float)(cg.time-cameraLastFrame);
-		if (cameraStiffFactor < 1.0)
+		if (cameraStiffFactor < 1.0f)
 		{
-			cameraStiffFactor = 0.0;
+			cameraStiffFactor = 0.0f;
 		}
-		else if (cameraStiffFactor > 2.5)
+		else if (cameraStiffFactor > 2.5f)
 		{
-			cameraStiffFactor = 0.75;
+			cameraStiffFactor = 0.75f;
 		}
 		else
 		{	// 1 to 2 scales from 0.0 to 0.5
@@ -1042,7 +1050,7 @@ static void CG_OffsetFirstPersonView( qboolean firstPersonSaber ) {
 			angles[PITCH] += ratio * cg.v_dmg_pitch;
 			angles[ROLL] += ratio * cg.v_dmg_roll;
 		} else {
-			ratio = 1.0 - ( ratio - DAMAGE_DEFLECT_TIME ) / DAMAGE_RETURN_TIME;
+			ratio = 1.0f - ( ratio - DAMAGE_DEFLECT_TIME ) / DAMAGE_RETURN_TIME;
 			if ( ratio > 0 ) {
 				angles[PITCH] += ratio * cg.v_dmg_pitch;
 				angles[ROLL] += ratio * cg.v_dmg_roll;
@@ -1129,7 +1137,7 @@ static void CG_OffsetFirstPersonView( qboolean firstPersonSaber ) {
 		cg.refdef.vieworg[2] += cg.landChange * f;
 	} else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME ) {
 		delta -= LAND_DEFLECT_TIME;
-		f = 1.0 - ( delta / LAND_RETURN_TIME );
+		f = 1.0f - ( delta / LAND_RETURN_TIME );
 		cg.refdef.vieworg[2] += cg.landChange * f;
 	}
 
@@ -1221,7 +1229,7 @@ Calcs Y FOV from given X FOV
 ====================
 */
 #define	WAVE_AMPLITUDE	1
-#define	WAVE_FREQUENCY	0.4
+#define	WAVE_FREQUENCY	0.4f
 
 qboolean CG_CalcFOVFromX( float fov_x ) 
 {
@@ -1239,7 +1247,7 @@ qboolean CG_CalcFOVFromX( float fov_x )
 
 
 	x = cg.refdef.width / tan( fov_x / 360 * M_PI );
-	fov_y = atan2( cg.refdef.height, x );
+	fov_y = atan2f( cg.refdef.height, x );
 	fov_y = fov_y * 360 / M_PI;
 
 	// there's a problem with this, it only takes the leafbrushes into account, not the entity brushes,
@@ -1254,8 +1262,8 @@ qboolean CG_CalcFOVFromX( float fov_x )
 	int		contents;
 	contents = CG_PointContents( cg.refdef.vieworg, -1 );
 	if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ){
-		phase = cg.time / 1000.0 * WAVE_FREQUENCY * M_PI * 2;
-		v = WAVE_AMPLITUDE * sin( phase );
+		phase = cg.time / 1000.0f * WAVE_FREQUENCY * M_PI * 2;
+		v = WAVE_AMPLITUDE * sinf( phase );
 		fov_x += v;
 		fov_y -= v;
 		inwater = qtrue;
@@ -1274,7 +1282,7 @@ qboolean CG_CalcFOVFromX( float fov_x )
 		float perc = (float)(cg.wonkyTime - cg.time) / 10000.0f; // goes for 10 seconds
 
 		fov_x += ( 25.0f * perc );
-		fov_y -= ( cos( cg.time * 0.0008f ) * 5.0f * perc );
+		fov_y -= ( cosf( cg.time * 0.0008f ) * 5.0f * perc );
 	}
 
 	// set it
@@ -1436,7 +1444,7 @@ static qboolean	CG_CalcFov( void ) {
 			fov_x = cg_zoomFov;
 		} else {
 			f = ( cg.time - cg.zoomTime ) / ZOOM_OUT_TIME;
-			if ( f > 1.0 ) {
+			if ( f > 1.0f ) {
 				fov_x = fov_x;
 			} else {
 				fov_x = cg_zoomFov + f * ( fov_x - cg_zoomFov );
@@ -1480,11 +1488,11 @@ static void CG_DamageBlendBlob( void )
 	VectorMA( ent.origin, cg.damageX * -8, cg.refdef.viewaxis[1], ent.origin );
 	VectorMA( ent.origin, cg.damageY * 8, cg.refdef.viewaxis[2], ent.origin );
 
-	ent.radius = cg.damageValue * 3 * ( 1.0 - ((float)t / maxTime) );
+	ent.radius = cg.damageValue * 3 * ( 1.0f - ((float)t / maxTime) );
 	ent.customShader = cgs.media.damageBlendBlobShader;
-	ent.shaderRGBA[0] = 180 * ( 1.0 - ((float)t / maxTime) );
-	ent.shaderRGBA[1] = 50 * ( 1.0 - ((float)t / maxTime) );
-	ent.shaderRGBA[2] = 50 * ( 1.0 - ((float)t / maxTime) );
+	ent.shaderRGBA[0] = 180 * ( 1.0f - ((float)t / maxTime) );
+	ent.shaderRGBA[1] = 50 * ( 1.0f - ((float)t / maxTime) );
+	ent.shaderRGBA[2] = 50 * ( 1.0f - ((float)t / maxTime) );
 	ent.shaderRGBA[3] = 255;
 
 	cgi_R_AddRefEntityToScene( &ent );
@@ -1514,7 +1522,7 @@ void CG_SaberClashFlare( void )
 	// Don't do clashes for things that are behind us
 	VectorSubtract( g_saberFlashPos, cg.refdef.vieworg, dif );
 
-	if ( DotProduct( dif, cg.refdef.viewaxis[0] ) < 0.2 )
+	if ( DotProduct( dif, cg.refdef.viewaxis[0] ) < 0.2f )
 	{
 		return;
 	}
@@ -1580,7 +1588,7 @@ static qboolean CG_CalcViewValues( void ) {
 	}
 
 	cg.bobcycle = ( ps->bobCycle & 128 ) >> 7;
-	cg.bobfracsin = fabs( sin( ( ps->bobCycle & 127 ) / 127.0 * M_PI ) );
+	cg.bobfracsin = fabsf( sinf( ( ps->bobCycle & 127 ) / 127.0f * M_PI ) );
 	cg.xyspeed = sqrt( ps->velocity[0] * ps->velocity[0] +
 		ps->velocity[1] * ps->velocity[1] );
 
@@ -1701,8 +1709,8 @@ static qboolean CG_CalcViewValues( void ) {
 	{
 		float perc = (float)(cg.wonkyTime - cg.time) / 10000.0f; // goes for 10 seconds
 
-		cg.refdefViewAngles[ROLL] += ( sin( cg.time * 0.0004f )  * 7.0f * perc );
-		cg.refdefViewAngles[PITCH] += ( 26.0f * perc + sin( cg.time * 0.0011f ) * 3.0f * perc );
+		cg.refdefViewAngles[ROLL] += ( sinf( cg.time * 0.0004f )  * 7.0f * perc );
+		cg.refdefViewAngles[PITCH] += ( 26.0f * perc + sinf( cg.time * 0.0011f ) * 3.0f * perc );
 	}
 
 	AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
@@ -1837,7 +1845,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView ) {
 
 	// let the client system know what our weapon and zoom settings are
 	//FIXME: should really send forcePowersActive over network onto cg.snap->ps...
-	float speed = cg.refdef.fov_y / 75.0 * ((cg_entities[0].gent->client->ps.forcePowersActive&(1<<FP_SPEED))?1.0f:cg_timescale.value);
+	float speed = cg.refdef.fov_y / 75.0f * ((cg_entities[0].gent->client->ps.forcePowersActive&(1<<FP_SPEED))?1.0f:cg_timescale.value);
 
 //FIXME: junk code, BUG:168
 

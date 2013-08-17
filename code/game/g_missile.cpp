@@ -108,7 +108,7 @@ static void G_MissileStick( gentity_t *missile, gentity_t *other, trace_t *tr )
 
 		// check for stop
 		if ( tr->entityNum >= 0 && tr->entityNum < ENTITYNUM_WORLD && 
-				tr->plane.normal[2] > 0.7 && missile->s.pos.trDelta[2] < 40 ) //this can happen even on very slightly sloped walls, so changed it from > 0 to > 0.7
+				tr->plane.normal[2] > 0.7f && missile->s.pos.trDelta[2] < 40 ) //this can happen even on very slightly sloped walls, so changed it from > 0 to > 0.7
 		{
 			missile->nextthink = level.time + 100;
 		}
@@ -375,7 +375,7 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 		ent->s.pos.trType = TR_GRAVITY;
 
 		// check for stop
-		if ( trace->plane.normal[2] > 0.7 && ent->s.pos.trDelta[2] < 40 ) //this can happen even on very slightly sloped walls, so changed it from > 0 to > 0.7
+		if ( trace->plane.normal[2] > 0.7f && ent->s.pos.trDelta[2] < 40 ) //this can happen even on very slightly sloped walls, so changed it from > 0 to > 0.7
 		{
 			G_SetOrigin( ent, trace->endpos );
 			ent->nextthink = level.time + 100;
@@ -384,10 +384,10 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 	}
 	else if ( ent->s.eFlags & EF_BOUNCE_HALF ) 
 	{
-		VectorScale( ent->s.pos.trDelta, 0.5, ent->s.pos.trDelta );
+		VectorScale( ent->s.pos.trDelta, 0.5f, ent->s.pos.trDelta );
 
 		// check for stop
-		if ( trace->plane.normal[2] > 0.7 && ent->s.pos.trDelta[2] < 40 ) //this can happen even on very slightly sloped walls, so changed it from > 0 to > 0.7
+		if ( trace->plane.normal[2] > 0.7f && ent->s.pos.trDelta[2] < 40 ) //this can happen even on very slightly sloped walls, so changed it from > 0 to > 0.7
 		{
 			if ( ent->s.weapon == WP_THERMAL )
 			{//roll when you "stop"
@@ -850,7 +850,7 @@ int G_GroundTrace( gentity_t *ent, pml_t *pPml )
 
 	point[0] = ent->currentOrigin[0];
 	point[1] = ent->currentOrigin[1];
-	point[2] = ent->currentOrigin[2] - 0.25;
+	point[2] = ent->currentOrigin[2] - 0.25f;
 
 	gi.trace ( &trace, ent->currentOrigin, ent->mins, ent->maxs, point, ent->s.number, ent->clipmask, (EG2_Collision)0, 0 );
 	pPml->groundTrace = trace;
@@ -864,7 +864,7 @@ int G_GroundTrace( gentity_t *ent, pml_t *pPml )
 	}
 
 	// if the trace didn't hit anything, we are in free fall
-	if ( trace.fraction == 1.0 ) 
+	if ( trace.fraction == 1.0f ) 
 	{
 		pPml->groundPlane = qfalse;
 		pPml->walking = qfalse;
@@ -941,7 +941,7 @@ void G_RollMissile( gentity_t *ent )
 	
 	G_GroundTrace( ent, &objPML );
 
-	objPML.frametime = (level.time - level.previousTime)*0.001;
+	objPML.frametime = (level.time - level.previousTime)*0.001f;
 	
 	numbumps = 4;
 
@@ -949,7 +949,7 @@ void G_RollMissile( gentity_t *ent )
 
 	VectorCopy( ent->s.pos.trDelta, endVelocity );
 	endVelocity[2] -= g_gravity->value * objPML.frametime;
-	ent->s.pos.trDelta[2] = ( ent->s.pos.trDelta[2] + endVelocity[2] ) * 0.5;
+	ent->s.pos.trDelta[2] = ( ent->s.pos.trDelta[2] + endVelocity[2] ) * 0.5f;
 	primal_velocity[2] = endVelocity[2];
 	if ( objPML.groundPlane ) 
 	{//FIXME: never happens!
@@ -1049,7 +1049,7 @@ void G_RollMissile( gentity_t *ent )
 		//
 		for ( i = 0 ; i < numplanes ; i++ ) 
 		{
-			if ( DotProduct( trace.plane.normal, planes[i] ) > 0.99 ) 
+			if ( DotProduct( trace.plane.normal, planes[i] ) > 0.99f ) 
 			{
 				VectorAdd( trace.plane.normal, ent->s.pos.trDelta, ent->s.pos.trDelta );
 				break;
@@ -1078,7 +1078,7 @@ void G_RollMissile( gentity_t *ent )
 		for ( i = 0 ; i < numplanes ; i++ ) 
 		{
 			into = DotProduct( ent->s.pos.trDelta, planes[i] );
-			if ( into >= 0.1 ) 
+			if ( into >= 0.1f ) 
 			{
 				continue;		// move doesn't interact with the plane
 			}
@@ -1102,7 +1102,7 @@ void G_RollMissile( gentity_t *ent )
 				{
 					continue;
 				}
-				if ( DotProduct( clipVelocity, planes[j] ) >= 0.1 ) 
+				if ( DotProduct( clipVelocity, planes[j] ) >= 0.1f ) 
 				{
 					continue;		// move doesn't interact with the plane
 				}
@@ -1135,7 +1135,7 @@ void G_RollMissile( gentity_t *ent )
 					{
 						continue;
 					}
-					if ( DotProduct( clipVelocity, planes[k] ) >= 0.1 ) 
+					if ( DotProduct( clipVelocity, planes[k] ) >= 0.1f ) 
 					{
 						continue;		// move doesn't interact with the plane
 					}

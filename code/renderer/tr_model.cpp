@@ -1477,7 +1477,7 @@ void	R_LerpTag( orientation_t *tag, qhandle_t handle, int startFrame, int endFra
 	}
 
 	frontLerp = frac;
-	backLerp = 1.0 - frac;
+	backLerp = 1.0f - frac;
 
 	for ( i = 0 ; i < 3 ; i++ ) {
 		tag->origin[i] = start->origin[i] * backLerp +  finish->origin[i] * frontLerp;

@@ -153,7 +153,7 @@ void R_BoxSurfaces_r(mnode_t *node, vec3_t mins, vec3_t maxs, surfaceType_t **li
 			s = BoxOnPlaneSide( mins, maxs, &(( srfSurfaceFace_t * ) surf->data)->plane );
 			if (s == 1 || s == 2) {
 				surf->viewCount = tr.viewCount;
-			} else if (DotProduct((( srfSurfaceFace_t * ) surf->data)->plane.normal, dir) > -0.5) {
+			} else if (DotProduct((( srfSurfaceFace_t * ) surf->data)->plane.normal, dir) > -0.5f) {
 			// don't add faces that make sharp angles with the projection direction
 				surf->viewCount = tr.viewCount;
 			}
@@ -336,7 +336,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 					VectorSubtract(clipPoints[0][2], clipPoints[0][1], v2);
 					CrossProduct(v1, v2, normal);
 					VectorNormalizeFast(normal);
-					if (DotProduct(normal, projectionDir) < -0.1) {
+					if (DotProduct(normal, projectionDir) < -0.1f) {
 						// add the fragments of this triangle
 						R_AddMarkFragments(numClipPoints, clipPoints,
 										   numPlanes, normals, dists,
@@ -360,7 +360,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 					VectorSubtract(clipPoints[0][2], clipPoints[0][1], v2);
 					CrossProduct(v1, v2, normal);
 					VectorNormalizeFast(normal);
-					if (DotProduct(normal, projectionDir) < -0.05) {
+					if (DotProduct(normal, projectionDir) < -0.05f) {
 						// add the fragments of this triangle
 						R_AddMarkFragments(numClipPoints, clipPoints,
 										   numPlanes, normals, dists,
@@ -378,7 +378,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 		else if (*surfaces[i] == SF_FACE) {
 			const srfSurfaceFace_t * const surf = ( srfSurfaceFace_t * ) surfaces[i];
 			// check the normal of this face
-			if (DotProduct(surf->plane.normal, projectionDir) > -0.5) {
+			if (DotProduct(surf->plane.normal, projectionDir) > -0.5f) {
 				continue;
 			}
 

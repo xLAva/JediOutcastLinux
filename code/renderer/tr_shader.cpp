@@ -698,12 +698,12 @@ static void ParseSurfaceSprites(const char *_text, shaderStage_t *stage )
 	stage->ss.fadeDist = fadedist;
 
 	// These are defaults that can be overwritten.
-	stage->ss.fadeMax = fadedist*1.33;
-	stage->ss.fadeScale = 0.0;
-	stage->ss.wind = 0.0;
-	stage->ss.windIdle = 0.0;
-	stage->ss.variance[0] = 0.0;
-	stage->ss.variance[1] = 0.0;
+	stage->ss.fadeMax = fadedist*1.33f;
+	stage->ss.fadeScale = 0.0f;
+	stage->ss.wind = 0.0f;
+	stage->ss.windIdle = 0.0f;
+	stage->ss.variance[0] = 0.0f;
+	stage->ss.variance[1] = 0.0f;
 	stage->ss.facing = SURFSPRITE_FACING_NORMAL;
 
 	// A vertical parameter that needs a default regardless
@@ -711,10 +711,10 @@ static void ParseSurfaceSprites(const char *_text, shaderStage_t *stage )
 
 	// These are effect parameters that need defaults nonetheless.
 	stage->ss.fxDuration = 1000;		// 1 second
-	stage->ss.fxGrow[0] = 0.0;
-	stage->ss.fxGrow[1] = 0.0;
-	stage->ss.fxAlphaStart = 1.0;	
-	stage->ss.fxAlphaEnd = 0.0;
+	stage->ss.fxGrow[0] = 0.0f;
+	stage->ss.fxGrow[1] = 0.0f;
+	stage->ss.fxAlphaStart = 1.0f;	
+	stage->ss.fxAlphaEnd = 0.0f;
 
 	shader.needsNormal = qtrue;
 }
@@ -877,7 +877,7 @@ static void ParseSurfaceSpritesOptional( const char *param, const char *_text, s
 			return;
 		}
 		value = atof(token);
-		if (value < 0.0)
+		if (value < 0.0f)
 		{
 			ri.Printf( PRINT_WARNING, "WARNING: invalid surfacesprite wind in shader '%s'\n", shader.name );
 			return;
@@ -902,7 +902,7 @@ static void ParseSurfaceSpritesOptional( const char *param, const char *_text, s
 			return;
 		}
 		value = atof(token);
-		if (value < 0.0)
+		if (value < 0.0f)
 		{
 			ri.Printf( PRINT_WARNING, "WARNING: invalid surfacesprite windidle in shader '%s'\n", shader.name );
 			return;
@@ -923,7 +923,7 @@ static void ParseSurfaceSpritesOptional( const char *param, const char *_text, s
 			return;
 		}
 		value = atof(token);
-		if (value < 0.0)
+		if (value < 0.0f)
 		{
 			ri.Printf( PRINT_WARNING, "WARNING: invalid surfacesprite vertskew in shader '%s'\n", shader.name );
 			return;
@@ -1000,7 +1000,7 @@ static void ParseSurfaceSpritesOptional( const char *param, const char *_text, s
 			return;
 		}
 		value = atof(token);
-		if (value < 0 || value > 1.0)
+		if (value < 0 || value > 1.0f)
 		{
 			ri.Printf( PRINT_WARNING, "WARNING: invalid surfacesprite fxalpha start in shader '%s'\n", shader.name );
 			return;
@@ -1014,7 +1014,7 @@ static void ParseSurfaceSpritesOptional( const char *param, const char *_text, s
 			return;
 		}
 		value = atof(token);
-		if (value < 0 || value > 1.0)
+		if (value < 0 || value > 1.0f)
 		{
 			ri.Printf( PRINT_WARNING, "WARNING: invalid surfacesprite fxalpha end in shader '%s'\n", shader.name );
 			return;
@@ -1458,7 +1458,6 @@ static qboolean ParseStage( shaderStage_t *stage, const char **text )
 				strcat( buffer, token );
 				strcat( buffer, " " );
 			}
-
 			ParseTexMod( buffer, stage );
 
 			continue;
@@ -1674,7 +1673,7 @@ static void ParseDeform( const char **text ) {
 
 		if ( atof( token ) != 0 )
 		{
-			ds->deformationSpread = 1.0f / atof( token );
+			ds->deformationSpread = 1.0f / (float)atof( token );
 		}
 		else
 		{
@@ -1990,9 +1989,9 @@ static qboolean ParseShader( const char  **text )
 			b = atof( token );
 			b = b / 180 * M_PI;
 
-			tr.sunDirection[0] = cos( a ) * cos( b );
-			tr.sunDirection[1] = sin( a ) * cos( b );
-			tr.sunDirection[2] = sin( b );
+			tr.sunDirection[0] = cosf( a ) * cosf( b );
+			tr.sunDirection[1] = sinf( a ) * cosf( b );
+			tr.sunDirection[2] = sinf( b );
 		}
 		else if ( !Q_stricmp( token, "deformVertexes" ) ) {
 			ParseDeform( text );
@@ -3161,7 +3160,7 @@ shader_t *R_FindShader( const char *name, const int *lightmapIndex, const byte *
 	image = R_FindImageFile( name, mipRawImage, mipRawImage, qtrue, mipRawImage ? GL_REPEAT : GL_CLAMP );
 	if ( !image ) {
 		if (strncmp(name, "levelshots", 10 ) ) {	//hide these warnings
-			ri.Printf( PRINT_WARNING, "Couldn't find image for shader %s\n", name );
+			ri.Printf( PRINT_WARNING, "Couldn't find image for shader (%p)=%s (stripped name=%s)\n", name, name, strippedName );/*SEB*/
 		}
 		shader.defaultShader = qtrue;
 		return FinishShader();
@@ -3238,7 +3237,6 @@ qhandle_t RE_RegisterShader( const char *name ) {
 	shader_t	*sh;
 
 	sh = R_FindShader( name, lightmaps2d, stylesDefault, qtrue );
-
 	// we want to return 0 if the shader failed to
 	// load for some reason, but R_FindShader should
 	// still keep a name allocated for it, so if

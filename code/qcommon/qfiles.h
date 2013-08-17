@@ -101,7 +101,7 @@ typedef struct _TargaHeader {
 #define MD3_MAX_TAGS		16		// per frame
 
 // vertex scales
-#define	MD3_XYZ_SCALE		(1.0/64)
+#define	MD3_XYZ_SCALE		(1.0f/64)
 
 typedef struct md3Frame_s {
 	vec3_t		bounds[2];

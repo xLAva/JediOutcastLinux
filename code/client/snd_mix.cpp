@@ -15,8 +15,8 @@ short	*snd_out;
 
 
 
-#if !(defined __linux__ && defined __i386__)
-#if	!id386
+#if !(defined __linux__ && defined __i386__) || (defined ARM)
+#if	!id386 || (defined ARM)
 
 
 void S_WriteLinearBlastStereo16 (void)
@@ -215,7 +215,7 @@ void S_TransferPaintBuffer(int endtime)
 		// write a fixed sine wave
 		count = (endtime - s_paintedtime);
 		for (i=0 ; i<count ; i++)
-			paintbuffer[i].left = paintbuffer[i].right = (int)(sin((s_paintedtime+i)*0.1)*20000*256);
+			paintbuffer[i].left = paintbuffer[i].right = (int)(sinf((s_paintedtime+i)*0.1)*20000*256);
 	}
 
 

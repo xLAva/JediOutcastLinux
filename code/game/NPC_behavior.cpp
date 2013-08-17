@@ -94,7 +94,7 @@ void NPC_BSAdvanceFight (void)
 					if( traceEnt != NPC->enemy &&
 						(!traceEnt || !traceEnt->client || !NPC->client->enemyTeam || NPC->client->enemyTeam != traceEnt->client->playerTeam) )
 					{//no, so shoot for the head
-						attack_scale *= 0.75;
+						attack_scale *= 0.75f;
 						gi.trace ( &tr, muzzle, NULL, NULL, enemy_head, NPC->s.number, MASK_SHOT, (EG2_Collision)0, 0 );
 						traceEnt = &g_entities[tr.entityNum];
 					}
@@ -107,7 +107,7 @@ void NPC_BSAdvanceFight (void)
 					}
 					else
 					{
-						attack_scale *= 0.5;
+						attack_scale *= 0.5f;
 						if(NPC->client->playerTeam)
 						{
 							if(traceEnt && traceEnt->client && traceEnt->client->playerTeam)
@@ -138,7 +138,7 @@ void NPC_BSAdvanceFight (void)
 						aim_off = VectorLength(diff);
 						if(aim_off > randomLava() * max_aim_off)//FIXME: use aim value to allow poor aim?
 						{
-							attack_scale *= 0.75;
+							attack_scale *= 0.75f;
 							//see if where we're going to shoot is too far from his head
 							VectorSubtract(hitspot, enemy_head, diff);
 							aim_off = VectorLength(diff);
@@ -690,8 +690,8 @@ void NPC_BSFollowLeader (void)
 			followDist = NPCInfo->followDist;
 		}
 		backupdist = followDist/2.0f;
-		walkdist = followDist*0.83;
-		minrundist = followDist*1.33;
+		walkdist = followDist*0.83f;
+		minrundist = followDist*1.33f;
 
 		VectorSubtract(NPC->client->leader->currentOrigin, NPC->currentOrigin, vec);
 		leaderDist = VectorLength( vec );//FIXME: make this just nav distance?
@@ -816,7 +816,7 @@ void NPC_BSJump (void)
 //		gi.Printf("apex is %4.2f percent from p1: ", (xy-z)*0.5/xy*100.0f);
 
 		xy -= z;
-		xy *= 0.5;
+		xy *= 0.5f;
 		
 		assert(xy > 0);
 
@@ -827,7 +827,7 @@ void NPC_BSJump (void)
 		
 		//Now we have the apex, aim for it
 		height = apex[2] - NPC->currentOrigin[2];
-		time = sqrt( height / ( .5 * NPC->client->ps.gravity ) );
+		time = sqrtf( height / ( .5f * NPC->client->ps.gravity ) );
 		if ( !time ) 
 		{
 //			gi.Printf("ERROR no time in jump\n");

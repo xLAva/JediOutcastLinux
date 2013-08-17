@@ -455,7 +455,7 @@ qboolean G_ParseAnimationFile( const char *af_filename )
 			animations[animNum].frameLerp = ceil(1000.0f / fps);
 		}
 
-		animations[animNum].initialLerp = ceil(1000.0f / fabs(fps));
+		animations[animNum].initialLerp = ceil(1000.0f / fabsf(fps));
 	}
 
 #ifdef CONVENIENT_ANIMATION_FILE_DEBUG_THING

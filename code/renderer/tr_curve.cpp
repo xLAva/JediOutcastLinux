@@ -29,21 +29,21 @@ LerpDrawVert
 */
 static void LerpDrawVert( drawVert_t *a, drawVert_t *b, drawVert_t *out ) {
 	int	k;
-	out->xyz[0] = 0.5 * (a->xyz[0] + b->xyz[0]);
-	out->xyz[1] = 0.5 * (a->xyz[1] + b->xyz[1]);
-	out->xyz[2] = 0.5 * (a->xyz[2] + b->xyz[2]);
+	out->xyz[0] = 0.5f * (a->xyz[0] + b->xyz[0]);
+	out->xyz[1] = 0.5f * (a->xyz[1] + b->xyz[1]);
+	out->xyz[2] = 0.5f * (a->xyz[2] + b->xyz[2]);
 
-	out->st[0] = 0.5 * (a->st[0] + b->st[0]);
-	out->st[1] = 0.5 * (a->st[1] + b->st[1]);
+	out->st[0] = 0.5f * (a->st[0] + b->st[0]);
+	out->st[1] = 0.5f * (a->st[1] + b->st[1]);
 
-	out->normal[0] = 0.5 * (a->normal[0] + b->normal[0]);
-	out->normal[1] = 0.5 * (a->normal[1] + b->normal[1]);
-	out->normal[2] = 0.5 * (a->normal[2] + b->normal[2]);
+	out->normal[0] = 0.5f * (a->normal[0] + b->normal[0]);
+	out->normal[1] = 0.5f * (a->normal[1] + b->normal[1]);
+	out->normal[2] = 0.5f * (a->normal[2] + b->normal[2]);
 
 	for(k=0;k<MAXLIGHTMAPS;k++)
 	{
-		out->lightmap[k][0] = 0.5 * (a->lightmap[k][0] + b->lightmap[k][0]);
-		out->lightmap[k][1] = 0.5 * (a->lightmap[k][1] + b->lightmap[k][1]);
+		out->lightmap[k][0] = 0.5f * (a->lightmap[k][0] + b->lightmap[k][0]);
+		out->lightmap[k][1] = 0.5f * (a->lightmap[k][1] + b->lightmap[k][1]);
 
 		out->color[k][0] = (a->color[k][0] + b->color[k][0]) >> 1;
 		out->color[k][1] = (a->color[k][1] + b->color[k][1]) >> 1;
@@ -122,7 +122,7 @@ static	int	neighbors[8][2] = {
 	for ( i = 0 ; i < height ; i++ ) {
 		VectorSubtract( ctrl[i][0].xyz, ctrl[i][width-1].xyz, delta );
 		len = VectorLength( delta );
-		if ( len > 1.0 ) {
+		if ( len > 1.0f ) {
 			break;
 		}
 	}
@@ -134,7 +134,7 @@ static	int	neighbors[8][2] = {
 	for ( i = 0 ; i < width ; i++ ) {
 		VectorSubtract( ctrl[0][i].xyz, ctrl[height-1][i].xyz, delta );
 		len = VectorLength( delta );
-		if ( len > 1.0 ) {
+		if ( len > 1.0f ) {
 			break;
 		}
 	}
@@ -318,7 +318,7 @@ srfGridMesh_t *R_SubdividePatchToGrid( int width, int height,
 				// calculate the point on the curve
 				for ( l = 0 ; l < 3 ; l++ ) {
 					midxyz[l] = (ctrl[i][j].xyz[l] + ctrl[i][j+1].xyz[l] * 2
-							+ ctrl[i][j+2].xyz[l] ) * 0.25;
+							+ ctrl[i][j+2].xyz[l] ) * 0.25f;
 				}
 
 				// see how far off the line it is
@@ -340,23 +340,23 @@ srfGridMesh_t *R_SubdividePatchToGrid( int width, int height,
 			}
 
 			// if all the points are on the lines, remove the entire columns
-			if ( maxLen < 0.1 ) {
+			if ( maxLen < 0.1f ) {
 				errorTable[dir][j+1] = 999;
 				continue;
 			}
 
 			// see if we want to insert subdivided columns
 			if ( width + 2 > MAX_GRID_SIZE ) {
-				errorTable[dir][j+1] = 1.0/maxLen;
+				errorTable[dir][j+1] = 1.0f/maxLen;
 				continue;	// can't subdivide any more
 			}
 
 			if ( maxLen <= r_subdivisions->value ) {
-				errorTable[dir][j+1] = 1.0/maxLen;
+				errorTable[dir][j+1] = 1.0f/maxLen;
 				continue;	// didn't need subdivision
 			}
 
-			errorTable[dir][j+2] = 1.0/maxLen;
+			errorTable[dir][j+2] = 1.0f/maxLen;
 
 			// insert two columns and replace the peak
 			width += 2;

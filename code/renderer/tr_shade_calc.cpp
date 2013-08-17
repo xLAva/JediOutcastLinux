@@ -80,15 +80,15 @@ void RB_CalcStretchTexCoords( const waveForm_t *wf, float *st )
 	float p;
 	texModInfo_t tmi;
 
-	p = 1.0 / EvalWaveForm( wf );
+	p = 1.0f / EvalWaveForm( wf );
 
 	tmi.matrix[0][0] = p;
 	tmi.matrix[1][0] = 0;
-	tmi.translate[0] = 0.5 - 0.5 * p;
+	tmi.translate[0] = 0.5f - 0.5f * p;
 
 	tmi.matrix[0][1] = 0;
 	tmi.matrix[1][1] = p;
-	tmi.translate[1] = 0.5 - 0.5 * p;
+	tmi.translate[1] = 0.5f - 0.5f * p;
 
 	RB_CalcTransformTexCoords( &tmi, st );
 }
@@ -299,9 +299,9 @@ void DeformText( const char *text ) {
 	// determine the individual character size
 	height[0] = 0;
 	height[1] = 0;
-	height[2] = ( top - bottom ) * 0.5;
+	height[2] = ( top - bottom ) * 0.5f;
 
-	VectorScale( width, height[2] * -0.75, width );
+	VectorScale( width, height[2] * -0.75f, width );
 
 	// determine the starting position
 	len = strlen( text );
@@ -325,9 +325,9 @@ void DeformText( const char *text ) {
 			row = ch>>4;
 			col = ch&15;
 
-			frow = row*0.0625;
-			fcol = col*0.0625;
-			size = 0.0625;
+			frow = row*0.0625f;
+			fcol = col*0.0625f;
+			size = 0.0625f;
 
 			RB_AddQuadStampExt( origin, width, height, color, fcol, frow, fcol + size, frow + size );
 		}
@@ -386,12 +386,12 @@ static void AutospriteDeform( void ) {
 		// find the midpoint
 		xyz = tess.xyz[i];
 
-		mid[0] = 0.25 * (xyz[0] + xyz[4] + xyz[8] + xyz[12]);
-		mid[1] = 0.25 * (xyz[1] + xyz[5] + xyz[9] + xyz[13]);
-		mid[2] = 0.25 * (xyz[2] + xyz[6] + xyz[10] + xyz[14]);
+		mid[0] = 0.25f * (xyz[0] + xyz[4] + xyz[8] + xyz[12]);
+		mid[1] = 0.25f * (xyz[1] + xyz[5] + xyz[9] + xyz[13]);
+		mid[2] = 0.25f * (xyz[2] + xyz[6] + xyz[10] + xyz[14]);
 
 		VectorSubtract( xyz, mid, delta );
-		radius = VectorLength( delta ) * 0.707;		// / sqrt(2)
+		radius = VectorLength( delta ) * 0.707f;		// / sqrt(2)
 
 		VectorScale( leftDir, radius, left );
 		VectorScale( upDir, radius, up );
@@ -482,9 +482,9 @@ static void Autosprite2Deform( void ) {
 			v1 = xyz + 4 * edgeVerts[nums[j]][0];
 			v2 = xyz + 4 * edgeVerts[nums[j]][1];
 
-			mid[j][0] = 0.5 * (v1[0] + v2[0]);
-			mid[j][1] = 0.5 * (v1[1] + v2[1]);
-			mid[j][2] = 0.5 * (v1[2] + v2[2]);
+			mid[j][0] = 0.5f * (v1[0] + v2[0]);
+			mid[j][1] = 0.5f * (v1[1] + v2[1]);
+			mid[j][2] = 0.5f * (v1[2] + v2[2]);
 		}
 
 		// find the vector of the major axis
@@ -735,7 +735,7 @@ void RB_CalcModulateColorsByFog( unsigned char *colors ) {
 	RB_CalcFogTexCoords( texCoords[0] );
 
 	for ( i = 0; i < tess.numVertexes; i++, colors += 4 ) {
-		float f = 1.0 - R_FogFactor( texCoords[i][0], texCoords[i][1] );
+		float f = 1.0f - R_FogFactor( texCoords[i][0], texCoords[i][1] );
 		colors[0] *= f;
 		colors[1] *= f;
 		colors[2] *= f;
@@ -755,7 +755,7 @@ void RB_CalcModulateAlphasByFog( unsigned char *colors ) {
 	RB_CalcFogTexCoords( texCoords[0] );
 
 	for ( i = 0; i < tess.numVertexes; i++, colors += 4 ) {
-		float f = 1.0 - R_FogFactor( texCoords[i][0], texCoords[i][1] );
+		float f = 1.0f - R_FogFactor( texCoords[i][0], texCoords[i][1] );
 		colors[3] *= f;
 	}
 }
@@ -773,7 +773,7 @@ void RB_CalcModulateRGBAsByFog( unsigned char *colors ) {
 	RB_CalcFogTexCoords( texCoords[0] );
 
 	for ( i = 0; i < tess.numVertexes; i++, colors += 4 ) {
-		float f = 1.0 - R_FogFactor( texCoords[i][0], texCoords[i][1] );
+		float f = 1.0f - R_FogFactor( texCoords[i][0], texCoords[i][1] );
 		colors[0] *= f;
 		colors[1] *= f;
 		colors[2] *= f;
@@ -840,7 +840,7 @@ void RB_CalcFogTexCoords( float *st ) {
 	} else {
 		eyeT = 1;	// non-surface fog always has eye inside
 		fogDepthVector[0] = fogDepthVector[1] = fogDepthVector[2] = 0.0;
-		fogDepthVector[3] = 1.0;
+		fogDepthVector[3] = 1.0f;
 	}
 
 	// see if the viewpoint is outside
@@ -852,7 +852,7 @@ void RB_CalcFogTexCoords( float *st ) {
 		eyeOutside = qfalse;
 	}
 
-	fogDistanceVector[3] += 1.0/512;
+	fogDistanceVector[3] += 1.0f/512;
 
 	// calculate density for each point
 	for (i = 0, v = tess.xyz[0] ; i < tess.numVertexes ; i++, v += 4) {
@@ -862,16 +862,16 @@ void RB_CalcFogTexCoords( float *st ) {
 
 		// partially clipped fogs use the T axis		
 		if ( eyeOutside ) {
-			if ( t < 1.0 ) {
-				t = 1.0/32;	// point is outside, so no fogging
+			if ( t < 1.0f ) {
+				t = 1.0f/32;	// point is outside, so no fogging
 			} else {
-				t = 1.0/32 + 30.0/32 * t / ( t - eyeT );	// cut the distance at the fog plane
+				t = 1.0f/32 + 30.0f/32 * t / ( t - eyeT );	// cut the distance at the fog plane
 			}
 		} else {
 			if ( t < 0 ) {
-				t = 1.0/32;	// point is outside, so no fogging
+				t = 1.0f/32;	// point is outside, so no fogging
 			} else {
-				t = 31.0/32;
+				t = 31.0f/32;
 			}
 		}
 
@@ -910,8 +910,8 @@ void RB_CalcEnvironmentTexCoords( float *st )
 			VectorNormalizeFast (viewer);
 
 			d = DotProduct (normal, viewer);
-			st[0] = normal[0]*d - 0.5*viewer[0];
-			st[1] = normal[1]*d - 0.5*viewer[1];
+			st[0] = normal[0]*d - 0.5f*viewer[0];
+			st[1] = normal[1]*d - 0.5f*viewer[1];
 		}
 	}
 }
@@ -931,8 +931,8 @@ void RB_CalcTurbulentTexCoords( const waveForm_t *wf, float *st )
 		float s = st[0];
 		float t = st[1];
 
-		st[0] = s + tr.sinTable[ ( ( int ) ( ( ( tess.xyz[i][0] + tess.xyz[i][2] )* 1.0/128 * 0.125 + now ) * FUNCTABLE_SIZE ) ) & ( FUNCTABLE_MASK ) ] * wf->amplitude;
-		st[1] = t + tr.sinTable[ ( ( int ) ( ( tess.xyz[i][1] * 1.0/128 * 0.125 + now ) * FUNCTABLE_SIZE ) ) & ( FUNCTABLE_MASK ) ] * wf->amplitude;
+		st[0] = s + tr.sinTable[ ( ( int ) ( ( ( tess.xyz[i][0] + tess.xyz[i][2] )* 1.0f/128 * 0.125f + now ) * FUNCTABLE_SIZE ) ) & ( FUNCTABLE_MASK ) ] * wf->amplitude;
+		st[1] = t + tr.sinTable[ ( ( int ) ( ( tess.xyz[i][1] * 1.0f/128 * 0.125f + now ) * FUNCTABLE_SIZE ) ) & ( FUNCTABLE_MASK ) ] * wf->amplitude;
 	}
 }
 
@@ -964,8 +964,8 @@ void RB_CalcScrollTexCoords( const float scrollSpeed[2], float *st )
 
 	// clamp so coordinates don't continuously get larger, causing problems
 	// with hardware limits
-	adjustedScrollS = adjustedScrollS - floor( adjustedScrollS );
-	adjustedScrollT = adjustedScrollT - floor( adjustedScrollT );
+	adjustedScrollS = adjustedScrollS - floorf( adjustedScrollS );
+	adjustedScrollT = adjustedScrollT - floorf( adjustedScrollT );
 
 	for ( i = 0; i < tess.numVertexes; i++, st += 2 )
 	{
@@ -1010,11 +1010,11 @@ void RB_CalcRotateTexCoords( float degsPerSecond, float *st )
 
 	tmi.matrix[0][0] = cosValue;
 	tmi.matrix[1][0] = -sinValue;
-	tmi.translate[0] = 0.5 - 0.5 * cosValue + 0.5 * sinValue;
+	tmi.translate[0] = 0.5f - 0.5f * cosValue + 0.5f * sinValue;
 
 	tmi.matrix[0][1] = sinValue;
 	tmi.matrix[1][1] = cosValue;
-	tmi.translate[1] = 0.5 - 0.5 * sinValue - 0.5 * cosValue;
+	tmi.translate[1] = 0.5f - 0.5f * sinValue - 0.5f * cosValue;
 
 	RB_CalcTransformTexCoords( &tmi, st );
 }
@@ -1024,7 +1024,12 @@ void RB_CalcRotateTexCoords( float degsPerSecond, float *st )
 
 
 
-#if id386 && !(defined __linux__ && defined __i386__)
+#if id386 && !(defined __linux__ && defined __i386__) && !(ARM)
+/*#if defined(ARM)
+long myftol( float f ) {
+	return f;
+}
+#else*/
 #pragma warning(disable: 4035)
 long myftol( float f ) {
 	static int tmp;
@@ -1034,6 +1039,7 @@ long myftol( float f ) {
 }
 #pragma warning(default: 4035)
 #endif
+//#endif
 
 /*
 ** RB_CalcSpecularAlpha

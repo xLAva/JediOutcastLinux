@@ -107,7 +107,7 @@ void NAVNEW_PushBlocker( gentity_t *self, gentity_t *blocker, vec3_t right, qboo
 	VectorCopy( blocker->mins, mins );
 	mins[2] += STEPSIZE;
 
-	moveamt = (self->maxs[1] + blocker->maxs[1]) * 1.2;//yes, magic number
+	moveamt = (self->maxs[1] + blocker->maxs[1]) * 1.2f;//yes, magic number
 
 	VectorMA( blocker->currentOrigin, -moveamt, right, end );
 	gi.trace( &tr, blocker->currentOrigin, mins, blocker->maxs, end, blocker->s.number, blocker->clipmask|CONTENTS_BOTCLIP, (EG2_Collision)0, 0);
@@ -261,7 +261,7 @@ qboolean NAVNEW_SidestepBlocker( gentity_t *self, gentity_t *blocker, vec3_t blo
 		AngleVectors( avoidAngles, movedir, NULL, NULL );
 		VectorMA( self->currentOrigin, blocked_dist, movedir, block_pos );
 		gi.trace( &tr, self->currentOrigin, mins, self->maxs, block_pos, self->s.number, self->clipmask|CONTENTS_BOTCLIP, (EG2_Collision)0, 0 );
-		return (tr.fraction==1.0&&!tr.allsolid&&!tr.startsolid);
+		return (tr.fraction==1.0f&&!tr.allsolid&&!tr.startsolid);
 	}
 
 	//test right

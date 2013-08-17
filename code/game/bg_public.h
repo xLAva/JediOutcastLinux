@@ -8,7 +8,7 @@
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-40
-#define	ARMOR_PROTECTION	0.40
+#define	ARMOR_PROTECTION	0.40f
 
 #define	MAX_ITEMS			256
 
@@ -43,7 +43,7 @@ extern float DEFAULT_PLAYER_RADIUS;
 //#define CROUCH_VIEWHEIGHT	12
 #define	DEAD_VIEWHEIGHT		-16
 //Player movement values
-#define	MIN_WALK_NORMAL		0.7		// can't walk on very steep slopes
+#define	MIN_WALK_NORMAL		0.7f		// can't walk on very steep slopes
 #define	JUMP_VELOCITY		225		// 270
 #define	STEPSIZE			18
 

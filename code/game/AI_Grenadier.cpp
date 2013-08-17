@@ -500,7 +500,7 @@ void NPC_BSGrenadier_Attack( void )
 		{//grenadier
 			trace_t	trace;
 			gi.trace ( &trace, NPC->currentOrigin, NPC->enemy->mins, NPC->enemy->maxs, NPC->enemy->currentOrigin, NPC->s.number, NPC->enemy->clipmask,(EG2_Collision)0,0 );
-			if ( !trace.allsolid && !trace.startsolid && (trace.fraction == 1.0 || trace.entityNum == NPC->enemy->s.number ) )
+			if ( !trace.allsolid && !trace.startsolid && (trace.fraction == 1.0f || trace.entityNum == NPC->enemy->s.number ) )
 			{//I can get right to him
 				//reset fire-timing variables
 				NPC_ChangeWeapon( WP_MELEE );
