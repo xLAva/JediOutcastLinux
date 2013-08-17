@@ -24,7 +24,3 @@ This fork is aimed at OpenPandra, so get:
  
 For the Pandora version, I used only the CMake  make files, I didn't update the codeblock project file. I use the Code::Blocks PND to compile.
 
-
-Original JediOutcastLinux : jochen.leopold@model-view.com
-Pandora port: sebastien.chev@gmail.com
-
