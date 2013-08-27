@@ -26,8 +26,13 @@
 
 #elif defined( __linux__ )
 
+#ifdef HAVE_GLES
+#include <GLES/gl.h>
+#include <EGL/egl.h>
+#else
 #include <GL/gl.h>
 #include <GL/glx.h>
+#endif
 //#include <GL/fxmesa.h> //LAvaPort 
 #else
 
@@ -42,6 +47,25 @@
 #define WINAPI
 #endif
 
+#ifdef HAVE_GLES
+extern	void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
+extern	void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
+extern	void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
+
+extern	void ( APIENTRY * qglPointParameterfEXT)( GLenum, GLfloat);
+extern	void ( APIENTRY * qglPointParameterfvEXT)( GLenum, GLfloat *);
+
+extern void (* qglLockArraysEXT) (GLint first, GLsizei count);
+extern void (* qglUnlockArraysEXT) (void);
+
+extern void myglClear(GLbitfield mask);
+extern void myglTexImage2D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
+extern void myglDrawBuffer(GLenum mode);
+extern void myglViewport(GLint x, GLint y, GLsizei width, GLsizei height);
+extern void myglScissor(GLint x, GLint y, GLsizei width, GLsizei height);
+
+
+#else
 
 //===========================================================================
 
@@ -133,11 +157,11 @@ typedef void ( APIENTRY * PFNGLPNTRIANGLESIATIPROC )( GLenum pname, GLint param 
 extern void ( APIENTRY * qglPNTrianglesiATI )( GLenum pname, GLint param );
 //extern void ( APIENTRY * qglPNTrianglesfATI )( GLenum pname, GLfloat param );
 #endif // _NPATCH
-
+#endif //HAVE_GLES
 //===========================================================================
 
 // non-windows systems will just redefine qgl* to gl*
-#if !defined( _WIN32 ) && !defined( __linux__ )
+#if (!defined( _WIN32 ) && !defined( __linux__ )) || defined(HAVE_GLES)
 
 #include "qgl_linked.h"
 

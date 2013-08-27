@@ -62,7 +62,7 @@ typedef struct ambientSet_s
 	char			name[MAX_SET_NAME_LENGTH];
 	unsigned char	loopedVolume;
 	unsigned int	time_start, time_end;
-	unsigned int	volRange_start, volRange_end;
+	/*unsigned*/ int	volRange_start, volRange_end;
 	unsigned char	numSubWaves;
 	int				subWaves[MAX_WAVES_PER_GROUP];
 	int				loopedWave;

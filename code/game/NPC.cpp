@@ -420,7 +420,7 @@ void pitch_roll_for_slope( gentity_t *forwhom, vec3_t pass_slope )
 //		if(trace_fraction>0.05&&forwhom.movetype==MOVETYPE_STEP)
 //			forwhom.flags(-)FL_ONGROUND;
 
-		if ( trace.fraction >= 1.0 )
+		if ( trace.fraction >= 1.0f )
 			return;
 
 		if( !( &trace.plane ) )
@@ -459,7 +459,7 @@ void pitch_roll_for_slope( gentity_t *forwhom, vec3_t pass_slope )
 		forwhom->client->ps.viewangles[PITCH] = dot * pitch;
 		forwhom->client->ps.viewangles[ROLL] = ((1-Q_fabs(dot)) * pitch * mod);
 		float oldmins2 = forwhom->mins[2];
-		forwhom->mins[2] = -24 + 12 * fabs(forwhom->client->ps.viewangles[PITCH])/180.0f;
+		forwhom->mins[2] = -24 + 12 * fabsf(forwhom->client->ps.viewangles[PITCH])/180.0f;
 		//FIXME: if it gets bigger, move up
 		if ( oldmins2 > forwhom->mins[2] )
 		{//our mins is now lower, need to move up
@@ -2014,7 +2014,7 @@ void NPC_CheckInSolid(void)
 	trace_t	trace;
 	vec3_t	point;
 	VectorCopy(NPC->currentOrigin, point);
-	point[2] -= 0.25;
+	point[2] -= 0.25f;
 
 	gi.trace(&trace, NPC->currentOrigin, NPC->mins, NPC->maxs, point, NPC->s.number, NPC->clipmask, (EG2_Collision)0, 0);
 	if(!trace.startsolid && !trace.allsolid)

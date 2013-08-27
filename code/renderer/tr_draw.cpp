@@ -43,6 +43,7 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	//
 	if ( cols != tr.scratchImage[iClient]->width || rows != tr.scratchImage[iClient]->height ) 
 	{
+//ri.Printf(PRINT_ALL, "DrawStretched different\n");
 		tr.scratchImage[iClient]->width = tr.scratchImage[iClient]->uploadWidth = cols;
 		tr.scratchImage[iClient]->height = tr.scratchImage[iClient]->uploadHeight = rows;
 #ifdef TIMEBIND
@@ -52,7 +53,13 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 		}
 #endif
 
+#ifdef HAVE_GLES
+      //don't do qglTexImage2D as this may end up doing a compressed image
+      //on which we are not allowed to do further sub images
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+#else
 		qglTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+#endif
 		
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -97,6 +104,35 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	extern void	RB_SetGL2D (void);
 	RB_SetGL2D();	
 
+#ifdef HAVE_GLES
+//ri.Printf(PRINT_ALL, "DrawStretched %ix%i, bDirthy=%i, iClient=%i\n", cols, rows, bDirty, iClient);
+	qglColor4f( tr.identityLight, tr.identityLight, tr.identityLight, 1.0f );
+	GLfloat tex[] = {
+	 0.5 / cols,  0.5 / rows,
+	 ( cols - 0.5 ) / cols ,  0.5 / rows,
+	 ( cols - 0.5 ) / cols, ( rows - 0.5 ) / rows,
+	 0.5 / cols, ( rows - 0.5 ) / rows
+	};
+	GLfloat vtx[] = {
+	 x, y,
+	 x + w, y,
+	 x + w, y + h,
+	 x, y + h
+	};
+	GLboolean text = qglIsEnabled(GL_TEXTURE_COORD_ARRAY);
+	GLboolean glcol = qglIsEnabled(GL_COLOR_ARRAY);
+	if (glcol)
+		qglDisableClientState(GL_COLOR_ARRAY);
+	if (!text)
+		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	qglTexCoordPointer( 2, GL_FLOAT, 0, tex );
+	qglVertexPointer  ( 2, GL_FLOAT, 0, vtx );
+	qglDrawArrays( GL_TRIANGLE_FAN, 0, 4 );
+	if (glcol)
+		qglEnableClientState(GL_COLOR_ARRAY);
+	if (!text)
+		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+#else
 	qglColor3f( tr.identityLight, tr.identityLight, tr.identityLight );
 
 	qglBegin (GL_QUADS);
@@ -109,6 +145,7 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	qglTexCoord2f ( 0.5 / cols, ( rows - 0.5 ) / rows );
 	qglVertex2f (x, y+h);
 	qglEnd ();
+#endif
 }
 
 
@@ -121,7 +158,11 @@ void RE_UploadCinematic (int cols, int rows, const byte *data, int client, qbool
 	if ( cols != tr.scratchImage[client]->width || rows != tr.scratchImage[client]->height ) {
 		tr.scratchImage[client]->width = tr.scratchImage[client]->uploadWidth = cols;
 		tr.scratchImage[client]->height = tr.scratchImage[client]->uploadHeight = rows;
+#ifdef HAVE_GLES
+		qglTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+#else
 		qglTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+#endif
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
@@ -130,7 +171,11 @@ void RE_UploadCinematic (int cols, int rows, const byte *data, int client, qbool
 		if (dirty) {
 			// otherwise, just subimage upload it so that drivers can tell we are going to be changing
 			// it and don't try and do a texture compression
+#ifdef HAVE_GLES
 			qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );
+#else
+			qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );
+#endif
 		}
 	}
 }
@@ -188,13 +233,24 @@ void RE_GetScreenShot(byte *buffer, int w, int h)
 
     qglFinish();	// try and fix broken Radeon cards (7500 & 8500) that don't read screen pixels properly
 
+	#ifdef HAVE_GLES
+	int p2width=16, p2height=16;
+	while (p2width<glConfig.vidWidth) p2width*=2;
+	while (p2height<glConfig.vidHeight) p2height*=2;
+	source = (byte*) ri.Malloc( p2width * p2height * 4, TAG_TEMP_WORKSPACE, qfalse );
+	#else
 	source = (byte *)ri.Malloc(glConfig.vidWidth * glConfig.vidHeight * 3, TAG_TEMP_WORKSPACE, qfalse);
+	#endif
 	if(!source)
 	{
 		return;
 	}
 	glPixelStorei(GL_PACK_ALIGNMENT,1);
+	#ifdef HAVE_GLES
+	qglReadPixels( 0, 0, p2width, p2height, GL_RGBA, GL_UNSIGNED_BYTE, source );
+	#else
 	qglReadPixels (0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, source ); 
+	#endif
 	
 	assert (w == h);
 	int count = 0;
@@ -206,7 +262,11 @@ void RE_GetScreenShot(byte *buffer, int w, int h)
 			r = g = b = 0;
 			for ( yy = 0 ; yy < 3 ; yy++ ) {
 				for ( xx = 0 ; xx < 4 ; xx++ ) {
+					#ifdef HAVE_GLES
+					src = source + 4 * ( p2width * (int)( (y*3+yy)*yScale ) + (int)( (x*4+xx)*xScale ) );
+					#else
 					src = source + 3 * ( glConfig.vidWidth * (int)( (y*3+yy)*yScale ) + (int)( (x*4+xx)*xScale ) );
+					#endif
 					r += src[0];
 					g += src[1];
 					b += src[2];
@@ -216,6 +276,7 @@ void RE_GetScreenShot(byte *buffer, int w, int h)
 			dst[0] = r / 12;
 			dst[1] = g / 12;
 			dst[2] = b / 12;
+			dst[3] = 255;
 			count++;
 		}
 	}
@@ -411,7 +472,9 @@ static int PowerOf2(int iArg)
 {
 	if ( (iArg & (iArg-1)) != 0)
 	{
+		/*		
 		int iShift=0;
+
 		while (iArg)
 		{
 			iArg>>=1;
@@ -421,6 +484,11 @@ static int PowerOf2(int iArg)
 		iArg = 1<<iShift;
 	}
 
+	return iArg;*/
+	int iShift = 1;
+		while (iShift<iArg) iShift<<=1;
+		return iShift;
+	} else
 	return iArg;
 }
 
@@ -444,6 +512,34 @@ static void RE_Blit(float fX0, float fY0, float fX1, float fY1, float fX2, float
 	GL_State(iGLState);
 	GL_Cull( CT_TWO_SIDED ) ;
 
+#ifdef HAVE_GLES
+	qglColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+	GLfloat tex[] = {
+	 0,0 ,
+	 1,0,
+	 1,1,
+	 0,1
+	};
+	GLfloat vtx[] = {
+	 fX0, fY0,
+	 fX1, fY1,
+	 fX2, fY2,
+	 fX3, fY3
+	};
+	GLboolean text = qglIsEnabled(GL_TEXTURE_COORD_ARRAY);
+	GLboolean glcol = qglIsEnabled(GL_COLOR_ARRAY);
+	if (glcol)
+		qglDisableClientState(GL_COLOR_ARRAY);
+	if (!text)
+		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	qglTexCoordPointer( 2, GL_FLOAT, 0, tex );
+	qglVertexPointer  ( 2, GL_FLOAT, 0, vtx );
+	qglDrawArrays( GL_TRIANGLE_FAN, 0, 4 );
+	if (glcol)
+		qglDisableClientState(GL_COLOR_ARRAY);
+	if (!text)
+		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+#else
 	qglColor3f( 1.0f, 1.0f, 1.0f );
 
 	qglBegin (GL_QUADS);
@@ -473,6 +569,7 @@ static void RE_Blit(float fX0, float fY0, float fX1, float fY1, float fX2, float
 		qglVertex2f( fX3, fY3);
 	}
 	qglEnd ();
+#endif
 }
 
 static void RE_KillDissolve(void)
@@ -662,7 +759,7 @@ qboolean RE_ProcessDissolve(void)
 
 				case eDISSOLVE_CIRCULAR_IN:
 				{
-					float fDiagZoom = ( ((float)Dissolve.iWidth*0.8) * (100-iDissolvePercentage))/100.0f;
+					float fDiagZoom = ( ((float)Dissolve.iWidth*0.8f) * (100-iDissolvePercentage))/100.0f;
 
 					//
 					// blit circular graphic...
@@ -682,7 +779,7 @@ qboolean RE_ProcessDissolve(void)
 
 				case eDISSOLVE_CIRCULAR_OUT:
 				{
-					float fDiagZoom = ( ((float)Dissolve.iWidth*0.8) * iDissolvePercentage)/100.0f;
+					float fDiagZoom = ( ((float)Dissolve.iWidth*0.8f) * iDissolvePercentage)/100.0f;
 
 					//
 					// blit circular graphic...
@@ -798,6 +895,11 @@ qboolean RE_InitDissolve(qboolean bForceCircularExtroWipe)
 			// read current screen image...  (GL_RGBA should work even on 3DFX in that the RGB parts will be valid at least)
 			//
 			glPixelStorei(GL_PACK_ALIGNMENT,1);
+			#ifdef HAVE_GLES
+			qglReadPixels (0, 0, iPow2VidWidth, iPow2VidHeight, GL_RGBA, GL_UNSIGNED_BYTE, pBuffer );
+			byte *pbSrc, *pbDst;
+			int iCopyBytes	= glConfig.vidWidth * 4;
+			#else
 			qglReadPixels (0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGBA, GL_UNSIGNED_BYTE, pBuffer );
 			//
 			// now expand the pic over the top of itself so that it has a stride value of {PowerOf2(glConfig.vidWidth)}
@@ -826,6 +928,7 @@ qboolean RE_InitDissolve(qboolean bForceCircularExtroWipe)
 				pbSrc -= iCopyBytes;
 				memmove(pbDst, pbSrc, iCopyBytes);
 			}
+			#endif
 			//
 			// ok, now we've got the screen image in the top left of the power-of-2 texture square,
 			//	but of course the damn thing's upside down (thanks, GL), so invert it, but only within

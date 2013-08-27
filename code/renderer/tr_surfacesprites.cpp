@@ -55,8 +55,8 @@ const float randomchart[256] = {
 };
 
 #define WIND_DAMP_INTERVAL 50
-#define WIND_GUST_TIME 2500.0
-#define WIND_GUST_DECAY (1.0 / WIND_GUST_TIME)
+#define WIND_GUST_TIME 2500.0f
+#define WIND_GUST_DECAY (1.0f / WIND_GUST_TIME)
 
 int		lastSSUpdateTime = 0;
 float	curWindSpeed=0;
@@ -115,29 +115,29 @@ static void R_SurfaceSpriteFrameUpdate(void)
 		if (backEnd.refdef.fov_x > 50 && backEnd.refdef.fov_x < 135)		// I don't consider anything below 50 or above 135 to be "normal".
 		{
 			standardfovx = backEnd.refdef.fov_x;
-			standardscalex = tan(standardfovx * 0.5 * (M_PI/180.0f));
+			standardscalex = tanf(standardfovx * 0.5f * (M_PI/180.0f));
 			standardfovinitialized = qtrue;
 		}
 		else
 		{
 			standardfovx = 90;
-			standardscalex = tan(standardfovx * 0.5 * (M_PI/180.0f));
+			standardscalex = tanf(standardfovx * 0.5f * (M_PI/180.0f));
 		}
-		rangescalefactor = 1.0;		// Don't multiply the shader range by anything.
+		rangescalefactor = 1.0f;		// Don't multiply the shader range by anything.
 	}
 	else if (standardfovx == backEnd.refdef.fov_x)
 	{	// This is the standard FOV (or higher), don't multiply the shader range.
-		rangescalefactor = 1.0;
+		rangescalefactor = 1.0f;
 	}
 	else
 	{	// We are using a non-standard FOV.  We need to multiply the range of the shader by a scale factor.
 		if (backEnd.refdef.fov_x > 135)
 		{
-			rangescalefactor = standardscalex / tan(135.0f * 0.5f * (M_PI/180.0f));
+			rangescalefactor = standardscalex / tanf(135.0f * 0.5f * (M_PI/180.0f));
 		}
 		else
 		{
-			rangescalefactor = standardscalex / tan(backEnd.refdef.fov_x * 0.5 * (M_PI/180.0f));
+			rangescalefactor = standardscalex / tanf(backEnd.refdef.fov_x * 0.5f * (M_PI/180.0f));
 		}
 	}
 
@@ -179,7 +179,7 @@ static void R_SurfaceSpriteFrameUpdate(void)
 	{	// We successfully got a speed from the rain system.
 		// Set the windgust to 5, since that looks pretty good.
 		targetspeed *= 0.3f;
-		if (targetspeed >= 1.0)
+		if (targetspeed >= 1.0f)
 		{
 			curWindGust = 300/targetspeed;
 		}
@@ -199,7 +199,7 @@ static void R_SurfaceSpriteFrameUpdate(void)
 		if (gustLeft > 0)
 		{	// We are gusting
 			// Add an amount to the target wind speed
-			targetspeed *= 1.0 + gustLeft;
+			targetspeed *= 1.0f + gustLeft;
 
 			gustLeft -= (float)(backEnd.refdef.time - lastSSUpdateTime)*WIND_GUST_DECAY;
 			if (gustLeft <= 0)
@@ -226,10 +226,10 @@ static void R_SurfaceSpriteFrameUpdate(void)
 		ang[YAW] = r_windAngle->value;
 	}
 
-	ang[PITCH] = -90.0 + targetspeed;
-	if (ang[PITCH]>-45.0)
+	ang[PITCH] = -90.0f + targetspeed;
+	if (ang[PITCH]>-45.0f)
 	{
-		ang[PITCH] = -45.0;
+		ang[PITCH] = -45.0f;
 	}
 	ang[ROLL] = 0;
 
@@ -241,7 +241,7 @@ static void R_SurfaceSpriteFrameUpdate(void)
 	
 	// Get the grass wind vector first
 	AngleVectors(ang, targetWindGrassDir, NULL, NULL);
-	targetWindGrassDir[2]-=1.0;
+	targetWindGrassDir[2]-=1.0f;
 //		VectorScale(targetWindGrassDir, targetspeed, targetWindGrassDir);
 
 	// Now get the general wind vector (no pitch)
@@ -249,8 +249,8 @@ static void R_SurfaceSpriteFrameUpdate(void)
 	AngleVectors(ang, targetWindBlowVect, NULL, NULL);
 
 	// Start calculating a smoothing factor so wind doesn't change abruptly between speeds.
-	dampfactor = 1.0-r_windDampFactor->value;	// We must exponent the amount LEFT rather than the amount bled off
-	dtime = (float)(backEnd.refdef.time - lastSSUpdateTime) * (1.0/(float)WIND_DAMP_INTERVAL);	// Our dampfactor is geared towards a time interval equal to "1".
+	dampfactor = 1.0f-r_windDampFactor->value;	// We must exponent the amount LEFT rather than the amount bled off
+	dtime = (float)(backEnd.refdef.time - lastSSUpdateTime) * (1.0f/(float)WIND_DAMP_INTERVAL);	// Our dampfactor is geared towards a time interval equal to "1".
 
 	// Note that since there are a finite number of "practical" delta millisecond values possible, 
 	// the ratio should be initialized into a chart ultimately.
@@ -271,7 +271,7 @@ static void R_SurfaceSpriteFrameUpdate(void)
 	lastSSUpdateTime = backEnd.refdef.time;
 
 	curWindPointForce = r_windPointForce->value - (ratio * (r_windPointForce->value - curWindPointForce));
-	if (curWindPointForce < 0.01)
+	if (curWindPointForce < 0.01f)
 	{
 		curWindPointActive = qfalse;
 	}
@@ -298,8 +298,8 @@ static void R_SurfaceSpriteFrameUpdate(void)
 // Surface sprite calculation and drawing.
 /////////////////////////////////////////////
 
-#define FADE_RANGE			250.0
-#define WINDPOINT_RADIUS	750.0
+#define FADE_RANGE			250.0f
+#define WINDPOINT_RADIUS	750.0f
 
 float SSVertAlpha[SHADER_MAX_VERTEXES];
 float SSVertWindForce[SHADER_MAX_VERTEXES];
@@ -321,13 +321,13 @@ static void RB_VerticalSurfaceSprite(vec3_t loc, float width, float height, byte
 	float points[16];
 	color4ub_t color;
 
-	angle = ((loc[0]+loc[1])*0.02+(tr.refdef.time*0.0015));
+	angle = ((loc[0]+loc[1])*0.02f+(tr.refdef.time*0.0015f));
 
-	if (windidle>0.0)
+	if (windidle>0.0f)
 	{
-		windsway = (height*windidle*0.075);
-		loc2[0] = loc[0]+skew[0]+cos(angle)*windsway;
-		loc2[1] = loc[1]+skew[1]+sin(angle)*windsway;
+		windsway = (height*windidle*0.075f);
+		loc2[0] = loc[0]+skew[0]+cosf(angle)*windsway;
+		loc2[1] = loc[1]+skew[1]+sinf(angle)*windsway;
 
 		if (hangdown)
 		{
@@ -352,25 +352,25 @@ static void RB_VerticalSurfaceSprite(vec3_t loc, float width, float height, byte
 		}
 	}
 
-	if (wind>0.0 && curWindSpeed > 0.001)
+	if (wind>0.0f && curWindSpeed > 0.001f)
 	{
-		windsway = (height*wind*0.075);
+		windsway = (height*wind*0.075f);
 
 		// Add the angle
 		VectorMA(loc2, height*wind, curWindGrassDir, loc2);
 		// Bob up and down
-		if (curWindSpeed < 40.0)
+		if (curWindSpeed < 40.0f)
 		{
-			windsway *= curWindSpeed*(1.0/100.0);
+			windsway *= curWindSpeed*(1.0f/100.0f);
 		}
 		else
 		{
 			windsway *= 0.4f;
 		}
-		loc2[2] += sin(angle*2.5)*windsway;
+		loc2[2] += sinf(angle*2.5f)*windsway;
 	}
 
-	VectorScale(ssrightvectors[rightvectorcount], width*0.5, right);
+	VectorScale(ssrightvectors[rightvectorcount], width*0.5f, right);
 
 	color[0]=light;
 	color[1]=light;
@@ -393,8 +393,8 @@ static void RB_VerticalSurfaceSprite(vec3_t loc, float width, float height, byte
 
 	// Top left
 //	VectorSubtract(loc2, right, point);
-	points[8] = loc2[0] - right[0] + ssfwdvector[0] * width * 0.2;
-	points[9] = loc2[1] - right[1] + ssfwdvector[1] * width * 0.2;
+	points[8] = loc2[0] - right[0] + ssfwdvector[0] * width * 0.2f;
+	points[9] = loc2[1] - right[1] + ssfwdvector[1] * width * 0.2f;
 	points[10] = loc2[2] - right[2];
 	points[11] = 0;
 
@@ -424,13 +424,13 @@ static void RB_VerticalSurfaceSpriteWindPoint(vec3_t loc, float width, float hei
 
 //	wind += 1.0-windforce;
 
-	angle = (loc[0]+loc[1])*0.02+(tr.refdef.time*0.0015);
+	angle = (loc[0]+loc[1])*0.02f+(tr.refdef.time*0.0015f);
 
-	if (curWindSpeed <80.0)
+	if (curWindSpeed <80.0f)
 	{
-		windsway = (height*windidle*0.1)*(1.0+windforce);
-		loc2[0] = loc[0]+skew[0]+cos(angle)*windsway;
-		loc2[1] = loc[1]+skew[1]+sin(angle)*windsway;
+		windsway = (height*windidle*0.1f)*(1.0f+windforce);
+		loc2[0] = loc[0]+skew[0]+cosf(angle)*windsway;
+		loc2[1] = loc[1]+skew[1]+sinf(angle)*windsway;
 	}
 	else
 	{
@@ -446,7 +446,7 @@ static void RB_VerticalSurfaceSpriteWindPoint(vec3_t loc, float width, float hei
 		loc2[2] = loc[2]+height;
 	}
 
-	if (curWindSpeed > 0.001)
+	if (curWindSpeed > 0.001f)
 	{
 		// Add the angle
 		VectorMA(loc2, height*wind, curWindGrassDir, loc2);
@@ -454,9 +454,9 @@ static void RB_VerticalSurfaceSpriteWindPoint(vec3_t loc, float width, float hei
 
 	loc2[0] += height*winddiff[0]*windforce;
 	loc2[1] += height*winddiff[1]*windforce;
-	loc2[2] -= height*windforce*(0.75 + 0.15*sin((tr.refdef.time + 500*windforce)*0.01));
+	loc2[2] -= height*windforce*(0.75f + 0.15f*sinf((tr.refdef.time + 500*windforce)*0.01f));
 
-	VectorScale(ssrightvectors[rightvectorcount], width*0.5, right);
+	VectorScale(ssrightvectors[rightvectorcount], width*0.5f, right);
 
 	color[0]=light;
 	color[1]=light;
@@ -479,8 +479,8 @@ static void RB_VerticalSurfaceSpriteWindPoint(vec3_t loc, float width, float hei
 
 	// Top left
 //	VectorSubtract(loc2, right, point);
-	points[8] = loc2[0] - right[0] + ssfwdvector[0] * width * 0.15;
-	points[9] = loc2[1] - right[1] + ssfwdvector[1] * width * 0.15;
+	points[8] = loc2[0] - right[0] + ssfwdvector[0] * width * 0.15f;
+	points[9] = loc2[1] - right[1] + ssfwdvector[1] * width * 0.15f;
 	points[10] = loc2[2] - right[2];
 	points[11] = 0;
 
@@ -529,21 +529,21 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 	float fadedist=stage->ss.fadeDist*rangescalefactor, fadedist2=fadedist*fadedist;
 
 	assert(cutdist2 != fadedist2);
-	float inv_fadediff = 1.0/(cutdist2-fadedist2);
+	float inv_fadediff = 1.0f/(cutdist2-fadedist2);
 
 	// The faderange is the fraction amount it takes for these sprites to fade out, assuming an ideal fade range of 250
 	float faderange = FADE_RANGE/(cutdist-fadedist);
 
-	if (faderange > 1.0)
+	if (faderange > 1.0f)
 	{	// Don't want to force a new fade_rand
-		faderange = 1.0;
+		faderange = 1.0f;
 	}
 
 	// Quickly calc all the alphas and windstuff for each vertex
 	for (curvert=0; curvert<input->numVertexes; curvert++)
 	{
 		VectorSubtract(ssViewOrigin, input->xyz[curvert], dist);
-		SSVertAlpha[curvert] = 1.0 - (VectorLengthSquared(dist) - fadedist2) * inv_fadediff;
+		SSVertAlpha[curvert] = 1.0f - (VectorLengthSquared(dist) - fadedist2) * inv_fadediff;
 	}
 
 	// Wind only needs initialization once per tess.
@@ -574,7 +574,7 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 					step = Q_rsqrt(step);		// Equals 1 over the distance.
 					SSVertWindDir[curvert][0] = dist[0] * step;
 					SSVertWindDir[curvert][1] = dist[1] * step;
-					step = 1.0 - (1.0 / (step * WINDPOINT_RADIUS));	// 1- (dist/maxradius) = a scale from 0 to 1 linearly dropping off
+					step = 1.0f - (1.0f / (step * WINDPOINT_RADIUS));	// 1- (dist/maxradius) = a scale from 0 to 1 linearly dropping off
 					SSVertWindForce[curvert] = curWindPointForce * stage->ss.wind * step;	// *step means divide by the distance.
 				}
 			}
@@ -588,14 +588,14 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 		VectorCopy(input->xyz[curvert], v1);
 		if (stage->ss.facing)
 		{	// Hang down
-			if (input->normal[curvert][2] > -0.5)
+			if (input->normal[curvert][2] > -0.5f)
 			{
 				continue;
 			}
 		}
 		else
 		{	// Point up
-			if (input->normal[curvert][2] < 0.5)
+			if (input->normal[curvert][2] < 0.5f)
 			{
 				continue;
 			}
@@ -612,14 +612,14 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 		VectorCopy(input->xyz[curvert], v2);
 		if (stage->ss.facing)
 		{	// Hang down
-			if (input->normal[curvert][2] > -0.5)
+			if (input->normal[curvert][2] > -0.5f)
 			{
 				continue;
 			}
 		}
 		else
 		{	// Point up
-			if (input->normal[curvert][2] < 0.5)
+			if (input->normal[curvert][2] < 0.5f)
 			{
 				continue;
 			}
@@ -636,14 +636,14 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 		VectorCopy(input->xyz[curvert], v3);
 		if (stage->ss.facing)
 		{	// Hang down
-			if (input->normal[curvert][2] > -0.5)
+			if (input->normal[curvert][2] > -0.5f)
 			{
 				continue;
 			}
 		}
 		else
 		{	// Point up
-			if (input->normal[curvert][2] < 0.5)
+			if (input->normal[curvert][2] < 0.5f)
 			{
 				continue;
 			}
@@ -656,7 +656,7 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 		winddiff3[1] = SSVertWindDir[curvert][1];
 		windforce3 = SSVertWindForce[curvert];
 
-		if (a1 <= 0.0 && a2 <= 0.0 && a3 <= 0.0)
+		if (a1 <= 0.0f && a2 <= 0.0f && a3 <= 0.0f)
 		{
 			continue;
 		}
@@ -670,7 +670,7 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 		// Now get the cross product of this sum.
 		triarea = vec1to3[0]*vec1to2[1] - vec1to3[1]*vec1to2[0];
 		triarea=fabs(triarea);
-		if (triarea <= 1.0)
+		if (triarea <= 1.0f)
 		{	// Insanely small abhorrent triangle.
 			continue;
 		}
@@ -680,9 +680,9 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 		randominterval = (byte)(v1[0]+v2[1]+v3[2])|0x03;	// Make sure the interval is at least 3, and always odd
 		rightvectorcount = 0;
 
-		for (posi=0; posi<1.0; posi+=step)
+		for (posi=0; posi<1.0f; posi+=step)
 		{
-			for (posj=0; posj<(1.0-posi); posj+=step)
+			for (posj=0; posj<(1.0f-posi); posj+=step)
 			{
 				fa=posi+randomchart[randomindex]*step;
 				randomindex += randominterval;
@@ -692,27 +692,27 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 
 				rightvectorcount=(rightvectorcount+1)&3;
 
-				if (fa>1.0)
+				if (fa>1.0f)
 					continue;
 
-				if (fb>(1.0-fa))
+				if (fb>(1.0f-fa))
 					continue;
 
-				fc = 1.0-fa-fb;
+				fc = 1.0f-fa-fb;
 
 				// total alpha, minus random factor so some things fade out sooner.
 				alphapos = a1*fa + a2*fb + a3*fc;
 				
 				// Note that the alpha at this point is a value from 1.0 to 0.0, but represents when to START fading
-				thisspritesfadestart = faderange + (1.0-faderange) * randomchart[randomindex];
+				thisspritesfadestart = faderange + (1.0f-faderange) * randomchart[randomindex];
 				randomindex += randominterval;
 
 				// Find where the alpha is relative to the fadestart, and calc the real alpha to draw at.
-				alpha = 1.0 - ((thisspritesfadestart-alphapos)/faderange);
-				if (alpha > 0.0)
+				alpha = 1.0f - ((thisspritesfadestart-alphapos)/faderange);
+				if (alpha > 0.0f)
 				{
-					if (alpha > 1.0) 
-						alpha=1.0;
+					if (alpha > 1.0f) 
+						alpha=1.0f;
 
 					if (SSUsingFog)
 					{
@@ -735,20 +735,20 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 					if (SSAdditiveTransparency)
 					{	// Additive transparency, scale light value
 //						light *= alpha;
-						light = (128 + (light*0.5))*alpha;
-						alpha = 1.0;
+						light = (128 + (light*0.5f))*alpha;
+						alpha = 1.0f;
 					}
 
 					randomindex2 = randomindex;
-					width = stage->ss.width*(1.0 + (stage->ss.variance[0]*randomchart[randomindex2]));
-					height = stage->ss.height*(1.0 + (stage->ss.variance[1]*randomchart[randomindex2++]));
-					if (randomchart[randomindex2++]>0.5)
+					width = stage->ss.width*(1.0f + (stage->ss.variance[0]*randomchart[randomindex2]));
+					height = stage->ss.height*(1.0f + (stage->ss.variance[1]*randomchart[randomindex2++]));
+					if (randomchart[randomindex2++]>0.5f)
 					{
 						width = -width;
 					}
-					if (stage->ss.fadeScale!=0 && alphapos < 1.0)
+					if (stage->ss.fadeScale!=0 && alphapos < 1.0f)
 					{
-						width *= 1.0 + (stage->ss.fadeScale*(1.0-alphapos));
+						width *= 1.0f + (stage->ss.fadeScale*(1.0f-alphapos));
 					}
 
 					if (stage->ss.vertSkew != 0)
@@ -757,17 +757,17 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 						skew[1] = height * ((stage->ss.vertSkew*2.0f*randomchart[randomindex2++])-stage->ss.vertSkew);
 					}
 
-					if (usewindpoint && windforce > 0 && stage->ss.wind > 0.0)
+					if (usewindpoint && windforce > 0 && stage->ss.wind > 0.0f)
 					{
 						if (SSUsingFog)
 						{
-							RB_VerticalSurfaceSpriteWindPoint(curpoint, width, height, (byte)light, (byte)(alpha*255.0), 
+							RB_VerticalSurfaceSpriteWindPoint(curpoint, width, height, (byte)light, (byte)(alpha*255.0f), 
 										stage->ss.wind, stage->ss.windIdle, fogv, stage->ss.facing, skew,
 										winddiffv, windforce);
 						}
 						else
 						{
-							RB_VerticalSurfaceSpriteWindPoint(curpoint, width, height, (byte)light, (byte)(alpha*255.0), 
+							RB_VerticalSurfaceSpriteWindPoint(curpoint, width, height, (byte)light, (byte)(alpha*255.0f), 
 										stage->ss.wind, stage->ss.windIdle, NULL, stage->ss.facing, skew, 
 										winddiffv, windforce);
 						}
@@ -776,12 +776,12 @@ static void RB_DrawVerticalSurfaceSprites( shaderStage_t *stage, shaderCommands_
 					{
 						if (SSUsingFog)
 						{
-							RB_VerticalSurfaceSprite(curpoint, width, height, (byte)light, (byte)(alpha*255.0), 
+							RB_VerticalSurfaceSprite(curpoint, width, height, (byte)light, (byte)(alpha*255.0f), 
 										stage->ss.wind, stage->ss.windIdle, fogv, stage->ss.facing, skew);
 						}
 						else
 						{
-							RB_VerticalSurfaceSprite(curpoint, width, height, (byte)light, (byte)(alpha*255.0), 
+							RB_VerticalSurfaceSprite(curpoint, width, height, (byte)light, (byte)(alpha*255.0f), 
 										stage->ss.wind, stage->ss.windIdle, NULL, stage->ss.facing, skew);
 						}
 					}
@@ -810,41 +810,41 @@ static void RB_OrientedSurfaceSprite(vec3_t loc, float width, float height, byte
 
 	if (faceup)
 	{
-		width *= 0.5;
-		height *= 0.5;
+		width *= 0.5f;
+		height *= 0.5f;
 
 		// Bottom right
 	//	VectorAdd(loc, right, point);
 		points[0] = loc[0] + width;
 		points[1] = loc[1] - width;
-		points[2] = loc[2] + 1.0;
+		points[2] = loc[2] + 1.0f;
 		points[3] = 0;
 
 		// Top right
 	//	VectorAdd(loc, right, point);
 		points[4] = loc[0] + width;
 		points[5] = loc[1] + width;
-		points[6] = loc[2] + 1.0;
+		points[6] = loc[2] + 1.0f;
 		points[7] = 0;
 
 		// Top left
 	//	VectorSubtract(loc, right, point);
 		points[8] = loc[0] - width;
 		points[9] = loc[1] + width;
-		points[10] = loc[2] + 1.0;
+		points[10] = loc[2] + 1.0f;
 		points[11] = 0;
 
 		// Bottom left
 	//	VectorSubtract(loc, right, point);
 		points[12] = loc[0] - width;
 		points[13] = loc[1] - width;
-		points[14] = loc[2] + 1.0;
+		points[14] = loc[2] + 1.0f;
 		points[15] = 0;
 	}
 	else
 	{
 		VectorMA(loc, height, ssViewUp, loc2);
-		VectorScale(ssViewRight, width*0.5, right);
+		VectorScale(ssViewRight, width*0.5f, right);
 
 		// Bottom right
 	//	VectorAdd(loc, right, point);
@@ -905,14 +905,14 @@ static void RB_DrawOrientedSurfaceSprites( shaderStage_t *stage, shaderCommands_
 	float fadedist=stage->ss.fadeDist*rangescalefactor, fadedist2=fadedist*fadedist;
 
 	assert(cutdist2 != fadedist2);
-	float inv_fadediff = 1.0/(cutdist2-fadedist2);
+	float inv_fadediff = 1.0f/(cutdist2-fadedist2);
 
 	// The faderange is the fraction amount it takes for these sprites to fade out, assuming an ideal fade range of 250
 	float faderange = FADE_RANGE/(cutdist-fadedist);
 
-	if (faderange > 1.0)
+	if (faderange > 1.0f)
 	{	// Don't want to force a new fade_rand
-		faderange = 1.0;
+		faderange = 1.0f;
 	}
 
 	if (stage->ss.facing)
@@ -929,7 +929,7 @@ static void RB_DrawOrientedSurfaceSprites( shaderStage_t *stage, shaderCommands_
 	{
 		// Calc alpha at each point
 		VectorSubtract(ssViewOrigin, input->xyz[curvert], dist);
-		SSVertAlpha[curvert] = 1.0 - (VectorLengthSquared(dist) - fadedist2) * inv_fadediff;
+		SSVertAlpha[curvert] = 1.0f - (VectorLengthSquared(dist) - fadedist2) * inv_fadediff;
 	}
 
 	for (curindex=0; curindex<input->numIndexes-2; curindex+=3)
@@ -967,7 +967,7 @@ static void RB_DrawOrientedSurfaceSprites( shaderStage_t *stage, shaderCommands_
 		fog3[0] = *((float *)(tess.svars.texcoords[0])+(curvert<<1));
 		fog3[1] = *((float *)(tess.svars.texcoords[0])+(curvert<<1)+1);
 
-		if (a1 <= 0.0 && a2 <= 0.0 && a3 <= 0.0)
+		if (a1 <= 0.0f && a2 <= 0.0f && a3 <= 0.0f)
 		{
 			continue;
 		}
@@ -980,8 +980,8 @@ static void RB_DrawOrientedSurfaceSprites( shaderStage_t *stage, shaderCommands_
 
 		// Now get the cross product of this sum.
 		triarea = vec1to3[0]*vec1to2[1] - vec1to3[1]*vec1to2[0];
-		triarea=fabs(triarea);
-		if (triarea <= 1.0)
+		triarea=fabsf(triarea);
+		if (triarea <= 1.0f)
 		{	// Insanely small abhorrent triangle.
 			continue;
 		}
@@ -990,37 +990,37 @@ static void RB_DrawOrientedSurfaceSprites( shaderStage_t *stage, shaderCommands_
 		randomindex = (byte)(v1[0]+v1[1]+v2[0]+v2[1]+v3[0]+v3[1]);
 		randominterval = (byte)(v1[0]+v2[1]+v3[2])|0x03;	// Make sure the interval is at least 3, and always odd
 
-		for (posi=0; posi<1.0; posi+=step)
+		for (posi=0; posi<1.0f; posi+=step)
 		{
-			for (posj=0; posj<(1.0-posi); posj+=step)
+			for (posj=0; posj<(1.0f-posi); posj+=step)
 			{
 				fa=posi+randomchart[randomindex]*step;
 				randomindex += randominterval;
-				if (fa>1.0)
+				if (fa>1.0f)
 					continue;
 
 				fb=posj+randomchart[randomindex]*step;
 				randomindex += randominterval;
-				if (fb>(1.0-fa))
+				if (fb>(1.0f-fa))
 					continue;
 
-				fc = 1.0-fa-fb;
+				fc = 1.0f-fa-fb;
 
 				// total alpha, minus random factor so some things fade out sooner.
 				alphapos = a1*fa + a2*fb + a3*fc;
 				
 				// Note that the alpha at this point is a value from 1.0 to 0.0, but represents when to START fading
-				thisspritesfadestart = faderange + (1.0-faderange) * randomchart[randomindex];
+				thisspritesfadestart = faderange + (1.0f-faderange) * randomchart[randomindex];
 				randomindex += randominterval;
 
 				// Find where the alpha is relative to the fadestart, and calc the real alpha to draw at.
-				alpha = 1.0 - ((thisspritesfadestart-alphapos)/faderange);
+				alpha = 1.0f - ((thisspritesfadestart-alphapos)/faderange);
 
 				randomindex += randominterval;
-				if (alpha > 0.0)
+				if (alpha > 0.0f)
 				{
-					if (alpha > 1.0) 
-						alpha=1.0;
+					if (alpha > 1.0f) 
+						alpha=1.0f;
 
 					if (SSUsingFog)
 					{
@@ -1036,29 +1036,29 @@ static void RB_DrawOrientedSurfaceSprites( shaderStage_t *stage, shaderCommands_
 					if (SSAdditiveTransparency)
 					{	// Additive transparency, scale light value
 //						light *= alpha;
-						light = (128 + (light*0.5))*alpha;
-						alpha = 1.0;
+						light = (128 + (light*0.5f))*alpha;
+						alpha = 1.0f;
 					}
 
 					randomindex2 = randomindex;
-					width = stage->ss.width*(1.0 + (stage->ss.variance[0]*randomchart[randomindex2]));
-					height = stage->ss.height*(1.0 + (stage->ss.variance[1]*randomchart[randomindex2++]));
-					if (randomchart[randomindex2++]>0.5)
+					width = stage->ss.width*(1.0f + (stage->ss.variance[0]*randomchart[randomindex2]));
+					height = stage->ss.height*(1.0f + (stage->ss.variance[1]*randomchart[randomindex2++]));
+					if (randomchart[randomindex2++]>0.5f)
 					{
 						width = -width;
 					}
-					if (stage->ss.fadeScale!=0 && alphapos < 1.0)
+					if (stage->ss.fadeScale!=0 && alphapos < 1.0f)
 					{
-						width *= 1.0 + (stage->ss.fadeScale*(1.0-alphapos));
+						width *= 1.0f + (stage->ss.fadeScale*(1.0f-alphapos));
 					}
 
 					if (SSUsingFog)
 					{
-						RB_OrientedSurfaceSprite(curpoint, width, height, (byte)light, (byte)(alpha*255.0), fogv, stage->ss.facing);
+						RB_OrientedSurfaceSprite(curpoint, width, height, (byte)light, (byte)(alpha*255.0f), fogv, stage->ss.facing);
 					}
 					else
 					{
-						RB_OrientedSurfaceSprite(curpoint, width, height, (byte)light, (byte)(alpha*255.0), NULL, stage->ss.facing);
+						RB_OrientedSurfaceSprite(curpoint, width, height, (byte)light, (byte)(alpha*255.0f), NULL, stage->ss.facing);
 					}
 
 					totalsurfsprites++;
@@ -1085,41 +1085,41 @@ static void RB_EffectSurfaceSprite(vec3_t loc, float width, float height, byte l
 
 	if (faceup)
 	{
-		width *= 0.5;
-		height *= 0.5;
+		width *= 0.5f;
+		height *= 0.5f;
 
 		// Bottom right
 	//	VectorAdd(loc, right, point);
 		points[0] = loc[0] + width;
 		points[1] = loc[1] - width;
-		points[2] = loc[2] + 1.0;
+		points[2] = loc[2] + 1.0f;
 		points[3] = 0;
 
 		// Top right
 	//	VectorAdd(loc, right, point);
 		points[4] = loc[0] + width;
 		points[5] = loc[1] + width;
-		points[6] = loc[2] + 1.0;
+		points[6] = loc[2] + 1.0f;
 		points[7] = 0;
 
 		// Top left
 	//	VectorSubtract(loc, right, point);
 		points[8] = loc[0] - width;
 		points[9] = loc[1] + width;
-		points[10] = loc[2] + 1.0;
+		points[10] = loc[2] + 1.0f;
 		points[11] = 0;
 
 		// Bottom left
 	//	VectorSubtract(loc, right, point);
 		points[12] = loc[0] - width;
 		points[13] = loc[1] - width;
-		points[14] = loc[2] + 1.0;
+		points[14] = loc[2] + 1.0f;
 		points[15] = 0;
 	}
 	else
 	{
 		VectorMA(loc, height, ssViewUp, loc2);
-		VectorScale(ssViewRight, width*0.5, right);
+		VectorScale(ssViewRight, width*0.5f, right);
 
 		// Bottom right
 	//	VectorAdd(loc, right, point);
@@ -1183,7 +1183,7 @@ static void RB_DrawEffectSurfaceSprites( shaderStage_t *stage, shaderCommands_t 
 	qboolean fadeinout=qfalse;
 	
 	assert(cutdist2 != fadedist2);
-	float inv_fadediff = 1.0/(cutdist2-fadedist2);
+	float inv_fadediff = 1.0f/(cutdist2-fadedist2);
 
 	// The faderange is the fraction amount it takes for these sprites to fade out, assuming an ideal fade range of 250
 	float faderange = FADE_RANGE/(cutdist-fadedist);
@@ -1202,14 +1202,14 @@ static void RB_DrawEffectSurfaceSprites( shaderStage_t *stage, shaderCommands_t 
 	}
 
 	// Make the object fade in.
-	if (stage->ss.fxAlphaEnd < 0.05 && stage->ss.height >= 0.1 && stage->ss.width >= 0.1)
+	if (stage->ss.fxAlphaEnd < 0.05f && stage->ss.height >= 0.1f && stage->ss.width >= 0.1f)
 	{	// The sprite fades out, and it doesn't start at a pinpoint.  Let's fade it in.
 		fadeinout=qtrue;
 	}
 
 	if (stage->ss.surfaceSpriteType == SURFSPRITE_WEATHERFX)
 	{	// This effect is affected by weather settings.
-		if (curWeatherAmount < 0.01)
+		if (curWeatherAmount < 0.01f)
 		{	// Don't show these effects
 			return;
 		}
@@ -1292,9 +1292,9 @@ static void RB_DrawEffectSurfaceSprites( shaderStage_t *stage, shaderCommands_t 
 
 		for (posi=0; posi<1.0f; posi+=step)
 		{
-			for (posj=0; posj<(1.0-posi); posj+=step)
+			for (posj=0; posj<(1.0f-posi); posj+=step)
 			{
-				effecttime = (tr.refdef.time+10000.0*randomchart[randomindex])/stage->ss.fxDuration;
+				effecttime = (tr.refdef.time+10000.0f*randomchart[randomindex])/stage->ss.fxDuration;
 				effectpos = (float)effecttime - (int)effecttime;
 
 				randomindex2 = randomindex+effecttime;
@@ -1304,16 +1304,16 @@ static void RB_DrawEffectSurfaceSprites( shaderStage_t *stage, shaderCommands_t 
 					continue;
 
 				fb=posj+randomchart[randomindex2++]*step;
-				if (fb>(1.0-fa))
+				if (fb>(1.0f-fa))
 					continue;
 
-				fc = 1.0-fa-fb;
+				fc = 1.0f-fa-fb;
 
 				// total alpha, minus random factor so some things fade out sooner.
 				alphapos = a1*fa + a2*fb + a3*fc;
 				
 				// Note that the alpha at this point is a value from 1.0f to 0.0, but represents when to START fading
-				thisspritesfadestart = faderange + (1.0-faderange) * randomchart[randomindex2];
+				thisspritesfadestart = faderange + (1.0f-faderange) * randomchart[randomindex2];
 				randomindex2 += randominterval;
 
 				// Find where the alpha is relative to the fadestart, and calc the real alpha to draw at.
@@ -1338,13 +1338,13 @@ static void RB_DrawEffectSurfaceSprites( shaderStage_t *stage, shaderCommands_t 
 					// If we want to fade in and out, that's different than a straight fade.
 					if (fadeinout)
 					{
-						if (effectpos > 0.5)
+						if (effectpos > 0.5f)
 						{	// Fade out
-							alpha = alpha*(stage->ss.fxAlphaStart+(fxalpha*(effectpos-0.5)*2.0));
+							alpha = alpha*(stage->ss.fxAlphaStart+(fxalpha*(effectpos-0.5f)*2.0f));
 						}
 						else
 						{	// Fade in
-							alpha = alpha*(stage->ss.fxAlphaStart+(fxalpha*(0.5-effectpos)*2.0));
+							alpha = alpha*(stage->ss.fxAlphaStart+(fxalpha*(0.5f-effectpos)*2.0f));
 						}
 					}
 					else
@@ -1355,8 +1355,8 @@ static void RB_DrawEffectSurfaceSprites( shaderStage_t *stage, shaderCommands_t 
 					if (SSAdditiveTransparency)
 					{	// Additive transparency, scale light value
 //						light *= alpha;
-						light = (128 + (light*0.5))*alpha;
-						alpha = 1.0;
+						light = (128 + (light*0.5f))*alpha;
+						alpha = 1.0f;
 					}
 
 					if (randomchart[randomindex2]>0.5f)
@@ -1365,10 +1365,10 @@ static void RB_DrawEffectSurfaceSprites( shaderStage_t *stage, shaderCommands_t 
 					}
 					if (stage->ss.fadeScale!=0 && alphapos < 1.0f)
 					{
-						width *= 1.0f + (stage->ss.fadeScale*(1.0-alphapos));
+						width *= 1.0f + (stage->ss.fadeScale*(1.0f-alphapos));
 					}
 
-					if (stage->ss.wind>0.0f && curWindSpeed > 0.001)
+					if (stage->ss.wind>0.0f && curWindSpeed > 0.001f)
 					{
 						vec3_t drawpoint;
 

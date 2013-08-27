@@ -339,7 +339,7 @@ typedef unsigned int JDIMENSION;
  */
 
 #ifndef FAST_FLOAT
-#ifdef HAVE_PROTOTYPES
+#if defined(HAVE_PROTOTYPES) || defined(ARM)
 #define FAST_FLOAT  float
 #else
 #define FAST_FLOAT  double

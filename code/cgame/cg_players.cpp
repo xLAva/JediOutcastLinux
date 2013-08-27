@@ -10,7 +10,7 @@
 #include "../game/anims.h"
 #include "../game/wp_saber.h"
 
-#define	LOOK_SWING_SCALE	0.5
+#define	LOOK_SWING_SCALE	0.5f
 
 #include "animtable.h"
 #include "../game/npc_headers.h"
@@ -768,7 +768,7 @@ void CG_ParseAnimationSndFile( const char *as_filename, int animFileIndex )
 	{//no file
 		return;
 	}
-	if ( len >= sizeof( text ) - 1 ) 
+	if ( len >= int(sizeof( text )) - 1 ) 
 	{
 		CG_Printf( "File %s too long\n", sfilename );
 		return;
@@ -852,7 +852,7 @@ qboolean CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, f
 	animation_t	*anim;
 	qboolean	newFrame = qfalse;
 
-	if(fpsMod > 2 || fpsMod < 0.5)
+	if(fpsMod > 2 || fpsMod < 0.5f)
 	{//should have been set right
 		fpsMod = 1.0f;
 	}
@@ -967,7 +967,7 @@ qboolean CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, f
 	} 
 	else 
 	{
-		lf->backlerp = 1.0 - (float)( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
+		lf->backlerp = 1.0f - (float)( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
 	}
 
 	return newFrame;
@@ -1329,13 +1329,13 @@ void CG_UpdateAngleClamp( float destAngle, float clampMin, float clampMax, float
 	scale = fabs( swing );
 	if (swing > 0)
 	{
-		if ( swing < clampMax * 0.25 ) 
+		if ( swing < clampMax * 0.25f ) 
 		{//Pretty small way to go
-			scale = 0.25;
+			scale = 0.25f;
 		} 
-		else if ( swing > clampMax * 2.0 )
+		else if ( swing > clampMax * 2.0f )
 		{//Way out of our range
-			scale = 2.0;
+			scale = 2.0f;
 		}
 		else
 		{//Scale it smoothly
@@ -1344,13 +1344,13 @@ void CG_UpdateAngleClamp( float destAngle, float clampMin, float clampMax, float
 	}
 	else// if (swing < 0)
 	{
-		if ( swing > clampMin * 0.25 ) 
+		if ( swing > clampMin * 0.25f ) 
 		{//Pretty small way to go
-			scale = 0.5;
+			scale = 0.5f;
 		} 
-		else if ( swing < clampMin * 2.0 )
+		else if ( swing < clampMin * 2.0f )
 		{//Way out of our range
-			scale = 2.0;
+			scale = 2.0f;
 		}
 		else
 		{//Scale it smoothly
@@ -1451,17 +1451,17 @@ void CG_SwingAngles( float destAngle,
 			return;
 		}
 
-		if ( swing < swingTolMax * 0.5 ) 
+		if ( swing < swingTolMax * 0.5f ) 
 		{//Pretty small way to go
-			scale = 0.5;
+			scale = 0.5f;
 		} 
 		else if ( scale < swingTolMax ) 
 		{//More than halfway to go
-			scale = 1.0;
+			scale = 1.0f;
 		} 
 		else 
 		{//Way out of our range
-			scale = 2.0;
+			scale = 2.0f;
 		}
 	}
 	else// if (swing < 0)
@@ -1472,17 +1472,17 @@ void CG_SwingAngles( float destAngle,
 			return;
 		}
 
-		if ( swing > swingTolMin * 0.5 ) 
+		if ( swing > swingTolMin * 0.5f ) 
 		{//Pretty small way to go
-			scale = 0.5;
+			scale = 0.5f;
 		} 
 		else if ( scale > swingTolMin ) 
 		{//More than halfway to go
-			scale = 1.0;
+			scale = 1.0f;
 		} 
 		else 
 		{//Way out of our range
-			scale = 2.0;
+			scale = 2.0f;
 		}
 	}
 
@@ -1956,36 +1956,36 @@ void CG_G2ClientNeckAngles( centity_t *cent, const vec3_t lookAngles, vec3_t hea
 	//split it up between the neck and cranium
 	if ( thoracicAngles[PITCH] )
 	{//already been set above, blend them
-		thoracicAngles[PITCH] = (thoracicAngles[PITCH] + (lA[PITCH] * 0.4)) * 0.5f;
+		thoracicAngles[PITCH] = (thoracicAngles[PITCH] + (lA[PITCH] * 0.4f)) * 0.5f;
 	}
 	else
 	{
-		thoracicAngles[PITCH] = lA[PITCH] * 0.4;
+		thoracicAngles[PITCH] = lA[PITCH] * 0.4f;
 	}
 	if ( thoracicAngles[YAW] )
 	{//already been set above, blend them
-		thoracicAngles[YAW] = (thoracicAngles[YAW] + (lA[YAW] * 0.1)) * 0.5f;
+		thoracicAngles[YAW] = (thoracicAngles[YAW] + (lA[YAW] * 0.1f)) * 0.5f;
 	}
 	else
 	{
-		thoracicAngles[YAW] = lA[YAW] * 0.1;
+		thoracicAngles[YAW] = lA[YAW] * 0.1f;
 	}
 	if ( thoracicAngles[ROLL] )
 	{//already been set above, blend them
-		thoracicAngles[ROLL] = (thoracicAngles[ROLL] + (lA[ROLL] * 0.1)) * 0.5f;
+		thoracicAngles[ROLL] = (thoracicAngles[ROLL] + (lA[ROLL] * 0.1f)) * 0.5f;
 	}
 	else
 	{
-		thoracicAngles[ROLL] = lA[ROLL] * 0.1;
+		thoracicAngles[ROLL] = lA[ROLL] * 0.1f;
 	}
 
 	neckAngles[PITCH] = lA[PITCH] * 0.2f;
 	neckAngles[YAW] = lA[YAW] * 0.3f;
 	neckAngles[ROLL] = lA[ROLL] * 0.3f;
 
-	headAngles[PITCH] = lA[PITCH] * 0.4;
-	headAngles[YAW] = lA[YAW] * 0.6;
-	headAngles[ROLL] = lA[ROLL] * 0.6;
+	headAngles[PITCH] = lA[PITCH] * 0.4f;
+	headAngles[YAW] = lA[YAW] * 0.6f;
+	headAngles[ROLL] = lA[ROLL] * 0.6f;
 
 	BG_G2SetBoneAngles( cent, cent->gent, cent->gent->craniumBone, headAngles, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, cgs.model_draw );
 	BG_G2SetBoneAngles( cent, cent->gent, cent->gent->cervicalBone, neckAngles, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, cgs.model_draw); 
@@ -2153,7 +2153,7 @@ void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t angles )
 		//VectorClear( viewAngles );
 		VectorCopy( cent->lerpAngles, viewAngles );
 		viewAngles[YAW] = viewAngles[ROLL] = 0;
-		viewAngles[PITCH] *= 0.5;
+		viewAngles[PITCH] *= 0.5f;
 		VectorCopy( viewAngles, lookAngles );
 
 	//	if ( cent->gent && !Q_stricmp( "atst", cent->gent->NPC_type ) )
@@ -2348,7 +2348,7 @@ void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t angles )
 
 			VectorCopy( cent->lerpAngles, viewAngles );
 //			viewAngles[YAW] = viewAngles[ROLL] = 0;
-			viewAngles[PITCH] *= 0.5;
+			viewAngles[PITCH] *= 0.5f;
 			VectorCopy( viewAngles, lookAngles );
 
 			lookAngles[1] = 0;
@@ -2417,7 +2417,7 @@ void CG_G2PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t angles )
 				{
 					//FIXME: This clamp goes off viewAngles,
 					//but really should go off the tag_torso's axis[0] angles, no?
-					lookAngles[YAW] = oldLookAngles[YAW]+(lookAngles[YAW]-oldLookAngles[YAW])*cg.frameInterpolation*0.25;
+					lookAngles[YAW] = oldLookAngles[YAW]+(lookAngles[YAW]-oldLookAngles[YAW])*cg.frameInterpolation*0.25f;
 				}
 				//Remember current lookAngles next time
 				VectorCopy( lookAngles, cent->gent->client->renderInfo.lastHeadAngles );
@@ -2483,10 +2483,10 @@ void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t h
 		VectorCopy( cent->lerpAngles, viewAngles );
 		
 		viewAngles[YAW] = viewAngles[ROLL] = 0;
-		viewAngles[PITCH] *= 0.5;
+		viewAngles[PITCH] *= 0.5f;
 		AnglesToAxis( viewAngles, head );
 		
-		viewAngles[PITCH] *= 0.75;
+		viewAngles[PITCH] *= 0.75f;
 		cent->pe.torso.pitchAngle = viewAngles[PITCH];
 		cent->pe.torso.yawAngle = viewAngles[YAW];
 		AnglesToAxis( viewAngles, torso );
@@ -2529,17 +2529,17 @@ void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t h
 		headPitchClampMin = -cent->gent->client->renderInfo.headPitchRangeUp;
 		headPitchClampMax = cent->gent->client->renderInfo.headPitchRangeDown;
 
-		torsoYawSwingTolMin = headYawClampMin * 0.3;
-		torsoYawSwingTolMax = headYawClampMax * 0.3;
-		torsoPitchSwingTolMin = headPitchClampMin * 0.5;
-		torsoPitchSwingTolMax =  headPitchClampMax * 0.5;
+		torsoYawSwingTolMin = headYawClampMin * 0.3f;
+		torsoYawSwingTolMax = headYawClampMax * 0.3f;
+		torsoPitchSwingTolMin = headPitchClampMin * 0.5f;
+		torsoPitchSwingTolMax =  headPitchClampMax * 0.5f;
 		torsoYawClampMin = -cent->gent->client->renderInfo.torsoYawRangeLeft;
 		torsoYawClampMax = cent->gent->client->renderInfo.torsoYawRangeRight;
 		torsoPitchClampMin = -cent->gent->client->renderInfo.torsoPitchRangeUp;
 		torsoPitchClampMax = cent->gent->client->renderInfo.torsoPitchRangeDown;
 
-		legsYawSwingTolMin = torsoYawClampMin * 0.5;
-		legsYawSwingTolMax = torsoYawClampMax * 0.5;
+		legsYawSwingTolMin = torsoYawClampMin * 0.5f;
+		legsYawSwingTolMax = torsoYawClampMax * 0.5f;
 
 		if ( cent->gent && cent->gent->next_roff_time && cent->gent->next_roff_time >= cg.time )
 		{//Following a roff, body must keep up with head, yaw-wise
@@ -2670,11 +2670,11 @@ void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t h
 	// only show a fraction of the pitch angle in the torso
 	if ( headAngles[PITCH] > 180 ) 
 	{
-		dest = (-360 + headAngles[PITCH]) * 0.75;
+		dest = (-360 + headAngles[PITCH]) * 0.75f;
 	} 
 	else 
 	{
-		dest = headAngles[PITCH] * 0.75;
+		dest = headAngles[PITCH] * 0.75f;
 	}
 
 	CG_SwingAngles( dest, torsoPitchSwingTolMin, torsoPitchSwingTolMax, torsoPitchClampMin, torsoPitchClampMax, 0.1f, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
@@ -2742,8 +2742,8 @@ void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t h
 		{
 			//FIXME: This clamp goes off viewAngles,
 			//but really should go off the tag_torso's axis[0] angles, no?
-			CG_UpdateAngleClamp( lookAngles[PITCH], headPitchClampMin/1.25, headPitchClampMax/1.25, lookAngleSpeed, &headAngles[PITCH], viewAngles[PITCH] );
-			CG_UpdateAngleClamp( lookAngles[YAW], headYawClampMin/1.25, headYawClampMax/1.25, lookAngleSpeed, &headAngles[YAW], viewAngles[YAW] );
+			CG_UpdateAngleClamp( lookAngles[PITCH], headPitchClampMin/1.25f, headPitchClampMax/1.25f, lookAngleSpeed, &headAngles[PITCH], viewAngles[PITCH] );
+			CG_UpdateAngleClamp( lookAngles[YAW], headYawClampMin/1.25f, headYawClampMax/1.25f, lookAngleSpeed, &headAngles[YAW], viewAngles[YAW] );
 			CG_UpdateAngleClamp( lookAngles[ROLL], -10, 10, lookAngleSpeed, &headAngles[ROLL], viewAngles[ROLL] );
 		}
 
@@ -2757,14 +2757,14 @@ void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t h
 
 			//Yaw change
 			swing = AngleSubtract( legsAngles[YAW], headAngles[YAW] );
-			scale = fabs( swing ) / ( torsoYawClampMax + 0.01 );	//NOTENOTE: Some ents have a clamp of 0, which is bad for division
+			scale = fabsf( swing ) / ( torsoYawClampMax + 0.01f );	//NOTENOTE: Some ents have a clamp of 0, which is bad for division
 
 			scale *= LOOK_SWING_SCALE;
 			torsoAngles[YAW] = legsAngles[YAW] - ( swing * scale );
 
 			//Pitch change
 			swing = AngleSubtract( legsAngles[PITCH], headAngles[PITCH] );
-			scale = fabs( swing ) / ( torsoPitchClampMax + 0.01 );	//NOTENOTE: Some ents have a clamp of 0, which is bad for division
+			scale = fabsf( swing ) / ( torsoPitchClampMax + 0.01f );	//NOTENOTE: Some ents have a clamp of 0, which is bad for division
 
 			scale *= LOOK_SWING_SCALE;
 			torsoAngles[PITCH] = legsAngles[PITCH] - ( swing * scale );	
@@ -2810,9 +2810,9 @@ void CG_TrailItem( centity_t *cent, qhandle_t hModel ) {
 	memset( &ent, 0, sizeof( ent ) );
 	VectorMA( cent->lerpOrigin, -24, axis[0], ent.origin );
 	ent.origin[2] += 20;
-	VectorScale( cg.autoAxis[0], 0.75, ent.axis[0] );
-	VectorScale( cg.autoAxis[1], 0.75, ent.axis[1] );
-	VectorScale( cg.autoAxis[2], 0.75, ent.axis[2] );
+	VectorScale( cg.autoAxis[0], 0.75f, ent.axis[0] );
+	VectorScale( cg.autoAxis[1], 0.75f, ent.axis[1] );
+	VectorScale( cg.autoAxis[2], 0.75f, ent.axis[2] );
 	ent.hModel = hModel;
 	cgi_R_AddRefEntityToScene( &ent );
 }
@@ -2901,7 +2901,7 @@ static qboolean _PlayerShadow( const vec3_t origin, const float orientation, flo
 	cgi_CM_BoxTrace( &trace, origin, end, mins, maxs, 0, MASK_PLAYERSOLID );
 
 	// no shadow if too high
-	if ( trace.fraction == 1.0 ) {
+	if ( trace.fraction == 1.0f ) {
 		return qfalse;
 	}
 
@@ -2912,7 +2912,7 @@ static qboolean _PlayerShadow( const vec3_t origin, const float orientation, flo
 	}
 
 	// fade the shadow out with height
-	alpha = 1.0 - trace.fraction;
+	alpha = 1.0f - trace.fraction;
 
 	// add the mark as a temporary, so it goes directly to the renderer
 	// without taking a spot in the cg_marks array
@@ -3015,7 +3015,7 @@ void _PlayerSplash( const vec3_t origin, const vec3_t velocity, const float radi
 	// trace down to find the surface
 	cgi_CM_BoxTrace( &trace, start, end, NULL, NULL, 0, ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) );
 
-	if ( trace.fraction == 1.0 ) 
+	if ( trace.fraction == 1.0f ) 
 	{
 		return;
 	}
@@ -3738,7 +3738,7 @@ static void CG_G2SetHeadAnim( centity_t *cent, int anim )
 	int	animFlags = BONE_ANIM_OVERRIDE ;//| BONE_ANIM_BLEND;
 	// animSpeed is 1.0 if the frameLerp (ms/frame) is 50 (20 fps).
 //	float		timeScaleMod = (cg_timescale.value&&gent&&gent->s.clientNum==0&&!player_locked&&!MatrixMode&&gent->client->ps.forcePowersActive&(1<<FP_SPEED))?(1.0/cg_timescale.value):1.0;
-	const float		timeScaleMod = (cg_timescale.value)?(1.0/cg_timescale.value):1.0;
+	const float		timeScaleMod = (cg_timescale.value)?(1.0f/cg_timescale.value):1.0f;
 	float animSpeed = 50.0f / animations[anim].frameLerp * timeScaleMod;
 
 	if (animations[anim].numFrames <= 0)
@@ -4332,15 +4332,15 @@ void CG_DoSaber( vec3_t origin, vec3_t dir, float length, float lengthMax, saber
 	// It's not quite what I'd hoped tho.  If you have any ideas, go for it!  --Pat
 	if (length < lengthMax )
 	{
-		radiusmult = 1.0 + (2.0 / length);		// Note this creates a curve, and length cannot be < 0.5.
+		radiusmult = 1.0f + (2.0f / length);		// Note this creates a curve, and length cannot be < 0.5.
 	}
 	else
 	{
-		radiusmult = 1.0;
+		radiusmult = 1.0f;
 	}
 
 
-	saber.radius = (2.8 + crandom() * 0.2f)*radiusmult;
+	saber.radius = (2.8f + crandom() * 0.2f)*radiusmult;
 
 
 	VectorCopy( origin, saber.origin );
@@ -4357,7 +4357,7 @@ void CG_DoSaber( vec3_t origin, vec3_t dir, float length, float lengthMax, saber
 	VectorMA( origin, -1, dir, saber.oldorigin );
 	saber.customShader = blade;
 	saber.reType = RT_LINE;
-	saber.radius = (1.0 + crandom() * 0.2f)*radiusmult;
+	saber.radius = (1.0f + crandom() * 0.2f)*radiusmult;
 
 	cgi_R_AddRefEntityToScene( &saber );
 }
@@ -4423,8 +4423,8 @@ void CG_CreateSaberMarks( vec3_t start, vec3_t end, vec3_t normal )
 			VectorScale( mid, 0.5f, mid );
 			VectorSubtract( v->xyz, mid, delta );
 
-			v->st[0] = 0.5 + DotProduct( delta, axis[1] ) * (0.05f + randomLava() * 0.03f);
-			v->st[1] = 0.5 + DotProduct( delta, axis[2] ) * (0.15f + randomLava() * 0.05f);
+			v->st[0] = 0.5f + DotProduct( delta, axis[1] ) * (0.05f + randomLava() * 0.03f);
+			v->st[1] = 0.5f + DotProduct( delta, axis[2] ) * (0.15f + randomLava() * 0.05f);
 		}
 
 		// save it persistantly, do burn first
@@ -4986,7 +4986,7 @@ void CG_Player( centity_t *cent ) {
 			float	side;
 
 			// Magic number fun!  Speed is used for banking, so modulate the speed by a sine wave
-			speed *= sin( (cg.frametime + 200 ) * 0.003 );
+			speed *= sinf( (cg.frametime + 200 ) * 0.003f );
 
 			// Clamp to prevent harsh rolling
 			if ( speed > 60 )

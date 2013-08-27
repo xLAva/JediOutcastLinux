@@ -1202,23 +1202,23 @@ int PM_AttackForEnemyPos( qboolean allowFB )
 			}
 		}
 		float dotR = DotProduct( enemyDir, faceRight );
-		if ( dotR > 0.35 )
+		if ( dotR > 0.35f )
 		{//enemy is to far right
 			autoMove = LS_A_L2R;
 		}
-		else if ( dotR < -0.35 )
+		else if ( dotR < -0.35f )
 		{//far left
 			autoMove = LS_A_R2L;
 		}
-		else if ( dotR > 0.15 )
+		else if ( dotR > 0.15f )
 		{//enemy is to near right
 			autoMove = LS_A_TR2BL;
 		}
-		else if ( dotR < -0.15 )
+		else if ( dotR < -0.15f )
 		{//near left
 			autoMove = LS_A_TL2BR;
 		}
-		if ( DotProduct( enemyDir, faceUp ) > 0.5 )
+		if ( DotProduct( enemyDir, faceUp ) > 0.5f )
 		{//enemy is above me
 			if ( autoMove == LS_A_TR2BL )
 			{
@@ -2071,7 +2071,7 @@ void PM_SaberStartTransAnim( int saberAnimLevel, int anim, float *animSpeed, gen
 		{//his fast attacks are slower
 			if ( !PM_SpinningSaberAnim( anim ) )
 			{
-				*animSpeed *= 0.75;
+				*animSpeed *= 0.75f;
 			}
 			return;
 		}
@@ -2085,11 +2085,11 @@ void PM_SaberStartTransAnim( int saberAnimLevel, int anim, float *animSpeed, gen
 	{
 		if ( saberAnimLevel == FORCE_LEVEL_1 || saberAnimLevel == FORCE_LEVEL_5 )
 		{//FIXME: should not be necc for FORCE_LEVEL_1's
-			*animSpeed *= 1.5;
+			*animSpeed *= 1.5f;
 		}
 		else if ( saberAnimLevel == FORCE_LEVEL_3 )
 		{
-			*animSpeed *= 0.75;
+			*animSpeed *= 0.75f;
 		}
 	}
 }
@@ -2148,11 +2148,11 @@ float PM_GetTimeScaleMod( gentity_t *gent )
 		{
 			if ( gent && gent->s.clientNum == 0 && !player_locked && gent->client->ps.forcePowersActive&(1<<FP_SPEED) )
 			{
-				return (1.0 / g_timescale->value);
+				return (1.0f / g_timescale->value);
 			}
 			else if ( gent && gent->client && gent->client->ps.forcePowersActive&(1<<FP_SPEED) )
 			{
-				return (1.0 / g_timescale->value);
+				return (1.0f / g_timescale->value);
 			}
 		}
 	}
@@ -2413,9 +2413,9 @@ void PM_SetAnimFinal(int *torsoAnim,int *legsAnim,
 */
 		if ((gent->client) && (setAnimFlags & SETANIM_FLAG_HOLD))
 		{//FIXME: allow to set a specific time?
-			if ( timeScaleMod != 1.0 )
+			if ( timeScaleMod != 1.0f )
 			{
-				PM_SetTorsoAnimTimer( gent, torsoAnimTimer, (animations[anim].numFrames - 1) * fabs(animations[anim].frameLerp) / timeScaleMod );
+				PM_SetTorsoAnimTimer( gent, torsoAnimTimer, (animations[anim].numFrames - 1) * fabsf(animations[anim].frameLerp) / timeScaleMod );
 			}
 			else if ( setAnimFlags & SETANIM_FLAG_HOLDLESS )
 			{	// Make sure to only wait in full 1/20 sec server frame intervals.
@@ -2629,9 +2629,9 @@ setAnimLegs:
 */
 		if ((gent->client) && (setAnimFlags & SETANIM_FLAG_HOLD))
 		{//FIXME: allow to set a specific time?
-			if ( timeScaleMod != 1.0 )
+			if ( timeScaleMod != 1.0f )
 			{
-				PM_SetLegsAnimTimer( gent, legsAnimTimer, (animations[anim].numFrames - 1) * fabs(animations[anim].frameLerp) / timeScaleMod );
+				PM_SetLegsAnimTimer( gent, legsAnimTimer, (animations[anim].numFrames - 1) * fabsf(animations[anim].frameLerp) / timeScaleMod );
 			}
 			else if ( setAnimFlags & SETANIM_FLAG_HOLDLESS )
 			{	// Make sure to only wait in full 1/20 sec server frame intervals.

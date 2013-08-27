@@ -1023,7 +1023,7 @@ static qboolean PM_CheckJump( void )
 				}
 				gentity_t *traceEnt = &g_entities[trace.entityNum];
 				
-				if ( !doTrace || (trace.fraction < 1.0f&&((trace.entityNum<ENTITYNUM_WORLD&&traceEnt&&traceEnt->s.solid!=SOLID_BMODEL)||DotProduct(trace.plane.normal,idealNormal)>0.7)) )
+				if ( !doTrace || (trace.fraction < 1.0f&&((trace.entityNum<ENTITYNUM_WORLD&&traceEnt&&traceEnt->s.solid!=SOLID_BMODEL)||DotProduct(trace.plane.normal,idealNormal)>0.7f)) )
 				{//there is a wall there
 					if ( (anim != BOTH_WALL_RUN_LEFT && anim != BOTH_WALL_RUN_RIGHT) || trace.plane.normal[2] == 0.0f )
 					{//wall-runs can only run on perfectly flat walls, sorry.
@@ -1223,7 +1223,7 @@ static qboolean PM_CheckJump( void )
 					VectorNormalize( idealNormal );
 					gentity_t *traceEnt = &g_entities[trace.entityNum];
 					
-					if ( trace.fraction < 1.0f&&((trace.entityNum<ENTITYNUM_WORLD&&traceEnt&&traceEnt->s.solid!=SOLID_BMODEL)||DotProduct(trace.plane.normal,idealNormal)>0.7) )
+					if ( trace.fraction < 1.0f&&((trace.entityNum<ENTITYNUM_WORLD&&traceEnt&&traceEnt->s.solid!=SOLID_BMODEL)||DotProduct(trace.plane.normal,idealNormal)>0.7f) )
 					{//there is a wall there
 						pm->ps->velocity[0] = pm->ps->velocity[1] = 0;
 						VectorMA( pm->ps->velocity, -150, fwd, pm->ps->velocity );
@@ -1950,8 +1950,8 @@ static void PM_WalkMove( void ) {
 	if ( pm->waterlevel ) {
 		float	waterScale;
 
-		waterScale = pm->waterlevel / 3.0;
-		waterScale = 1.0 - ( 1.0 - pm_swimScale ) * waterScale;
+		waterScale = pm->waterlevel / 3.0f;
+		waterScale = 1.0f - ( 1.0f - pm_swimScale ) * waterScale;
 		if ( wishspeed > pm->ps->speed * waterScale ) {
 			wishspeed = pm->ps->speed * waterScale;
 		}
@@ -1971,7 +1971,7 @@ static void PM_WalkMove( void ) {
 	//Com_Printf("velocity1 = %1.1f\n", VectorLength(pm->ps->velocity));
 
 	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK || (pm->ps->pm_flags&PMF_TIME_NOFRICTION) ) {
-		if ( pm->ps->gravity >= 0 && pm->ps->groundEntityNum != ENTITYNUM_NONE && !VectorLengthSquared( pm->ps->velocity ) && pml.groundTrace.plane.normal[2] == 1.0 )
+		if ( pm->ps->gravity >= 0 && pm->ps->groundEntityNum != ENTITYNUM_NONE && !VectorLengthSquared( pm->ps->velocity ) && pml.groundTrace.plane.normal[2] == 1.0f )
 		{//on ground and not moving and on level ground, no reason to do stupid fucking gravity with the clipvelocity!!!!
 		}
 		else
@@ -2094,7 +2094,7 @@ static void PM_NoclipMove( void ) {
 	{
 		drop = 0;
 
-		friction = pm_friction*1.5;	// extra friction
+		friction = pm_friction*1.5f;	// extra friction
 		control = speed < pm_stopspeed ? pm_stopspeed : speed;
 		drop += control*friction*pml.frametime;
 
@@ -2260,11 +2260,11 @@ static float PM_CrashLandDelta( vec3_t prev_vel, int waterlevel )
 	// reduce falling damage if there is standing water
 	if ( pm->waterlevel == 2 ) 
 	{
-		delta *= 0.25;
+		delta *= 0.25f;
 	}
 	if ( pm->waterlevel == 1 ) 
 	{
-		delta *= 0.5;
+		delta *= 0.5f;
 	}
 
 	return delta;
@@ -2384,7 +2384,7 @@ static qboolean PM_TryRoll( void )
 	int		anim = -1;
 	AngleVectors( fwdAngles, fwd, right, NULL );
 	//FIXME: trace ahead for clearance to roll
-	if ( pm->cmd.forwardmove )
+	if ( pm->cmd.forwardmove && (pm->cmd.forwardmove >= fabsf(pm->cmd.rightmove) ) )	/*SEB*/
 	{
 		if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) 
 		{
@@ -2878,7 +2878,7 @@ static void PM_GroundTraceMissed( void ) {
 										speed = 1;
 									}
 									time = 400/speed;
-									vel[2] -= 0.5 * time * pm->ps->gravity;
+									vel[2] -= 0.5f * time * pm->ps->gravity;
 									speed = VectorLength( vel );
 									if ( !speed )
 									{//damn divide by zero
@@ -2892,7 +2892,7 @@ static void PM_GroundTraceMissed( void ) {
 
 									if ( !trace.allsolid && !trace.startsolid && (pm->ps->origin[2] - trace.endpos[2]) >= 128 )//>=128 so we don't die on steps!
 									{
-										if ( trace.fraction == 1.0 )
+										if ( trace.fraction == 1.0f )
 										{//didn't hit, we're probably going to die
 											if ( pm->ps->velocity[2] < 0 && pm->ps->origin[2] - point[2] > 256 )
 											{//going down, into a bottomless pit, apparently
@@ -2909,9 +2909,9 @@ static void PM_GroundTraceMissed( void ) {
 
 												VectorCopy( pm->ps->velocity, vel );
 												time = Distance( trace.endpos, pm->ps->origin )/VectorLength( vel );
-												vel[2] -= 0.5 * time * pm->ps->gravity;
+												vel[2] -= 0.5f * time * pm->ps->gravity;
 
-												if ( trace.plane.normal[2] > 0.5 )
+												if ( trace.plane.normal[2] > 0.5f )
 												{//use falling damage
 													int	waterlevel, junk;
 													PM_SetWaterLevelAtPoint( trace.endpos, &waterlevel, &junk );
@@ -3016,7 +3016,7 @@ static void PM_GroundTraceMissed( void ) {
 				point[2] -= 64;
 
 				pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask, (EG2_Collision)0, 0);
-				if ( trace.fraction == 1.0 ) 
+				if ( trace.fraction == 1.0f ) 
 				{//FIXME: if velocity[2] < 0 and didn't jump, use some falling anim
 					if ( pm->ps->velocity[2] <= 0 && !(pm->ps->pm_flags&PMF_JUMP_HELD))
 					{
@@ -3034,22 +3034,22 @@ static void PM_GroundTraceMissed( void ) {
 							AngleVectors( lookAngles, lookDir, lookRight, NULL );
 
 							float dot = DotProduct( moveDir, lookDir );
-							if ( dot > 0.5 )
+							if ( dot > 0.5f )
 							{//redundant
 								anim = BOTH_INAIR1;
 							}
-							else if ( dot < -0.5 )
+							else if ( dot < -0.5f )
 							{
 								anim = BOTH_INAIRBACK1;
 							}
 							else
 							{
 								dot = DotProduct( moveDir, lookRight );
-								if ( dot > 0.5 )
+								if ( dot > 0.5f )
 								{
 									anim = BOTH_INAIRRIGHT1;
 								}
-								else if ( dot < -0.5 )
+								else if ( dot < -0.5f )
 								{
 									anim = BOTH_INAIRLEFT1;
 								}
@@ -3143,7 +3143,7 @@ static void PM_GroundTrace( void ) {
 
 	point[0] = pm->ps->origin[0];
 	point[1] = pm->ps->origin[1];
-	point[2] = pm->ps->origin[2] - 0.25;
+	point[2] = pm->ps->origin[2] - 0.25f;
 
 	pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask, (EG2_Collision)0, 0);
 	pml.groundTrace = trace;
@@ -3155,7 +3155,7 @@ static void PM_GroundTrace( void ) {
 	}
 
 	// if the trace didn't hit anything, we are in free fall
-	if ( trace.fraction == 1.0 || g_gravity->value <= 0 ) 
+	if ( trace.fraction == 1.0f || g_gravity->value <= 0 ) 
 	{
 		PM_GroundTraceMissed();
 		pml.groundPlane = qfalse;
@@ -3361,7 +3361,7 @@ void PM_SetWaterHeight( void )
 		{
 			pm->ps->waterHeightLevel = WHL_KNEES;
 		}
-		else if ( distFromOrg > fabs(pm->mins[2]) )
+		else if ( distFromOrg > fabsf(pm->mins[2]) )
 		{
 			pm->ps->waterHeightLevel = WHL_NONE;
 		}
@@ -4907,9 +4907,9 @@ static void PM_Footsteps( void )
 						PM_SetAnim( pm, SETANIM_TORSO, anim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
 					}
 					if (fabs(pm->ps->velocity[2]) >5) {
-						bobmove = 0.005 * fabs(pm->ps->velocity[2]);	// climbing bobs slow
-						if (bobmove > 0.3)
-							bobmove = 0.3F;
+						bobmove = 0.005f * fabsf(pm->ps->velocity[2]);	// climbing bobs slow
+						if (bobmove > 0.3f)
+							bobmove = 0.3f;
 						goto DoFootSteps;
 					}
 				}
@@ -5267,9 +5267,9 @@ static void PM_Footsteps( void )
 		{
 			pm->gent->client->renderInfo.legsFpsMod = 2;
 		}
-		else if(pm->gent->client->renderInfo.legsFpsMod < 0.5)
+		else if(pm->gent->client->renderInfo.legsFpsMod < 0.5f)
 		{
-			pm->gent->client->renderInfo.legsFpsMod = 0.5;
+			pm->gent->client->renderInfo.legsFpsMod = 0.5f;
 		}
 	}
 

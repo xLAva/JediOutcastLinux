@@ -629,7 +629,7 @@ qboolean G2_Set_Bone_Anim_Index(boneInfo_v &blist, const int index, const int st
 	// start up the animation:)
 	if (setFrame != -1)
 	{
-		blist[index].startTime = (currentTime - (((setFrame - (float)startFrame) * 50.0)/ animSpeed));
+		blist[index].startTime = (currentTime - (((setFrame - (float)startFrame) * 50.0f)/ animSpeed));
 /*
 		setFrame = bone.startFrame + ((currentTime - bone.startTime) / 50.0f * animSpeed);
 
@@ -724,7 +724,7 @@ qboolean G2_Set_Bone_Anim(CGhoul2Info *ghlInfo, boneInfo_v &blist, const char *b
 		// start up the animation:)
 		if (setFrame != -1)
 		{
-			blist[index].startTime = (currentTime - (((setFrame - (float)startFrame) * 50.0)/ animSpeed));
+			blist[index].startTime = (currentTime - (((setFrame - (float)startFrame) * 50.0f)/ animSpeed));
 		}
 		else
 		{

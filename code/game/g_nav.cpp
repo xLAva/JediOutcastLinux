@@ -245,7 +245,7 @@ qboolean NAV_ClearPathToPoint( gentity_t *self, vec3_t pmins, vec3_t pmaxs, vec3
 		}
 		
 		//Made it
-		if ( trace.fraction == 1.0 )
+		if ( trace.fraction == 1.0f )
 		{
 			return qtrue;
 		}
@@ -691,7 +691,7 @@ qboolean NAV_TrueCollision( gentity_t *self, gentity_t *blocker, vec3_t movedir,
 	//See if it's even feasible
 	float dot = DotProduct( movedir, velocityDir );
 
-	if ( dot < 0.85 )
+	if ( dot < 0.85f )
 		return qfalse;
 
 	vec3_t	testPos;
@@ -1337,7 +1337,7 @@ void SP_waypoint_navgoal( gentity_t *ent )
 
 	VectorSet( ent->mins, -16, -16, -24 );
 	VectorSet( ent->maxs, 16, 16, 32 );
-	ent->s.origin[2] += 0.125;
+	ent->s.origin[2] += 0.125f;
 	if ( !(ent->spawnflags&1) && G_CheckInSolid( ent, qfalse ) )
 	{
 		gi.Printf(S_COLOR_RED"ERROR: Waypoint_navgoal %s at %s in solid!\n", ent->targetname, vtos(ent->currentOrigin));
@@ -1372,7 +1372,7 @@ void SP_waypoint_navgoal_8( gentity_t *ent )
 {
 	VectorSet( ent->mins, -8, -8, -24 );
 	VectorSet( ent->maxs, 8, 8, 32 );
-	ent->s.origin[2] += 0.125;
+	ent->s.origin[2] += 0.125f;
 	if ( !(ent->spawnflags&1) && G_CheckInSolid( ent, qfalse ) )
 	{
 		gi.Printf(S_COLOR_RED"ERROR: Waypoint_navgoal_8 %s at %s in solid!\n", ent->targetname, vtos(ent->currentOrigin));
@@ -1408,7 +1408,7 @@ void SP_waypoint_navgoal_4( gentity_t *ent )
 {
 	VectorSet( ent->mins, -4, -4, -24 );
 	VectorSet( ent->maxs, 4, 4, 32 );
-	ent->s.origin[2] += 0.125;
+	ent->s.origin[2] += 0.125f;
 	if ( !(ent->spawnflags&1) && G_CheckInSolid( ent, qfalse ) )
 	{
 		gi.Printf(S_COLOR_RED"ERROR: Waypoint_navgoal_4 %s at %s in solid!\n", ent->targetname, vtos(ent->currentOrigin));
@@ -1444,7 +1444,7 @@ void SP_waypoint_navgoal_2( gentity_t *ent )
 {	
 	VectorSet( ent->mins, -2, -2, -24 );
 	VectorSet( ent->maxs, 2, 2, 32 );
-	ent->s.origin[2] += 0.125;
+	ent->s.origin[2] += 0.125f;
 	if ( !(ent->spawnflags&1) && G_CheckInSolid( ent, qfalse ) )
 	{
 		gi.Printf(S_COLOR_RED"ERROR: Waypoint_navgoal_2 %s at %s in solid!\n", ent->targetname, vtos(ent->currentOrigin));
@@ -1480,7 +1480,7 @@ void SP_waypoint_navgoal_1( gentity_t *ent )
 {
 	VectorSet( ent->mins, -1, -1, -24 );
 	VectorSet( ent->maxs, 1, 1, 32 );
-	ent->s.origin[2] += 0.125;
+	ent->s.origin[2] += 0.125f;
 	if ( !(ent->spawnflags&1) && G_CheckInSolid( ent, qfalse ) )
 	{
 		gi.Printf(S_COLOR_RED"ERROR: Waypoint_navgoal_1 %s at %s in solid!\n", ent->targetname, vtos(ent->currentOrigin));

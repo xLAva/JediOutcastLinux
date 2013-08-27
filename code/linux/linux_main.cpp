@@ -402,6 +402,10 @@ void Sys_UnloadGame (void)
 	game_library = NULL;
 }
 
+#ifdef AUTOAIM
+int *g_plastFireTime;
+short *cg_pcrossHairStatus;
+#endif
 /*
 =================
 Sys_GetGameAPI
@@ -422,7 +426,14 @@ void *Sys_GetGameAPI (void *parms)
 #else
 	const char *debugdir = "Debug";
 #endif	//NDEBUG
+#elif defined(ARM)
+	const char *gamename = "jk2gamearm.so";
 
+#ifdef NDEBUG
+	const char *debugdir = "Release";
+#else
+	const char *debugdir = "Debug";
+#endif
 #endif //__i386__
 
 	if (game_library)
@@ -708,6 +719,8 @@ void Sys_Init(void)
 	Cvar_Set( "arch", "linux alpha" );
 #elif defined __sparc__
 	Cvar_Set( "arch", "linux sparc" );
+#elif defined ARM
+	Cvar_Set( "arch", "linux arm" );
 #else
 	Cvar_Set( "arch", "linux unknown" );
 #endif
@@ -743,10 +756,22 @@ static void QuickMemTest(void)
   //left empty for now
 }
 
-
-
-
-
+#ifdef NEON
+void enable_runfast()
+{
+	static const unsigned int x = 0x04086060;
+	static const unsigned int y = 0x03000000;
+	int r;
+	asm volatile (
+		"fmrx	%0, fpscr			\n\t"	//r0 = FPSCR
+		"and	%0, %0, %1			\n\t"	//r0 = r0 & 0x04086060
+		"orr	%0, %0, %2			\n\t"	//r0 = r0 | 0x03000000
+		"fmxr	fpscr, %0			\n\t"	//FPSCR = r0
+		: "=r"(r)
+		: "r"(x), "r"(y)
+	);
+}
+#endif
 /*
 =============
 main
@@ -796,7 +821,9 @@ int main (int argc, char **argv)
 		// set low precision every frame, because some system calls
 		// reset it arbitrarily
 		//Sys_LowFPPrecision ();    
-
+		#ifdef NEON
+		enable_runfast();
+		#endif
         Com_Frame ();
     }
 }

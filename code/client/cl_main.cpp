@@ -806,6 +806,7 @@ extern cvar_t	*cl_newClock;
 static unsigned int frameCount;
 float avgFrametime=0.0;
 void CL_Frame ( int msec,float fractionMsec ) {
+//Com_Printf ("CL_Frame(%i, %f)\n", msec, fractionMsec);
 	if ( !com_cl_running->integer ) {
 		return;
 	}
@@ -1217,9 +1218,12 @@ void CL_Init( void ) {
 
 	CL_StartHunkUsers();
 
+
 	SCR_Init ();
 
+
 	Cbuf_Execute ();
+
 	
 	Cvar_Set( "cl_running", "1" );
 

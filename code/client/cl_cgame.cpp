@@ -364,7 +364,9 @@ void CL_ShutdownCGame( void ) {
 //	cgvm = NULL;
 }
 
-
+#ifdef PANDORA
+cvar_t	*cl_autoResetNubs;
+#endif
 /*
 ====================
 CL_CgameSystemCalls
@@ -704,6 +706,12 @@ Ghoul2 Insert End
 		return 0;
 
 	case CG_UI_MENU_RESET:
+		#ifdef PANDORA
+		if (Cvar_VariableIntegerValue("cl_autoResetNubs")) {
+			printf("reset nubs\n");
+			system("/usr/pandora/scripts/reset_nubs.sh");
+		}
+		#endif
 		Menu_Reset();
 		return 0;
 

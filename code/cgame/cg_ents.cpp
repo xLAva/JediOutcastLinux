@@ -168,7 +168,7 @@ void CG_AddRefEntWithTransportEffect ( centity_t *cent, refEntity_t *ent )
 
 		ent->customShader = cgi_R_RegisterShader( "gfx/effects/solidWhite_cull" );
 		ent->renderfx = RF_RGB_TINT;
-		wv = sin( cg.time * 0.003f ) * 0.08f + 0.1f;
+		wv = sinf( cg.time * 0.003f ) * 0.08f + 0.1f;
 		ent->shaderRGBA[0] = wv * 255;
 		ent->shaderRGBA[1] = wv * 255;
 		ent->shaderRGBA[2] = wv * 0;
@@ -690,7 +690,7 @@ Ghoul2 Insert End
 		float val = (1.0f - (float)(cent->gent->nextthink - cg.time) / 3200.0f ) * 0.3f;
 
 		ent.customShader = cgi_R_RegisterShader( "gfx/effects/solidWhite" );
-		ent.shaderRGBA[0] = (sin( cg.time * 0.04f ) * val * 0.4f + val) * 255;
+		ent.shaderRGBA[0] = (sinf( cg.time * 0.04f ) * val * 0.4f + val) * 255;
 		ent.shaderRGBA[1] = ent.shaderRGBA[2] = 0;
 		ent.renderfx |= RF_RGB_TINT;
 		cgi_R_AddRefEntityToScene( &ent );
@@ -889,7 +889,7 @@ Ghoul2 Insert End
 	if( item->giType == IT_HOLOCRON )
 	{
 		scale = 0.005f + cent->currentState.number * 0.00001f;
-		cent->lerpOrigin[2] += (float)(4 + cos( ( cg.time + 1000 ) *  scale ) * 3)+8; // just raised them up a bit
+		cent->lerpOrigin[2] += (float)(4 + cosf( ( cg.time + 1000 ) *  scale ) * 3)+8; // just raised them up a bit
 	}
 
 
@@ -984,7 +984,7 @@ Ghoul2 Insert End
 
 		ent.customShader = cgi_R_RegisterShader( "gfx/effects/solidWhite_cull" );
 		ent.renderfx = RF_RGB_TINT;
-		wv = sin( cg.time * 0.002f ) * 0.08f + 0.2f;
+		wv = sinf( cg.time * 0.002f ) * 0.08f + 0.2f;
 		ent.shaderRGBA[0] = ent.shaderRGBA[1] = wv * 255;
 		ent.shaderRGBA[2] = 0;
 		cgi_R_AddRefEntityToScene(&ent);
@@ -2003,11 +2003,11 @@ void CG_MatrixEffect ( centity_t *cent )
 		cg.overrides.thirdPersonPitchOffset = cg_thirdPersonPitchOffset.value;
 		if ( elapsedTime < MATRIX_EFFECT_TIME*0.33f )
 		{
-			cg.overrides.thirdPersonPitchOffset -= 30.0f*elapsedTime/(MATRIX_EFFECT_TIME*0.33);
+			cg.overrides.thirdPersonPitchOffset -= 30.0f*elapsedTime/(MATRIX_EFFECT_TIME*0.33f);
 		}
 		else if ( elapsedTime > MATRIX_EFFECT_TIME*0.66f )
 		{
-			cg.overrides.thirdPersonPitchOffset -= 30.0f*(MATRIX_EFFECT_TIME-elapsedTime)/(MATRIX_EFFECT_TIME*0.33);
+			cg.overrides.thirdPersonPitchOffset -= 30.0f*(MATRIX_EFFECT_TIME-elapsedTime)/(MATRIX_EFFECT_TIME*0.33f);
 		}
 		else
 		{
@@ -2017,13 +2017,13 @@ void CG_MatrixEffect ( centity_t *cent )
 		//pull back
 		cg.overrides.active |= CG_OVERRIDE_3RD_PERSON_RNG;
 		cg.overrides.thirdPersonRange = cg_thirdPersonRange.value;
-		if ( elapsedTime < MATRIX_EFFECT_TIME*0.33 )
+		if ( elapsedTime < MATRIX_EFFECT_TIME*0.33f )
 		{
-			cg.overrides.thirdPersonRange += 80.0f*elapsedTime/(MATRIX_EFFECT_TIME*0.33);
+			cg.overrides.thirdPersonRange += 80.0f*elapsedTime/(MATRIX_EFFECT_TIME*0.33f);
 		}
-		else if ( elapsedTime > MATRIX_EFFECT_TIME*0.66 )
+		else if ( elapsedTime > MATRIX_EFFECT_TIME*0.66f )
 		{
-			cg.overrides.thirdPersonRange += 80.0f*(MATRIX_EFFECT_TIME-elapsedTime)/(MATRIX_EFFECT_TIME*0.33);
+			cg.overrides.thirdPersonRange += 80.0f*(MATRIX_EFFECT_TIME-elapsedTime)/(MATRIX_EFFECT_TIME*0.33f);
 		}
 		else
 		{

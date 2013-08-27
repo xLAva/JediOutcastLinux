@@ -933,7 +933,7 @@ Alters lastTime to reflect the time updates.
 
 static void AS_PlayLocalSet( vec3_t listener_origin, vec3_t origin, ambientSet_t *set, int entID, int *lastTime )
 {
-	unsigned char	volume;
+	/*unsigned char*/int	volume;
 	vec3_t			dir;
 	float			volScale, dist, distScale;
 	int				time = cls.realtime;
@@ -947,7 +947,7 @@ static void AS_PlayLocalSet( vec3_t listener_origin, vec3_t origin, ambientSet_t
 
 	//Determine the volume based on distance (NOTE: This sits on top of what SpatializeOrigin does)
 	distScale	= ( dist < ( set->radius * 0.5f ) ) ? 1 : ( set->radius - dist ) / ( set->radius * 0.5f );
-	volume		= ( distScale > 1.0f || distScale < 0.0f ) ? 0 : (unsigned char) ( set->masterVolume * distScale );
+	volume		= ( distScale > 1.0f || distScale < 0.0f ) ? 0 : /*(unsigned char)*/ ( set->masterVolume * distScale );
 
 	//Add the looping sound
 	if ( set->loopedWave )
@@ -962,8 +962,10 @@ static void AS_PlayLocalSet( vec3_t listener_origin, vec3_t origin, ambientSet_t
 
 	//Scale the volume ranges for the subwaves based on the overall master volume
 	volScale = (float) volume / (float) MAX_SET_VOLUME;
-	volume = (unsigned char) Q_irand( (int)(volScale*set->volRange_start), (int)(volScale*set->volRange_end) );
-
+	volume = /*(unsigned char)*/ Q_irand( (int)(volScale*set->volRange_start), (int)(volScale*set->volRange_end) );
+	if (volume<0) volume=0;
+	if (volume>255) volume=255;
+	
 	//Add the random subwave
 	if ( set->numSubWaves )
 		S_StartAmbientSound( origin, entID, volume, set->subWaves[Q_irand( 0, set->numSubWaves-1)] );
@@ -980,7 +982,7 @@ Alters lastTime to reflect the time updates.
 
 static void AS_PlayAmbientSet( vec3_t origin, ambientSet_t *set, int *lastTime )
 {
-	unsigned char	volume;
+	/*unsigned char*/int	volume;
 	float			volScale;
 	int				time = cls.realtime;
 
@@ -1006,6 +1008,8 @@ static void AS_PlayAmbientSet( vec3_t origin, ambientSet_t *set, int *lastTime )
 	//Allow for softer noises than the masterVolume, but not louder
 	if ( volume > set->masterVolume )
 		volume = set->masterVolume;
+	if (volume<0) volume=0;
+	if (volume>255) volume=255;
 
 	//Add the random subwave
 	if ( set->numSubWaves )

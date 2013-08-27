@@ -145,7 +145,7 @@ void	CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 #endif
 
 	cgi_CM_BoxTrace ( &t, start, end, mins, maxs, 0, mask);
-	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
+	t.entityNum = t.fraction != 1.0f ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities (start, mins, maxs, end, skipNumber, mask, &t);
 
@@ -677,7 +677,7 @@ void CG_PredictPlayerState( void ) {
 
 				VectorSubtract( oldPlayerState.origin, adjusted, delta );
 				len = VectorLength( delta );
-				if ( len > 0.1 ) {
+				if ( len > 0.1f ) {
 					if ( cg_errorDecay.integer ) {
 						int		t;
 						float	f;

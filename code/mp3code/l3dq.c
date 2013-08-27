@@ -179,7 +179,7 @@ void dequant(SAMPLE Sample[], int *nsamp,
 	       Sample[i].x = xs * look_pow[ISMAX + Sample[i].s];
 	    else
 	    {
-		float tmpConst = (float)(1.0/3.0);
+		float tmpConst = (float)(1.0f/3.0f);
 	       tmp = (double) Sample[i].s;
 	       Sample[i].x = (float) (xs * tmp * pow(fabs(tmp), tmpConst));
 	    }

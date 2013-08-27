@@ -59,6 +59,37 @@ void CQuickSpriteSystem::Flush(void)
 	//
 	// set arrays and lock
 	//
+	#ifdef HAVE_GLES
+	unsigned short indexes[(mNextVert/2)*3];
+	int idx;
+	// split TRIANGLE_FAN in 2 TRIANGLES
+	qglEnableClientState( GL_TEXTURE_COORD_ARRAY);
+	qglEnableClientState( GL_COLOR_ARRAY);
+	/*for (int i=0; i<mNextVert; i+=4) {
+		qglTexCoordPointer(2, GL_FLOAT, 0, mTextureCoords+i);
+		qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, mColors+i );
+		qglVertexPointer (3, GL_FLOAT, 16, mVerts+i);
+		qglDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	}*/
+	qglTexCoordPointer(2, GL_FLOAT, 0, mTextureCoords);
+	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, mColors );
+	qglVertexPointer (3, GL_FLOAT, 16, mVerts);
+	idx = 0;
+	for (int i=0; i<mNextVert; i+=4) {
+		// Triangle 1
+		indexes[idx+0]=i;
+		indexes[idx+1]=i+1;
+		indexes[idx+2]=i+2;
+		idx+=3;
+		// Triangle 2
+		indexes[idx+0]=i;
+		indexes[idx+1]=i+2;
+		indexes[idx+2]=i+3;
+		idx+=3;
+	}
+	qglDrawElements(GL_TRIANGLES, idx, GL_UNSIGNED_SHORT, indexes);
+	
+	#else
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY);
 	qglTexCoordPointer( 2, GL_FLOAT, 0, mTextureCoords );
 
@@ -74,6 +105,7 @@ void CQuickSpriteSystem::Flush(void)
 	}
 
 	qglDrawArrays(GL_QUADS, 0, mNextVert);
+	#endif
 
 	backEnd.pc.c_vertexes += mNextVert;
 	backEnd.pc.c_indexes += mNextVert;
@@ -90,6 +122,16 @@ void CQuickSpriteSystem::Flush(void)
 		//
 		// set arrays and lock
 		//
+		#ifdef HAVE_GLES
+		qglDisableClientState( GL_COLOR_ARRAY );
+		qglColor4ubv((GLubyte *)&mFogColor);
+		/*for (int i=0; i<mNextVert; i+=4) {
+			qglTexCoordPointer(2, GL_FLOAT, 0, mFogTextureCoords+i);
+			qglVertexPointer (3, GL_FLOAT, 16, mVerts+i);
+			qglDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		}*/
+		qglDrawElements(GL_TRIANGLES, idx, GL_UNSIGNED_SHORT, indexes);
+		#else
 		qglTexCoordPointer( 2, GL_FLOAT, 0, mFogTextureCoords);
 //		qglEnableClientState( GL_TEXTURE_COORD_ARRAY);	// Done above
 
@@ -99,6 +141,7 @@ void CQuickSpriteSystem::Flush(void)
 //		qglVertexPointer (3, GL_FLOAT, 16, mVerts);	// Done above
 
 		qglDrawArrays(GL_QUADS, 0, mNextVert);
+		#endif
 
 		// Second pass from fog
 		backEnd.pc.c_totalIndexes += mNextVert;

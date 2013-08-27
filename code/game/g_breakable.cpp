@@ -95,7 +95,7 @@ void funcBBrushDieGo (gentity_t *self)
 
 	// This formula really has no logical basis other than the fact that it seemed to be the closest to yielding the results that I wanted.
 	// Volume is length * width * height...then break that volume down based on how many chunks we have
-	scale = sqrt( sqrt( org[0] * org[1] * org[2] )) * 1.75f;
+	scale = sqrtf( sqrtf( org[0] * org[1] * org[2] )) * 1.75f; /*SEB*/
 
 	if ( scale > 48 )
 	{
@@ -449,7 +449,7 @@ void misc_model_breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t 
 
 	// This formula really has no logical basis other than the fact that it seemed to be the closest to yielding the results that I wanted.
 	// Volume is length * width * height...then break that volume down based on how many chunks we have
-	scale = sqrt( sqrt( dis[0] * dis[1] * dis[2] )) * 1.75f;
+	scale = sqrtf( sqrtf( dis[0] * dis[1] * dis[2] )) * 1.75f; /*SEB*/
 
 	if ( scale > 48 )
 	{
@@ -678,7 +678,7 @@ void TieFighterThink ( gentity_t *self )
 			float	side;
 
 			// Magic number fun!  Speed is used for banking, so modulate the speed by a sine wave
-			fighterSpeed *= sin( ( 100 ) * 0.003 );
+			fighterSpeed *= sinf( ( 100 ) * 0.003f );
 
 			// Clamp to prevent harsh rolling
 			if ( fighterSpeed > 10 )
@@ -694,7 +694,7 @@ void TieFighterThink ( gentity_t *self )
 		{//heading toward the player
 			if ( playerDist < 1024 )
 			{
-				if ( DotProduct( playerDir, fwd ) > 0.7 )
+				if ( DotProduct( playerDir, fwd ) > 0.7f )
 				{//facing the player
 					if ( self->attackDebounceTime < level.time )
 					{
@@ -775,7 +775,7 @@ void misc_model_breakable_gravity_init( gentity_t *ent, qboolean dropToFloor )
 		VectorCopy( ent->currentOrigin, bottom );
 		bottom[2] = MIN_WORLD_COORD;
 		gi.trace( &tr, top, ent->mins, ent->maxs, bottom, ent->s.number, MASK_NPCSOLID, (EG2_Collision)0, 0 );
-		if ( !tr.allsolid && !tr.startsolid && tr.fraction < 1.0 )
+		if ( !tr.allsolid && !tr.startsolid && tr.fraction < 1.0f )
 		{
 			G_SetOrigin( ent, tr.endpos );
 			gi.linkentity( ent );

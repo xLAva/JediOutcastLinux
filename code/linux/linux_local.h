@@ -35,6 +35,11 @@ void IN_Init(void);
 void IN_DeactivateMouse( void );
 void IN_Frame (void);
 
+#ifdef JOYSTICK
+void IN_JoyMove( void );
+void IN_StartupJoystick( void );
+#endif
+
 extern	qboolean	inputActive;
 
 extern glconfig_t glConfig;

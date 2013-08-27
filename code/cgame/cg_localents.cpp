@@ -211,7 +211,7 @@ void CG_AddFragment( localEntity_t *le )
 	
 	// trace a line from previous position to new position
 	CG_Trace( &trace, le->refEntity.origin, NULL, NULL, newOrigin, le->ownerGentNum, CONTENTS_SOLID );
-	if ( trace.fraction == 1.0 ) {
+	if ( trace.fraction == 1.0f ) {
 		// still in free fall
 		VectorCopy( newOrigin, le->refEntity.origin );
 
@@ -320,7 +320,7 @@ static void CG_AddPuff( localEntity_t *le ) {
 	re->shaderRGBA[2] = le->color[2] * c;
 
 	if ( !( le->leFlags & LEF_PUFF_DONT_SCALE ) ) {
-		re->radius = le->radius * ( 1.0 - c ) + 8;
+		re->radius = le->radius * ( 1.0f - c ) + 8;
 	}
 
 	EvaluateTrajectory( &le->pos, cg.time, re->origin );
@@ -351,13 +351,13 @@ static void CG_AddLocalLight( localEntity_t *le )
 
 		light = (float)( cg.time - le->startTime ) / ( le->endTime - le->startTime );
 
-		if ( light < 0.5 ) 
+		if ( light < 0.5f ) 
 		{
-			light = 1.0;
+			light = 1.0f;
 		} 
 		else 
 		{
-			light = 1.0 - ( light - 0.5 ) * 2;
+			light = 1.0f - ( light - 0.5f ) * 2;
 		}
 
 		light = le->light * light;

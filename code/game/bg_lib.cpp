@@ -390,9 +390,15 @@ double atan2( double y, double x ) {
 
 #endif
 
+#ifdef ARM
+float tan( float x ) {
+	return sinf(x) / cosf(x);
+}
+#else
 double tan( double x ) {
 	return sin(x) / cos(x);
 }
+#endif
 
 
 static int randSeed = 0;
@@ -518,9 +524,15 @@ int abs( int n ) {
 	return n < 0 ? -n : n;
 }
 
+#ifdef ARM
+float fabs( float x ) {
+	return x < 0 ? -x : x;
+}
+#else
 double fabs( double x ) {
 	return x < 0 ? -x : x;
 }
+#endif
 
 
 

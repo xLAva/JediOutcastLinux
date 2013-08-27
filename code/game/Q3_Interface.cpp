@@ -1817,7 +1817,7 @@ static void Q3_SetOriginOffset( int entID, int axis, float offset )
 	float duration = 0;
 	if ( ent->speed )
 	{
-		duration = fabs(offset)/fabs(ent->speed)*1000.0f;
+		duration = fabsf(offset)/fabsf(ent->speed)*1000.0f;
 	}
 	Q3_Lerp2Origin( -1, entID, origin, duration );
 }
@@ -2519,7 +2519,7 @@ static qboolean Q3_SetBState( int entID, const char *bs_name )
 		ent->NPC->tempBehavior = BS_DEFAULT;//need to clear any temp behaviour
 		if ( ent->NPC->behaviorState == BS_NOCLIP && bSID != BS_NOCLIP )
 		{//need to rise up out of the floor after noclipping
-			ent->currentOrigin[2] += 0.125;
+			ent->currentOrigin[2] += 0.125f;
 			G_SetOrigin( ent, ent->currentOrigin );
 		}
 		ent->NPC->behaviorState = bSID;

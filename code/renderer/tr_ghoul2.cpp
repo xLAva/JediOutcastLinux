@@ -20,6 +20,10 @@
 	#include "../ghoul2/G2.h"
 #endif
 
+#ifdef NEON
+#include "../game/neon_math.h"
+#endif
+
 #define	LL(x) x=LittleLong(x)
 
 extern	cvar_t	*r_Ghoul2UnSqash;
@@ -180,7 +184,7 @@ public:
 					{
 						dif=100.0f;
 					}
-					float f=1.0f-pow(1.0f-mSmoothFactor,16.0f/dif);
+					float f=1.0f-powf(1.0f-mSmoothFactor,16.0f/dif);
 
 					int i;
 					float *oldM=&mSmoothBones[index].boneMatrix.matrix[0][0];
@@ -421,7 +425,7 @@ static int G2_ComputeLOD( trRefEntity_t *ent, const model_t *currentModel, int l
 		largestScale = 1;
 	}
 
-	if ( ( projectedRadius = ProjectRadius( 0.75*largestScale*ent->e.radius, ent->e.origin ) ) != 0 )	//we reduce the radius to make the LOD match other model types which use the actual bound box size
+	if ( ( projectedRadius = ProjectRadius( 0.75f*largestScale*ent->e.radius, ent->e.origin ) ) != 0 )	//we reduce the radius to make the LOD match other model types which use the actual bound box size
  	{
  		lodscale = r_lodscale->value;
  		if (lodscale > 20) lodscale = 20;	 
@@ -459,6 +463,25 @@ static int G2_ComputeLOD( trRefEntity_t *ent, const model_t *currentModel, int l
 
 void Multiply_3x4Matrix(mdxaBone_t *out,const  mdxaBone_t *in2,const mdxaBone_t *in) 
 {
+	#ifdef NEON
+	// first row of out                                                                                      
+	vst1q_f32(out->matrix[0], vaddq_f32(vaddq_f32(	vmulq_n_f32(vld1q_f32(in->matrix[0]), in2->matrix[0][0]),
+													vmulq_n_f32(vld1q_f32(in->matrix[1]), in2->matrix[0][1])),
+													vmulq_n_f32(vld1q_f32(in->matrix[2]), in2->matrix[0][2])));
+	// second row of outf out                                                                                     
+	vst1q_f32(out->matrix[1], vaddq_f32(vaddq_f32(	vmulq_n_f32(vld1q_f32(in->matrix[0]), in2->matrix[1][0]),
+													vmulq_n_f32(vld1q_f32(in->matrix[1]), in2->matrix[1][1])),
+													vmulq_n_f32(vld1q_f32(in->matrix[2]), in2->matrix[1][2])));
+
+	// third row of out  out                                                                                      
+	vst1q_f32(out->matrix[2], vaddq_f32(vaddq_f32(	vmulq_n_f32(vld1q_f32(in->matrix[0]), in2->matrix[2][0]),
+													vmulq_n_f32(vld1q_f32(in->matrix[1]), in2->matrix[2][1])),
+													vmulq_n_f32(vld1q_f32(in->matrix[2]), in2->matrix[2][2])));
+	// add last element not in neon...
+	out->matrix[0][3]+= in2->matrix[0][3];
+	out->matrix[1][3]+= in2->matrix[1][3];
+	out->matrix[2][3]+= in2->matrix[2][3];
+	#else
 	// first row of out                                                                                      
 	out->matrix[0][0] = (in2->matrix[0][0] * in->matrix[0][0]) + (in2->matrix[0][1] * in->matrix[1][0]) + (in2->matrix[0][2] * in->matrix[2][0]);
 	out->matrix[0][1] = (in2->matrix[0][0] * in->matrix[0][1]) + (in2->matrix[0][1] * in->matrix[1][1]) + (in2->matrix[0][2] * in->matrix[2][1]);
@@ -474,6 +497,7 @@ void Multiply_3x4Matrix(mdxaBone_t *out,const  mdxaBone_t *in2,const mdxaBone_t 
 	out->matrix[2][1] = (in2->matrix[2][0] * in->matrix[0][1]) + (in2->matrix[2][1] * in->matrix[1][1]) + (in2->matrix[2][2] * in->matrix[2][1]);
 	out->matrix[2][2] = (in2->matrix[2][0] * in->matrix[0][2]) + (in2->matrix[2][1] * in->matrix[1][2]) + (in2->matrix[2][2] * in->matrix[2][2]);
 	out->matrix[2][3] = (in2->matrix[2][0] * in->matrix[0][3]) + (in2->matrix[2][1] * in->matrix[1][3]) + (in2->matrix[2][2] * in->matrix[2][3]) + in2->matrix[2][3]; 
+	#endif
 }
 
 static int G2_GetBonePoolIndex(	const mdxaHeader_t *pMDXAHeader, int iFrame, int iBone)
@@ -557,11 +581,11 @@ void G2_TimingModel(boneInfo_t &bone,int currentTime,int numFramesInFile,int &cu
 					{
 						if (newFrame_g <= endFrame+1)
 						{
-							newFrame_g=endFrame+fmod(newFrame_g-endFrame,animSize)-animSize;
+							newFrame_g=endFrame+fmodf(newFrame_g-endFrame,animSize)-animSize;
 						}
 						// now figure out what we are lerping between
 						// delta is the fraction between this frame and the next, since the new anim is always at a .0f;
-						lerp = (ceil(newFrame_g)-newFrame_g);
+						lerp = (ceilf(newFrame_g)-newFrame_g);
 						// frames are easy to calculate
 						currentFrame = ceil(newFrame_g);
 						assert(currentFrame>=0&&currentFrame<numFramesInFile);
@@ -596,7 +620,7 @@ void G2_TimingModel(boneInfo_t &bone,int currentTime,int numFramesInFile,int &cu
 					{
 						if (newFrame_g >= endFrame)
 						{
-							newFrame_g=endFrame+fmod(newFrame_g-endFrame,animSize)-animSize;
+							newFrame_g=endFrame+fmodf(newFrame_g-endFrame,animSize)-animSize;
 						}
 						// now figure out what we are lerping between
 						// delta is the fraction between this frame and the next, since the new anim is always at a .0f;
@@ -649,7 +673,7 @@ void G2_TimingModel(boneInfo_t &bone,int currentTime,int numFramesInFile,int &cu
 		}
 		else
 		{
-			if (animSpeed> 0.0)
+			if (animSpeed> 0.0f)
 			{
 				// frames are easy to calculate
 				currentFrame = (int)newFrame_g;
@@ -682,7 +706,7 @@ void G2_TimingModel(boneInfo_t &bone,int currentTime,int numFramesInFile,int &cu
 			}
 			else
 			{
-				lerp = (ceil(newFrame_g)-newFrame_g);
+				lerp = (ceilf(newFrame_g)-newFrame_g);
 				// frames are easy to calculate
 				currentFrame = ceil(newFrame_g);
 				if (currentFrame>bone.startFrame)
@@ -718,7 +742,7 @@ void G2_TimingModel(boneInfo_t &bone,int currentTime,int numFramesInFile,int &cu
 	}
 	else
 	{
-		if (animSpeed<0.0)
+		if (animSpeed<0.0f)
 		{
 			currentFrame = bone.endFrame+1;
 		}
@@ -823,10 +847,10 @@ void G2_TransformBone (int child,CBoneCache &BC)
 //	aoldFrame = (mdxaFrame_t *)((byte *)BC.header + BC.header->ofsFrames + TB.currentFrame * BC.frameSize );
 
 	// figure out where the location of the blended animation data is
-	assert(!(TB.blendFrame < 0.0 || TB.blendFrame >= (BC.header->numFrames+1)));
-	if (TB.blendFrame < 0.0 || TB.blendFrame >= (BC.header->numFrames+1) )
+	assert(!(TB.blendFrame < 0.0f || TB.blendFrame >= (BC.header->numFrames+1)));
+	if (TB.blendFrame < 0.0f || TB.blendFrame >= (BC.header->numFrames+1) )
 	{
-		TB.blendFrame=0.0;
+		TB.blendFrame=0.0f;
 	}
 //	bFrame = (mdxaFrame_t *)((byte *)BC.header + BC.header->ofsFrames + (int)TB.blendFrame * BC.frameSize );
 	assert(TB.blendOldFrame>=0&&TB.blendOldFrame<BC.header->numFrames);
@@ -902,7 +926,7 @@ void G2_TransformBone (int child,CBoneCache &BC)
 	if (TB.blendMode)
 	{
 		float backlerp = TB.blendFrame - (int)TB.blendFrame;
-		float frontlerp = 1.0 - backlerp;
+		float frontlerp = 1.0f - backlerp;
 		
 // 		MC_UnCompress(tbone[3].matrix,compBonePointer[bFrame->boneIndexes[child]].Comp);
 // 		MC_UnCompress(tbone[4].matrix,compBonePointer[boldFrame->boneIndexes[child]].Comp);
@@ -927,7 +951,7 @@ void G2_TransformBone (int child,CBoneCache &BC)
 		// blend in the other frame if we need to
 		if (TB.blendMode)
 		{
-			float blendFrontlerp = 1.0 - TB.blendLerp;
+			float blendFrontlerp = 1.0f - TB.blendLerp;
 	  		for ( j = 0 ; j < 12 ; j++ ) 
 			{
   				((float *)&tbone[2])[j] = (TB.blendLerp * ((float *)&tbone[2])[j])
@@ -943,7 +967,7 @@ void G2_TransformBone (int child,CBoneCache &BC)
   	}
 	else
   	{
-		float frontlerp = 1.0 - TB.backlerp;
+		float frontlerp = 1.0f - TB.backlerp;
 // 		MC_UnCompress(tbone[0].matrix,compBonePointer[aFrame->boneIndexes[child]].Comp);
 //		MC_UnCompress(tbone[1].matrix,compBonePointer[aoldFrame->boneIndexes[child]].Comp);
 		UnCompressBone(tbone[0].matrix, child, BC.header, TB.newFrame);
@@ -958,7 +982,7 @@ void G2_TransformBone (int child,CBoneCache &BC)
 		// blend in the other frame if we need to
 		if (TB.blendMode)
 		{
-			float blendFrontlerp = 1.0 - TB.blendLerp;
+			float blendFrontlerp = 1.0f - TB.blendLerp;
 	  		for ( j = 0 ; j < 12 ; j++ ) 
 			{
   				((float *)&tbone[2])[j] = (TB.blendLerp * ((float *)&tbone[2])[j])
@@ -1039,7 +1063,7 @@ void G2_TransformBone (int child,CBoneCache &BC)
  				Multiply_3x4Matrix(&temp, &newMatrixTemp,&skel->BasePoseMatInv);
 
 				// now do the blend into the destination
-				float blendFrontlerp = 1.0 - blendLerp;
+				float blendFrontlerp = 1.0f - blendLerp;
 	  			for ( j = 0 ; j < 12 ; j++ ) 
 				{
   					((float *)&bone)[j] = (blendLerp * ((float *)&temp)[j])
@@ -1276,9 +1300,16 @@ void G2_ProcessSurfaceBolt2(CBoneCache &boneCache, const mdxmSurface_t *surface,
 
 			const mdxaBone_t &bone=boneCache.Eval(piBoneReferences[iBoneIndex]);
 
+			#ifdef NEON0
+			DotProduct3Scale(vert0->vertCoords, fBoneWeight, bone.matrix[0], bone.matrix[1], bone.matrix[2], pTri[0]);
+			pTri[0][0] += fBoneWeight*bone.matrix[0][3];
+			pTri[0][1] += fBoneWeight*bone.matrix[1][3];
+			pTri[0][2] += fBoneWeight*bone.matrix[2][3];
+			#else
 			pTri[0][0] += fBoneWeight * ( DotProduct( bone.matrix[0], vert0->vertCoords ) + bone.matrix[0][3] );
  			pTri[0][1] += fBoneWeight * ( DotProduct( bone.matrix[1], vert0->vertCoords ) + bone.matrix[1][3] );
  			pTri[0][2] += fBoneWeight * ( DotProduct( bone.matrix[2], vert0->vertCoords ) + bone.matrix[2][3] );
+ 			#endif
 		}
 
 //		w = vert1->weights;
@@ -1291,9 +1322,16 @@ void G2_ProcessSurfaceBolt2(CBoneCache &boneCache, const mdxmSurface_t *surface,
 
 			const mdxaBone_t &bone=boneCache.Eval(piBoneReferences[iBoneIndex]);
 
+			#ifdef NEON0
+			DotProduct3Scale(vert1->vertCoords, fBoneWeight, bone.matrix[0], bone.matrix[1], bone.matrix[2], pTri[1]);
+			pTri[1][0] += fBoneWeight*bone.matrix[0][3];
+			pTri[1][1] += fBoneWeight*bone.matrix[1][3];
+			pTri[1][2] += fBoneWeight*bone.matrix[2][3];
+			#else
  			pTri[1][0] += fBoneWeight * ( DotProduct( bone.matrix[0], vert1->vertCoords ) + bone.matrix[0][3] );
  			pTri[1][1] += fBoneWeight * ( DotProduct( bone.matrix[1], vert1->vertCoords ) + bone.matrix[1][3] );
  			pTri[1][2] += fBoneWeight * ( DotProduct( bone.matrix[2], vert1->vertCoords ) + bone.matrix[2][3] );
+ 			#endif
 		}
 
 //		w = vert2->weights;
@@ -1306,9 +1344,16 @@ void G2_ProcessSurfaceBolt2(CBoneCache &boneCache, const mdxmSurface_t *surface,
 
 			const mdxaBone_t &bone=boneCache.Eval(piBoneReferences[iBoneIndex]);
 
+			#ifdef NEON0
+			DotProduct3Scale(vert2->vertCoords, fBoneWeight, bone.matrix[0], bone.matrix[1], bone.matrix[2], pTri[2]);
+			pTri[2][0] += fBoneWeight*bone.matrix[0][3];
+			pTri[2][1] += fBoneWeight*bone.matrix[1][3];
+			pTri[2][2] += fBoneWeight*bone.matrix[2][3];
+			#else
  			pTri[2][0] += fBoneWeight * ( DotProduct( bone.matrix[0], vert2->vertCoords ) + bone.matrix[0][3] );
  			pTri[2][1] += fBoneWeight * ( DotProduct( bone.matrix[1], vert2->vertCoords ) + bone.matrix[1][3] );
  			pTri[2][2] += fBoneWeight * ( DotProduct( bone.matrix[2], vert2->vertCoords ) + bone.matrix[2][3] );
+ 			#endif
 		}
  			
    		vec3_t normal;
@@ -1316,7 +1361,7 @@ void G2_ProcessSurfaceBolt2(CBoneCache &boneCache, const mdxmSurface_t *surface,
 		vec3_t right;
 		vec3_t vec0, vec1;
 		// work out baryCentricK
-		float baryCentricK = 1.0 - (surfInfo->genBarycentricI + surfInfo->genBarycentricJ);
+		float baryCentricK = 1.0f - (surfInfo->genBarycentricI + surfInfo->genBarycentricJ);
 
 		// now we have the model transformed into model space, now generate an origin.
 		retMatrix.matrix[0][3] = (pTri[0][0] * surfInfo->genBarycentricI) + (pTri[1][0] * surfInfo->genBarycentricJ) + (pTri[2][0] * baryCentricK);
@@ -1382,9 +1427,16 @@ void G2_ProcessSurfaceBolt2(CBoneCache &boneCache, const mdxmSurface_t *surface,
 
 				const mdxaBone_t &bone=boneCache.Eval(piBoneReferences[iBoneIndex]);
 
+				#ifdef NEON0
+				DotProduct3Scale(vert0->vertCoords, fBoneWeight, bone.matrix[0], bone.matrix[1], bone.matrix[2], pTri[j]);
+				pTri[j][0] += fBoneWeight*bone.matrix[0][3];
+				pTri[j][1] += fBoneWeight*bone.matrix[1][3];
+				pTri[j][2] += fBoneWeight*bone.matrix[2][3];
+				#else
  				pTri[j][0] += fBoneWeight * ( DotProduct( bone.matrix[0], v->vertCoords ) + bone.matrix[0][3] );
  				pTri[j][1] += fBoneWeight * ( DotProduct( bone.matrix[1], v->vertCoords ) + bone.matrix[1][3] );
  				pTri[j][2] += fBoneWeight * ( DotProduct( bone.matrix[2], v->vertCoords ) + bone.matrix[2][3] );
+ 				#endif
  			}
  			
  			v++;// = (mdxmVertex_t *)&v->weights[/*v->numWeights*/surface->maxVertBoneWeights];
@@ -1926,7 +1978,11 @@ void RB_SurfaceGhoul( CRenderableSurface *surf ) {
 	tess.numIndexes += indexes;
 #else
 	const int indexes = surface->numTriangles; //*3;	//unrolled 3 times, don't multiply
+	#ifdef HAVE_GLES
+	unsigned short * tessIndexes = &tess.indexes[baseIndex];
+	#else
 	unsigned int * tessIndexes = &tess.indexes[baseIndex];
+	#endif
 	for (j = 0 ; j < indexes ; j++) {
 		*tessIndexes++ = baseVertex + *triangles++;
 		*tessIndexes++ = baseVertex + *triangles++;
@@ -1947,6 +2003,13 @@ void RB_SurfaceGhoul( CRenderableSurface *surf ) {
 		const int iNumWeights = G2_GetVertWeights( v );
 //		const mdxmWeight_t	*w = v->weights;
 		const mdxaBone_t *bone;
+		#ifdef NEON
+		#if 0
+		#else
+		to_neon(vvertCoords, v->vertCoords);
+		to_neon(vnormal, v->normal);
+		#endif
+		#endif
 
 		VectorClear( tess.xyz[baseVert]);
 		VectorClear( tess.normal[baseVert]);
@@ -1955,9 +2018,28 @@ void RB_SurfaceGhoul( CRenderableSurface *surf ) {
 		{
 			int		iBoneIndex	= G2_GetVertBoneIndex( v, k );
 			float	fBoneWeight	= G2_GetVertBoneWeight( v, k, fTotalWeight, iNumWeights );
-
+			
 			bone = &bones->Eval(piBoneReferences[iBoneIndex]);
 
+			#ifdef NEON
+			
+			#if 0
+			DotProduct3Scale(v->vertCoords, fBoneWeight, bone->matrix[0], bone->matrix[1], bone->matrix[2], tess.xyz[baseVert]);
+			tess.xyz[baseVert][0] += bone->matrix[0][3];
+			tess.xyz[baseVert][1] += bone->matrix[1][3];
+			tess.xyz[baseVert][2] += bone->matrix[2][3];
+
+			DotProduct3Scale(v->normal, fBoneWeight, bone->matrix[0], bone->matrix[1], bone->matrix[2], tess.normal[baseVert]);
+			#else
+			tess.xyz[baseVert][0] += fBoneWeight * ( DotProductNeon( bone->matrix[0], vvertCoords ) + bone->matrix[0][3] );
+			tess.xyz[baseVert][1] += fBoneWeight * ( DotProductNeon( bone->matrix[1], vvertCoords ) + bone->matrix[1][3] );
+			tess.xyz[baseVert][2] += fBoneWeight * ( DotProductNeon( bone->matrix[2], vvertCoords ) + bone->matrix[2][3] );
+
+			tess.normal[baseVert][0] += fBoneWeight * DotProductNeon( bone->matrix[0], vnormal );
+			tess.normal[baseVert][1] += fBoneWeight * DotProductNeon( bone->matrix[1], vnormal );
+			tess.normal[baseVert][2] += fBoneWeight * DotProductNeon( bone->matrix[2], vnormal );
+			#endif
+			#else
 			tess.xyz[baseVert][0] += fBoneWeight * ( DotProduct( bone->matrix[0], v->vertCoords ) + bone->matrix[0][3] );
 			tess.xyz[baseVert][1] += fBoneWeight * ( DotProduct( bone->matrix[1], v->vertCoords ) + bone->matrix[1][3] );
 			tess.xyz[baseVert][2] += fBoneWeight * ( DotProduct( bone->matrix[2], v->vertCoords ) + bone->matrix[2][3] );
@@ -1965,6 +2047,7 @@ void RB_SurfaceGhoul( CRenderableSurface *surf ) {
 			tess.normal[baseVert][0] += fBoneWeight * DotProduct( bone->matrix[0], v->normal );
 			tess.normal[baseVert][1] += fBoneWeight * DotProduct( bone->matrix[1], v->normal );
 			tess.normal[baseVert][2] += fBoneWeight * DotProduct( bone->matrix[2], v->normal );
+			#endif
 		}
 
 		tess.texCoords[baseVert][0][0] = pTexCoords[j].texCoords[0];

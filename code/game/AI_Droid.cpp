@@ -117,7 +117,7 @@ void Droid_Patrol( void )
 
 		if( NPC->client && NPC->client->NPC_class == CLASS_MOUSE )
 		{
-			NPCInfo->desiredYaw += sin(level.time*.5) * 25; // Weaves side to side a little
+			NPCInfo->desiredYaw += sinf(level.time*.5f) * 25; // Weaves side to side a little
 
 			if (TIMER_Done(NPC,"patrolNoise"))
 			{
@@ -187,7 +187,7 @@ void Droid_Run( void )
 		{
 			if (NPC_MoveToGoal( qfalse ))
 			{
-				NPCInfo->desiredYaw += sin(level.time*.5) * 5; // Weaves side to side a little
+				NPCInfo->desiredYaw += sinf(level.time*.5f) * 5; // Weaves side to side a little
 			}
 		}
 	}

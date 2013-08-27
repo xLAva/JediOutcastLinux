@@ -496,7 +496,7 @@ void SP_misc_portal_camera(gentity_t *ent) {
 
 	G_SpawnFloat( "roll", "0", &roll );
 
-	ent->s.clientNum = roll/360.0 * 256;
+	ent->s.clientNum = roll/360.0f * 256;
 	ent->wait *= 1000;
 }
 
@@ -1645,7 +1645,7 @@ void SP_misc_trip_mine( gentity_t *self )
 		G_FreeEntity( self );
 		return;
 	}
-	if ( trace.fraction == 1.0 )
+	if ( trace.fraction == 1.0f )
 	{
 		Com_Error( ERR_DROP,"misc_trip_mine at %s pointed at no surface\n", vtos(self->s.origin) );
 		G_FreeEntity( self );
@@ -1739,7 +1739,7 @@ void maglock_link( gentity_t *self )
 		G_FreeEntity( self );
 		return;
 	}
-	if ( trace.fraction == 1.0 )
+	if ( trace.fraction == 1.0f )
 	{
 		self->e_ThinkFunc = thinkF_maglock_link;
 		self->nextthink = level.time + 100;

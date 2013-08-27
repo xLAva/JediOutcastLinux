@@ -1,5 +1,8 @@
 
 #include "cm_local.h"
+#ifdef NEON
+#include "../game/neon_math.h"
+#endif
 
 /*
 ===============================================================================
@@ -210,8 +213,8 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush ) {
 	float		f;
 	cbrushside_t	*side, *leadside;
 
-	enterFrac = -1.0;
-	leaveFrac = 1.0;
+	enterFrac = -1.0f;
+	leaveFrac = 1.0f;
 	clipplane = NULL;
 
 	if ( !brush->numsides ) {
@@ -235,10 +238,18 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush ) {
 		plane = side->plane;
 
 		// adjust the plane distance apropriately for mins/maxs
+		#ifdef NEON
+		to_neon(planenormal, plane->normal);
+		dist = plane->dist - DotProductNeon( tw->offsets[ plane->signbits ], planenormal );
+
+		d1 = DotProductNeon( tw->start, planenormal ) - dist;
+		d2 = DotProductNeon( tw->end, planenormal ) - dist;
+		#else
 		dist = plane->dist - DotProduct( tw->offsets[ plane->signbits ], plane->normal );
 
 		d1 = DotProduct( tw->start, plane->normal ) - dist;
 		d2 = DotProduct( tw->end, plane->normal ) - dist;
+		#endif
 
 		if (d2 > 0) {
 			getout = qtrue;	// endpoint is not in solid
@@ -256,9 +267,31 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush ) {
 		if (d1 <= 0 && d2 <= 0 ) {
 			continue;
 		}
-
+#if 1
+		float delta = d1-d2;
 		// crosses face
+		if (delta>0) {	// enter
+			f = d1-SURFACE_CLIP_EPSILON;
+			if ( f<0 ) 
+				f = 0;
+			if (f > enterFrac*delta) {
+				enterFrac = f / delta;
+				clipplane = plane;
+				leadside = side;
+			}
+		} else {	// leave
+			if ( d1+SURFACE_CLIP_EPSILON<=delta ) { // delta is negative
+				f = delta;
+			} else {
+				f = (d1+SURFACE_CLIP_EPSILON) ;
+			}
+			if (f > leaveFrac*delta) {	// delta is negative !
+				leaveFrac = f / delta;
+			}
+		}
+#else		
 		if (d1 > d2) {	// enter
+
 			f = (d1-SURFACE_CLIP_EPSILON) / (d1-d2);
 			if ( f < 0 ) {
 				f = 0;
@@ -277,8 +310,8 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush ) {
 				leaveFrac = f;
 			}
 		}
+#endif
 	}
-
 	//
 	// all planes have been checked, and the trace was not
 	// completely outside the brush
@@ -428,7 +461,7 @@ return;
 			// an axial brush right behind a slanted bsp plane
 			// will poke through when expanded, so adjust
 			// by sqrt(3)
-			offset = fabs(tw->extents[0]*plane->normal[0]) +
+/*			offset = fabs(tw->extents[0]*plane->normal[0]) +
 				fabs(tw->extents[1]*plane->normal[1]) +
 				fabs(tw->extents[2]*plane->normal[2]);
 
@@ -438,7 +471,7 @@ CM_TraceThroughTree( tw, node->children[0], p1f, p2f, p1, p2 );
 CM_TraceThroughTree( tw, node->children[1], p1f, p2f, p1, p2 );
 return;
 #endif
-			offset = tw->maxOffset;
+			offset = tw->maxOffset;*/
 			offset = 2048;
 		}
 	}
@@ -455,12 +488,12 @@ return;
 
 	// put the crosspoint SURFACE_CLIP_EPSILON pixels on the near side
 	if ( t1 < t2 ) {
-		idist = 1.0/(t1-t2);
+		idist = 1.0f/(t1-t2);
 		side = 1;
 		frac2 = (t1 + offset + SURFACE_CLIP_EPSILON)*idist;
 		frac = (t1 - offset + SURFACE_CLIP_EPSILON)*idist;
 	} else if (t1 > t2) {
-		idist = 1.0/(t1-t2);
+		idist = 1.0f/(t1-t2);
 		side = 0;
 		frac2 = (t1 - offset - SURFACE_CLIP_EPSILON)*idist;
 		frac = (t1 + offset + SURFACE_CLIP_EPSILON)*idist;
@@ -551,7 +584,7 @@ void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
 	// avoids some complications with plane expanding of rotated
 	// bmodels
 	for ( i = 0 ; i < 3 ; i++ ) {
-		offset[i] = ( mins[i] + maxs[i] ) * 0.5;
+		offset[i] = ( mins[i] + maxs[i] ) * 0.5f;
 		tw.size[0][i] = mins[i] - offset[i];
 		tw.size[1][i] = maxs[i] - offset[i];
 		tw.start[i] = start[i] + offset[i];
@@ -686,7 +719,7 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 	// avoids some complications with plane expanding of rotated
 	// bmodels
 	for ( i = 0 ; i < 3 ; i++ ) {
-		offset[i] = ( mins[i] + maxs[i] ) * 0.5;
+		offset[i] = ( mins[i] + maxs[i] ) * 0.5f;
 		symetricSize[0][i] = mins[i] - offset[i];
 		symetricSize[1][i] = maxs[i] - offset[i];
 		start_l[i] = start[i] + offset[i];
@@ -722,7 +755,7 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 	// sweep the box through the model
 	CM_BoxTrace( &trace, start_l, end_l, symetricSize[0], symetricSize[1], model, brushmask);
 
-	if ( rotated && trace.fraction != 1.0 ) {
+	if ( rotated && trace.fraction != 1.0f ) {
 		// FIXME: figure out how to do this with existing angles
 		VectorNegate (angles, a);
 		AngleVectors (a, forward, right, up);

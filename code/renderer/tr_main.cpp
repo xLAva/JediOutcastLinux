@@ -282,12 +282,12 @@ void R_TransformClipToWindow( const vec4_t clip, const viewParms_t *view, vec4_t
 	normalized[1] = clip[1] / clip[3];
 	normalized[2] = ( clip[2] + clip[3] ) / ( 2 * clip[3] );
 
-	window[0] = 0.5 * ( 1.0 + normalized[0] ) * view->viewportWidth;
-	window[1] = 0.5 * ( 1.0 + normalized[1] ) * view->viewportHeight;
+	window[0] = 0.5f * ( 1.0f + normalized[0] ) * view->viewportWidth;
+	window[1] = 0.5f * ( 1.0f + normalized[1] ) * view->viewportHeight;
 	window[2] = normalized[2];
 
-	window[0] = (int) ( window[0] + 0.5 );
-	window[1] = (int) ( window[1] + 0.5 );
+	window[0] = (int) ( window[0] + 0.5f );
+	window[1] = (int) ( window[1] + 0.5f );
 }
 
 
@@ -369,10 +369,10 @@ void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms,
 		if ( !axisLength ) {
 			axisLength = 0;
 		} else {
-			axisLength = 1.0 / axisLength;
+			axisLength = 1.0f / axisLength;
 		}
 	} else {
-		axisLength = 1.0;
+		axisLength = 1.0f;
 	}
 
 	orient->viewOrigin[0] = DotProduct( delta, orient->axis[0] ) * axisLength;
@@ -490,7 +490,7 @@ static void SetFarClip( void )
 			farthestCornerDistance = distance;
 		}
 	}
-	tr.viewParms.zFar = sqrt( farthestCornerDistance );
+	tr.viewParms.zFar = sqrtf( farthestCornerDistance );
 }
 
 
@@ -513,10 +513,10 @@ void R_SetupProjection( void ) {
 	zNear	= r_znear->value;
 	zFar	= tr.viewParms.zFar;
 
-	ymax = zNear * tan( tr.refdef.fov_y * M_PI / 360.0 );
+	ymax = zNear * tanf( tr.refdef.fov_y * M_PI / 360.0f );
 	ymin = -ymax;
 
-	xmax = zNear * tan( tr.refdef.fov_x * M_PI / 360.0 );
+	xmax = zNear * tanf( tr.refdef.fov_x * M_PI / 360.0f );
 	xmin = -xmax;
 
 	width = xmax - xmin;
@@ -556,9 +556,9 @@ void R_SetupFrustum (void) {
 	float	xs, xc;
 	float	ang;
 
-	ang = tr.viewParms.fovX / 180 * M_PI * 0.5;
-	xs = sin( ang );
-	xc = cos( ang );
+	ang = tr.viewParms.fovX / 180 * M_PI * 0.5f;
+	xs = sinf( ang );
+	xc = cosf( ang );
 
 	VectorScale( tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[0].normal );
 	VectorMA( tr.viewParms.frustum[0].normal, xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[0].normal );
@@ -566,9 +566,9 @@ void R_SetupFrustum (void) {
 	VectorScale( tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[1].normal );
 	VectorMA( tr.viewParms.frustum[1].normal, -xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[1].normal );
 
-	ang = tr.viewParms.fovY / 180 * M_PI * 0.5;
-	xs = sin( ang );
-	xc = cos( ang );
+	ang = tr.viewParms.fovY / 180 * M_PI * 0.5f;
+	xs = sinf( ang );
+	xc = cosf( ang );
 
 	VectorScale( tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[2].normal );
 	VectorMA( tr.viewParms.frustum[2].normal, xc, tr.viewParms.orient.axis[2], tr.viewParms.frustum[2].normal );
@@ -1527,22 +1527,36 @@ void R_DebugPolygon( int color, int numPoints, float *points ) {
 
 	// draw solid shade
 
+	#ifdef HAVE_GLES
+	qglColor4f( color&1, (color>>1)&1, (color>>2)&1, 1.0f );
+	qglVertexPointer  ( 3, GL_FLOAT, 0, points );
+	qglDrawArrays( GL_TRIANGLE_FAN, 0, numPoints );
+	#else
 	qglColor3f( color&1, (color>>1)&1, (color>>2)&1 );
 	qglBegin( GL_POLYGON );
 	for ( i = 0 ; i < numPoints ; i++ ) {
 		qglVertex3fv( points + i * 3 );
 	}
 	qglEnd();
+	#endif
 
 	// draw wireframe outline
+	#ifndef HAVE_GLES
 	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
+	#endif
 	qglDepthRange( 0, 0 );
+	#ifdef HAVE_GLES
+	qglColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+	qglVertexPointer  ( 3, GL_FLOAT, 0, points );
+	qglDrawArrays( GL_LINES, 0, numPoints );
+	#else
 	qglColor3f( 1, 1, 1 );
 	qglBegin( GL_POLYGON );
 	for ( i = 0 ; i < numPoints ; i++ ) {
 		qglVertex3fv( points + i * 3 );
 	}
 	qglEnd();
+	#endif
 	qglDepthRange( 0, 1 );
 }
 

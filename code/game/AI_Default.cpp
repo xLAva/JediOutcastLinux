@@ -195,7 +195,7 @@ void NPC_BSStandGuard (void)
 	//FIXME: Use Snapshot info
 	if ( NPC->enemy == NULL )
 	{//Possible to pick one up by being shot
-		if( randomLava() < 0.5 )
+		if( randomLava() < 0.5f )
 		{
 			if(NPC->client->enemyTeam)
 			{
@@ -259,7 +259,7 @@ void NPC_BSHuntAndKill( void )
 			//FIXME, use IdealDistance to determin if we need to close distance
 			VectorSubtract(NPC->enemy->currentOrigin, NPC->currentOrigin, vec);
 			enemyDist = VectorLength(vec);
-			if( enemyDist > 48 && ((enemyDist*1.5)*(enemyDist*1.5) >= NPC_MaxDistSquaredForWeapon() ||
+			if( enemyDist > 48 && ((enemyDist*1.5f)*(enemyDist*1.5f) >= NPC_MaxDistSquaredForWeapon() ||
 				oEVis != VIS_SHOOT ||
 				//!(ucmd.buttons & BUTTON_ATTACK) || 
 				enemyDist > IdealDistance(NPC)*3 ) )
@@ -590,8 +590,8 @@ void NPC_BSPointShoot (qboolean shoot)
 				pitchMissAllow = 8.0f;
 			}
 
-			yawMiss = tan(DEG2RAD(AngleDelta ( NPC->client->ps.viewangles[YAW], NPCInfo->desiredYaw ))) * dist;
-			pitchMiss = tan(DEG2RAD(AngleDelta ( NPC->client->ps.viewangles[PITCH], NPCInfo->desiredPitch))) * dist;
+			yawMiss = tanf(DEG2RAD(AngleDelta ( NPC->client->ps.viewangles[YAW], NPCInfo->desiredYaw ))) * dist;
+			pitchMiss = tanf(DEG2RAD(AngleDelta ( NPC->client->ps.viewangles[PITCH], NPCInfo->desiredPitch))) * dist;
 
 			if ( yawMissAllow >= yawMiss && pitchMissAllow > pitchMiss )
 			{

@@ -558,6 +558,7 @@ void G_InitCvars( void ) {
 	gi.cvar( "newTotalSecrets", "0", CVAR_ROM );
 	gi.cvar_set("newTotalSecrets", "0");//used to carry over the count from SP_target_secret to ClientBegin
 	g_iscensored = gi.cvar( "ui_iscensored", "0", CVAR_ARCHIVE|CVAR_ROM|CVAR_INIT|CVAR_CHEAT|CVAR_NORESTART );
+	
 }
 
 /*
@@ -743,7 +744,16 @@ Ghoul2 Insert End
 static void G_Cvar_Create( const char *var_name, const char *var_value, int flags ) {
 	gi.cvar( var_name, var_value, flags );
 }
-
+#ifdef AUTOAIM
+int g_lastFireTime = 0;
+int g_getLastFireTime() {
+		return g_lastFireTime;
+}
+short cg_crossHairStatus = 0;
+short g_getCrossHairStatus(void) {
+		return cg_crossHairStatus;
+}
+#endif
 /*
 =================
 GetGameAPI
@@ -778,6 +788,11 @@ game_export_t *GetGameAPI( game_import_t *import ) {
 
 	globals.RunFrame = G_RunFrame;
 
+	#ifdef AUTOAIM
+	globals.GetLastFireTime = g_getLastFireTime;
+	globals.GetCrossHairStatus = g_getCrossHairStatus;
+	#endif
+
 	globals.ConsoleCommand = ConsoleCommand;
 	globals.PrintEntClassname = PrintEntClassname;
 
@@ -791,7 +806,7 @@ game_export_t *GetGameAPI( game_import_t *import ) {
 	gameinfo_import.Cvar_Set = gi.cvar_set;
 	gameinfo_import.Cvar_VariableStringBuffer = gi.Cvar_VariableStringBuffer;
 	gameinfo_import.Cvar_Create = G_Cvar_Create;
-
+	
 	GI_Init( &gameinfo_import );
 
 	return &globals;

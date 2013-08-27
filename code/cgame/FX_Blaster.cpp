@@ -35,7 +35,7 @@ void FX_BlasterProjectileThink( centity_t *cent, const struct weaponInfo_s *weap
 			dif = 0;
 		}
 
-		float scale = ( dif / 75.0f ) * 0.95f + 0.05f;
+		float scale = ( dif *(0.95f / 75.0f) )  + 0.05f;
 
 		VectorScale( forward, scale, forward );
 	}

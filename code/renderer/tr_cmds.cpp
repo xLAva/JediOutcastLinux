@@ -347,7 +347,7 @@ void RE_LAGoggles( void )
 	fog->parms.color[3] = 1.0f;
 	fog->parms.depthForOpaque = 10000;
 	fog->colorInt = ColorBytes4(fog->parms.color[0], fog->parms.color[1], fog->parms.color[2], fog->parms.color[3]);
-	fog->tcScale = 2.0f / ( fog->parms.depthForOpaque * (1.0f + cos( tr.refdef.floatTime) * 0.1f));
+	fog->tcScale = 2.0f / ( fog->parms.depthForOpaque * (1.0f + cosf( tr.refdef.floatTime) * 0.1f));
 }
 
 void RE_RenderWorldEffects(void)
@@ -406,6 +406,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 	//
 	// do overdraw measurement
 	//
+#ifndef HAVE_GLES
 	if ( r_measureOverdraw->integer )
 	{
 		if ( glConfig.stencilBits < 4 )
@@ -440,7 +441,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 			r_measureOverdraw->modified = qfalse;
 		}
 	}
-
+#endif
 	//
 	// texturemode stuff
 	//
@@ -480,6 +481,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 	}
 	cmd->commandId = RC_DRAW_BUFFER;
 
+	#ifndef HAVE_GLES
 	if ( glConfig.stereoEnabled ) {
 		if ( stereoFrame == STEREO_LEFT ) {
 			cmd->buffer = (int)GL_BACK_LEFT;
@@ -488,7 +490,9 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 		} else {
 			ri.Error( ERR_FATAL, "RE_BeginFrame: Stereo is enabled, but stereoFrame was %i", stereoFrame );
 		}
-	} else {
+	} else 
+	#endif
+	{
 		if ( stereoFrame != STEREO_CENTER ) {
 			ri.Error( ERR_FATAL, "RE_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame );
 		}

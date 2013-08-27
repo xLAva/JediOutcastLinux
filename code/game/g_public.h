@@ -361,6 +361,11 @@ typedef struct {
 	struct gentity_s	*gentities;
 	int			gentitySize;
 	int			num_entities;		// current number, <= MAX_GENTITIES
+	
+	#ifdef AUTOAIM
+	int	(*GetLastFireTime)(void);
+	short	(*GetCrossHairStatus)(void);
+	#endif
 } game_export_t;
 
 
