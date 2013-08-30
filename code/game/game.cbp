@@ -6,6 +6,35 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
+			<Target title="Linux Debug">
+				<Option output="../Debug/jk2gamex86" prefix_auto="0" extension_auto="1" />
+				<Option object_output="../Debug/game" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-g" />
+					<Add option="-Wno-write-strings" />
+					<Add option="-Wno-conversion-null" />
+					<Add option="-Wno-pointer-arith" />
+					<Add option="-Wno-multichar" />
+					<Add option="-Wno-int-to-pointer-cast" />
+					<Add option="-Wno-enum-compare" />
+					<Add option="-Wno-cpp" />
+					<Add option="-fexceptions" />
+					<Add option="-m32" />
+					<Add option="-fPIC" />
+					<Add option="-ffast-math" />
+					<Add option="-DLINUX" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-m32" />
+					<Add option="-shared" />
+				</Linker>
+			</Target>
 			<Target title="Linux Release">
 				<Option output="../Release/jk2gamex86" prefix_auto="0" extension_auto="1" />
 				<Option object_output="../Release/game" />
@@ -227,6 +256,36 @@
 		<Unit filename="../client/vmachine.h" />
 		<Unit filename="../ff/ff.h" />
 		<Unit filename="../ff/ff_public.h" />
+		<Unit filename="../ghoul2/g2.h" />
+		<Unit filename="../icarus/BlockStream.cpp" />
+		<Unit filename="../icarus/BlockStream.h" />
+		<Unit filename="../icarus/Instance.cpp" />
+		<Unit filename="../icarus/Instance.h" />
+		<Unit filename="../icarus/Interface.h" />
+		<Unit filename="../icarus/Interpreter.h" />
+		<Unit filename="../icarus/Sequence.cpp" />
+		<Unit filename="../icarus/Sequence.h" />
+		<Unit filename="../icarus/Sequencer.cpp" />
+		<Unit filename="../icarus/Sequencer.h" />
+		<Unit filename="../icarus/TaskManager.cpp" />
+		<Unit filename="../icarus/TaskManager.h" />
+		<Unit filename="../icarus/Tokenizer.h" />
+		<Unit filename="../icarus/icarus.h" />
+		<Unit filename="../qcommon/sstring.h" />
+		<Unit filename="../qcommon/stripPublic.h" />
+		<Unit filename="../qcommon/tags.h" />
+		<Unit filename="../qcommon/tri_coll_test.cpp" />
+		<Unit filename="../renderer/mdx_format.h" />
+		<Unit filename="../renderer/tr_types.h" />
+		<Unit filename="../smartheap/HAW32M.LIB">
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="../smartheap/SMRTHEAP.C">
+			<Option compilerVar="CC" />
+			<Option target="Win32 SHDebug" />
+		</Unit>
+		<Unit filename="../ui/gameinfo.cpp" />
+		<Unit filename="../ui/gameinfo.h" />
 		<Unit filename="AI.h" />
 		<Unit filename="AI_Atst.cpp" />
 		<Unit filename="AI_Default.cpp" />
@@ -303,6 +362,7 @@
 		<Unit filename="g_items.h" />
 		<Unit filename="g_local.cpp">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="g_local.h" />
 		<Unit filename="g_main.cpp">
@@ -352,36 +412,6 @@
 		<Unit filename="weapons.h" />
 		<Unit filename="wp_saber.cpp" />
 		<Unit filename="wp_saber.h" />
-		<Unit filename="../ghoul2/g2.h" />
-		<Unit filename="../icarus/BlockStream.cpp" />
-		<Unit filename="../icarus/BlockStream.h" />
-		<Unit filename="../icarus/Instance.cpp" />
-		<Unit filename="../icarus/Instance.h" />
-		<Unit filename="../icarus/Interface.h" />
-		<Unit filename="../icarus/Interpreter.h" />
-		<Unit filename="../icarus/Sequence.cpp" />
-		<Unit filename="../icarus/Sequence.h" />
-		<Unit filename="../icarus/Sequencer.cpp" />
-		<Unit filename="../icarus/Sequencer.h" />
-		<Unit filename="../icarus/TaskManager.cpp" />
-		<Unit filename="../icarus/TaskManager.h" />
-		<Unit filename="../icarus/Tokenizer.h" />
-		<Unit filename="../icarus/icarus.h" />
-		<Unit filename="../qcommon/sstring.h" />
-		<Unit filename="../qcommon/stripPublic.h" />
-		<Unit filename="../qcommon/tags.h" />
-		<Unit filename="../qcommon/tri_coll_test.cpp" />
-		<Unit filename="../renderer/mdx_format.h" />
-		<Unit filename="../renderer/tr_types.h" />
-		<Unit filename="../smartheap/HAW32M.LIB">
-			<Option target="Win32 SHDebug" />
-		</Unit>
-		<Unit filename="../smartheap/SMRTHEAP.C">
-			<Option compilerVar="CC" />
-			<Option target="Win32 SHDebug" />
-		</Unit>
-		<Unit filename="../ui/gameinfo.cpp" />
-		<Unit filename="../ui/gameinfo.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

@@ -230,10 +230,12 @@ set(STARWARS_SOURCE_FILES
 	code/jpeg-6/jmemnobs.cpp
 	code/jpeg-6/jutils.cpp
 	code/linux/linux_console.cpp
+	code/linux/linux_gamma.cpp
 	code/linux/linux_glimp.cpp
 	code/linux/linux_main.cpp
 	code/linux/linux_qgl.cpp
 	code/linux/linux_snddma.cpp
+	code/linux/xvidmode.cpp
 	code/mp3code/cdct.c
 	code/mp3code/csbt.c
 	code/mp3code/csbtL3.c

@@ -39,6 +39,21 @@ extern	qboolean	inputActive;
 
 extern glconfig_t glConfig;
 
+void WG_CheckHardwareGamma();
+void WG_RestoreGamma();
+
+
+struct x11drv_gamma_ramp {
+	unsigned short red[256];
+	unsigned short green[256];
+	unsigned short blue[256];
+};
+
+void X11DRV_XF86VM_Init(Display* dpy);
+BOOL X11DRV_XF86VM_GetGammaRamp(struct x11drv_gamma_ramp *ramp);
+BOOL X11DRV_XF86VM_SetGammaRamp(struct x11drv_gamma_ramp *ramp);
+
+
 
 
 

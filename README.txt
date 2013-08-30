@@ -36,6 +36,9 @@ sudo apt-get install libopenal1
 Needed libraries on Ubuntu 12.10 64bit:
 sudo apt-get install ia32-libs
 
+Optional libraries on Ubuntu 12.10 64bit (different mouse access):
+sudo apt-get install libxxf86dga1:i386
+
 
 Development
 

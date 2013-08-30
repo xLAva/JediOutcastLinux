@@ -438,6 +438,11 @@ void S_Init( void ) {
 		if (alcGetError(ALCDevice) != ALC_NO_ERROR)
 			return;
 		
+		printf("OpenAL vendor string: %s\n", alGetString(AL_VENDOR));
+		printf("OpenAL renderer string: %s\n", alGetString(AL_RENDERER));
+		printf("OpenAL version string: %s\n", alGetString(AL_VERSION));
+
+		
 		s_soundStarted = 1;
 		s_soundMuted = 1;
 		s_soundtime = 0;
@@ -454,6 +459,12 @@ void S_Init( void ) {
 		alListenerfv(AL_ORIENTATION,listenerOri);
 
 		InitEAXManager();
+		
+		if (!s_bEAX)
+		{
+			// on Linux we use OpenAL without EAX -> emulate the fallback linear sound system
+			alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
+		}
 
 		memset(s_channels, 0, sizeof(s_channels));
 
@@ -963,9 +974,12 @@ void S_memoryLoad(sfx_t	*sfx)
 //=============================================================================
 static qboolean S_CheckChannelStomp( int chan1, int chan2 )
 {
-	if ( chan1 == chan2 )
+	if (!s_UseOpenAL)
 	{
-		return qtrue;
+		if ( chan1 == chan2 )
+		{
+			return qtrue;
+		}
 	}
 
 	if ( ( chan1 == CHAN_VOICE || chan1 == CHAN_VOICE_ATTEN || chan1 == CHAN_VOICE_GLOBAL  ) && ( chan2 == CHAN_VOICE || chan2 == CHAN_VOICE_ATTEN || chan2 == CHAN_VOICE_GLOBAL ) )
@@ -2644,13 +2658,15 @@ void S_Update_(void) {
 			alSourcefv(s_channels[source].alSource, AL_POSITION, pos);
 			alSourcei(s_channels[source].alSource, AL_LOOPING, AL_FALSE);
 
-			if ( ch->entchannel == CHAN_VOICE || ch->entchannel == CHAN_VOICE_ATTEN || ch->entchannel == CHAN_VOICE_GLOBAL )
+			if (s_bEAX)
 			{
-				alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 1500.0f);
-				alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volumeVoice->value) / 255.0f);
-
-				if (s_bEAX)
+				if ( ch->entchannel == CHAN_VOICE || ch->entchannel == CHAN_VOICE_ATTEN || ch->entchannel == CHAN_VOICE_GLOBAL )
 				{
+					alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 1500.0f);
+					alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volumeVoice->value) / 255.0f);
+					
+
+
 					// Switch-off Occlusion + Obstruction
 					eaxOBProp.lObstruction = EAXBUFFER_DEFAULTOBSTRUCTION;
 					eaxOBProp.flObstructionLFRatio = EAXBUFFER_DEFAULTOBSTRUCTIONLFRATIO;
@@ -2665,15 +2681,58 @@ void S_Update_(void) {
 
 					s_eaxSet(&DSPROPSETID_EAX_BufferProperties, DSPROPERTY_EAXBUFFER_OCCLUSIONPARAMETERS,
 						ch->alSource, &eaxOCProp, sizeof(EAXOCCLUSIONPROPERTIES));
+				
+				}
+				else
+				{
+				
+					alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 400.f);
+					alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volume->value) / 255.f);			
+
+					if (s_bEALFileLoaded)
+						UpdateEAXBuffer(ch);
 				}
 			}
 			else
 			{
-				alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 400.f);
-				alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volume->value) / 255.f);
-
-				if (s_bEALFileLoaded)
-					UpdateEAXBuffer(ch);
+				// emulate the fallback linear sound system with OpenAL
+				// the distance values are taken from S_SpatializeOrigin and converted for OpenAL
+				if (ch->entchannel == CHAN_VOICE_ATTEN)
+				{
+					// Normal fall-off, affected by Voice Volume
+					alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 345.0f);
+					alSourcef(s_channels[source].alSource, AL_MAX_DISTANCE, 970.0f);
+					alSourcef(s_channels[source].alSource, AL_ROLLOFF_FACTOR, 1.0f);					
+					alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volumeVoice->value) / 255.0f);
+				}
+				else if (ch->entchannel == CHAN_VOICE)
+				{
+					alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 768.0f);
+					alSourcef(s_channels[source].alSource, AL_MAX_DISTANCE, 2018.0f);
+					alSourcef(s_channels[source].alSource, AL_ROLLOFF_FACTOR, 1.0f);						
+					alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volumeVoice->value) / 255.0f);
+				}					
+				else if (ch->entchannel == CHAN_VOICE_GLOBAL)
+				{
+					alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 768.0f);
+					alSourcef(s_channels[source].alSource, AL_MAX_DISTANCE, 2018.0f);
+					alSourcef(s_channels[source].alSource, AL_ROLLOFF_FACTOR, 0.0f);
+					alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volumeVoice->value) / 255.0f);
+				}
+				else if (ch->entchannel == CHAN_LESS_ATTEN)
+				{
+					alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 2048.f);
+					alSourcef(s_channels[source].alSource, AL_MAX_DISTANCE, 3298.f);
+					alSourcef(s_channels[source].alSource, AL_ROLLOFF_FACTOR, 1.0f);						
+					alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volume->value) / 255.f);			
+				}				
+				else
+				{				
+					alSourcef(s_channels[source].alSource, AL_REFERENCE_DISTANCE, 256.f);
+					alSourcef(s_channels[source].alSource, AL_MAX_DISTANCE, 1506.f);
+					alSourcef(s_channels[source].alSource, AL_ROLLOFF_FACTOR, 1.0f);						
+					alSourcef(s_channels[source].alSource, AL_GAIN, ((float)(ch->master_vol) * s_volume->value) / 255.f);			
+				}
 			}
 
 

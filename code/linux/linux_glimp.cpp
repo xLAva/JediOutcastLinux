@@ -42,9 +42,7 @@
 #include <X11/cursorfont.h>
 #include <X11/Xatom.h>
 
-#ifdef USE_XF86DGA
-#include <X11/extensions/xf86dga.h>
-#endif
+
 #include <X11/extensions/xf86vmode.h>
 #include <X11/extensions/Xrandr.h>
 
@@ -208,6 +206,9 @@ static int mouse_accel_numerator;
 static int mouse_accel_denominator;
 static int mouse_threshold;   
 
+static void* sXf86dgaLib = NULL;
+static Status	(*spDGADirectVideo) (Display *, int, int) = NULL;
+
 static void		GLW_InitExtensions( void );
 int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen );
 
@@ -258,7 +259,8 @@ static void InitSig(void)
 ** GLW_StartDriverAndSetMode
 */
 static qboolean GLW_StartDriverAndSetMode( const char *drivername, 
-	int mode, qboolean fullscreen )
+										   int mode, 
+										   qboolean fullscreen )
 {
 	rserr_t err;
 
@@ -295,6 +297,7 @@ static int CheckXRandR()
 	}
 	return 0;
 }
+
 
 void GLW_SetModeXRandr(int* actualWidth, int* actualHeight, qboolean* fullscreen, bool usePrimaryRes)
 {
@@ -567,6 +570,7 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 #define ATTR_BLUE_IDX 6
 #define ATTR_DEPTH_IDX 9
 #define ATTR_STENCIL_IDX 11
+
 	XVisualInfo *visinfo;
 	XSetWindowAttributes attr;
 	unsigned long mask;
@@ -595,13 +599,16 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 		return RSERR_INVALID_MODE;
 	}
 
+	
+	X11DRV_XF86VM_Init(dpy);
+	WG_CheckHardwareGamma();
+
 	scrnum = DefaultScreen(dpy);
 	root = RootWindow(dpy, scrnum);
 	
 	actualWidth = glConfig.vidWidth;
 	actualHeight = glConfig.vidHeight;
 	
-
 	// Are we going fullscreen?  If so, let's change video mode
 	if (fullscreen && !r_fakeFullscreen->integer) {
 
@@ -705,7 +712,6 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 	else
 		depthbits = r_depthbits->value;
 	stencilbits = r_stencilbits->value;
-	
 
 	for (i = 0; i < 16; i++) {
 		// 0 - default
@@ -824,6 +830,7 @@ ri.Printf( PRINT_ALL, "eglConfig choosen\n");
 			0, visinfo->depth, InputOutput,
 			visinfo->visual, mask, &attr);
 	XMapWindow(dpy, win);
+
 	if (vidmode_active)
 		XMoveWindow(dpy, win, 0, 0);
 		
@@ -833,27 +840,17 @@ ri.Printf( PRINT_ALL, "eglConfig choosen\n");
 		XChangeProperty(dpy, win, wmState, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wmFullscreen, 1);	
 	}
 
-	#ifdef USE_XF86DGA
-  // Check for DGA
-	//if (in_dgamouse->value) {
-		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
-			// unable to query, probalby not supported
-			ri.Printf( PRINT_ALL, "Failed to detect XF86DGA Mouse\n" );
-			ri.Cvar_Set( "in_dgamouse", "0" );
-		} else
-			ri.Printf( PRINT_ALL, "XF86DGA Mouse (Version %d.%d) initialized\n",
-				MajorVersion, MinorVersion);
-	//}
-	#endif
+
 
 	XFlush(dpy);
 
 	ctx = qglXCreateContext(dpy, visinfo, NULL, True);
 
 	qglXMakeCurrent(dpy, win, ctx);
-#endif
+
 	return RSERR_OK;
 }
+
 
 //--------------------------------------------
 static void GLW_InitTextureCompression( void )
@@ -870,6 +867,7 @@ static void GLW_InitTextureCompression( void )
 	newer_tc = ( strstr( glConfig.extensions_string, "ARB_texture_compression" )
 		&& strstr( glConfig.extensions_string, "EXT_texture_compression_s3tc" )) ? qtrue : qfalse;
 	old_tc = ( strstr( glConfig.extensions_string, "GL_S3_s3tc" )) ? qtrue : qfalse;
+
 	if ( old_tc )
 	{
 		ri.Printf( PRINT_ALL, "...GL_S3_s3tc available\n" );
@@ -1017,7 +1015,6 @@ static void GLW_InitExtensions( void )
 	glConfig.textureFilterAnisotropicAvailable = qtrue;
 	#else
 	glConfig.textureFilterAnisotropicAvailable = qfalse;
-
 	if ( strstr( glConfig.extensions_string, "EXT_texture_filter_anisotropic" ) )
 	{
 		glConfig.textureFilterAnisotropicAvailable = qtrue;
@@ -1312,7 +1309,7 @@ void GLimp_Init( void )
 
 	ri.Printf( PRINT_ALL, "Initializing OpenGL subsystem\n" );
 
-	glConfig.deviceSupportsGamma = qfalse;
+	//glConfig.deviceSupportsGamma = qfalse;
 
 	InitSig();
 
@@ -1404,9 +1401,9 @@ void GLimp_Init( void )
 **
 ** This routine should only be called if glConfig.deviceSupportsGamma is TRUE
 */
-void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned char blue[256] )
-{
-}
+//void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned char blue[256] )
+//{
+//}
 
 
 /*
@@ -1425,7 +1422,7 @@ void GLimp_Shutdown( void )
 	ri.Printf( PRINT_ALL, "Shutting down OpenGL subsystem\n" );
 
 	// restore gamma.  We do this first because 3Dfx's extension needs a valid OGL subsystem
-	//WG_RestoreGamma();
+	WG_RestoreGamma();
 	#ifdef HAVE_GLES
 	if (!g_EGLWindowSurface || !dpy)
 	#else
@@ -1772,6 +1769,7 @@ static Cursor CreateNullCursor(Display *display, Window root)
     return cursor;
 }
 
+
 static void install_grabs(void)
 {
 // inviso cursor
@@ -1794,29 +1792,68 @@ static void install_grabs(void)
 
 		XChangePointerControl(dpy, qtrue, qtrue, 2, 1, 0);
 
-		#ifdef USE_XF86DGA
-		if (in_dgamouse->value) {
-			int MajorVersion, MinorVersion;
 
-			if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
-				// unable to query, probalby not supported
-				ri.Printf( PRINT_ALL, "Failed to detect XF86DGA Mouse\n" );
-				ri.Cvar_Set( "in_dgamouse", "0" );
-			} else {
-				dgamouse = qtrue;
-				XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
-				XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
+		if (in_dgamouse->value) {
+		
+			
+			sXf86dgaLib = dlopen ("libXxf86dga.so", RTLD_LAZY );
+			if (sXf86dgaLib)
+			{
+				Com_DPrintf ("LoadLibrary (%s)\n", "libXxf86dga.so");
+
+				Bool (*pDGAQueryVersion)(Display*, int*, int*);
+				*(void **)(&pDGAQueryVersion) = dlsym (sXf86dgaLib, "XF86DGAQueryVersion");			
+					
+				if (!pDGAQueryVersion)
+				{
+					const char* error = dlerror();
+					printf("libXxf86dga error: %s\n", error);
+					Com_Printf("dlsym() failed on XF86DGAQueryVersion\n" );
+				}					
+				else
+				{
+					Status	(*pDGADirectVideo) (Display *, int, int);
+					*(void **)(&spDGADirectVideo) = dlsym (sXf86dgaLib, "XF86DGADirectVideo");
+					
+					if (!spDGADirectVideo)
+					{
+						const char* error = dlerror();
+						printf("libXxf86dga error: %s\n", error);
+						Com_Printf("dlsym() failed on XF86DGADirectVideo\n" );
+					}
+					else
+					{
+					
+						int majorVersion, minorVersion;
+
+						if (!(*pDGAQueryVersion)(dpy, &majorVersion, &minorVersion)) { 
+							// unable to query, probalby not supported
+							ri.Printf( PRINT_ALL, "Failed to detect XF86DGA Mouse\n" );
+							ri.Cvar_Set( "in_dgamouse", "0" );
+						} else {
+							dgamouse = qtrue;
+							
+							(*spDGADirectVideo)(dpy, DefaultScreen(dpy), 0x0004);
+							XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
+							
+							ri.Printf( PRINT_ALL, "XF86DGA Mouse (Version %d.%d) initialized\n", majorVersion, minorVersion);
+						}					
+					}
+				}
 			}
-		} else {
+			else
+			{
+				Com_Printf("dlopen() failed on libXxf86dga.so\n" );
+			}
+		}
+		
+		if (!in_dgamouse->value || !dgamouse)
+		{
 			XWarpPointer(dpy, None, win,
 						 0, 0, 0, 0,
 						 glConfig.vidWidth / 2, glConfig.vidHeight / 2);
 		}
-		#else
-		XWarpPointer(dpy, None, win,
-					 0, 0, 0, 0,
-					 glConfig.vidWidth / 2, glConfig.vidHeight / 2);		
-		#endif
+
 
 		XGrabKeyboard(dpy, win,
 				  False,
@@ -1828,11 +1865,9 @@ static void install_grabs(void)
 
 static void uninstall_grabs(void)
 {
-	if (dgamouse) {
+	if (dgamouse && spDGADirectVideo) {
 		dgamouse = qfalse;
-		#ifdef USE_XF86DGA		
-		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
-		#endif
+		(*spDGADirectVideo)(dpy, DefaultScreen(dpy), 0);
 	}
 
 	XChangePointerControl(dpy, qtrue, qtrue, mouse_accel_numerator, 

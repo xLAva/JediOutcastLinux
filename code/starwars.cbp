@@ -6,6 +6,42 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
+			<Target title="Linux Debug">
+				<Option output="./Debug/jk2sp" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="./Debug" />
+				<Option object_output="./Debug/exe" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-g" />
+					<Add option="-Wno-write-strings" />
+					<Add option="-Wno-conversion-null" />
+					<Add option="-Wno-pointer-arith" />
+					<Add option="-Wno-multichar" />
+					<Add option="-Wno-int-to-pointer-cast" />
+					<Add option="-Wno-enum-compare" />
+					<Add option="-Wno-cpp" />
+					<Add option="-fexceptions" />
+					<Add option="-m32" />
+					<Add option="-ffast-math" />
+					<Add option="-DLINUX" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_JK2EXE" />
+					<Add option="-D_M_IX86" />
+				</Compiler>
+				<Linker>
+					<Add option="-m32" />
+					<Add library="dl" />
+					<Add library="libopenal" />
+					<Add library="GL" />
+					<Add library="X11" />
+					<Add library="libXxf86vm" />
+					<Add library="Xrandr" />
+					<Add library="rt" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
 			<Target title="Linux Release">
 				<Option output="./Release/jk2sp" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="./Release" />
@@ -411,26 +447,42 @@
 		<Unit filename="jpeg-6/jversion.h" />
 		<Unit filename="linux/linux_console.cpp">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
+		</Unit>
+		<Unit filename="linux/linux_gamma.cpp">
+			<Option target="Linux Debug" />
+			<Option target="Linux Release" />
 		</Unit>
 		<Unit filename="linux/linux_glimp.cpp">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="linux/linux_glw.h">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="linux/linux_local.h">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="linux/linux_main.cpp">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="linux/linux_qgl.cpp">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="linux/linux_snddma.cpp">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="linux/linuxprefix.h">
+			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
+		</Unit>
+		<Unit filename="linux/xvidmode.cpp">
+			<Option target="Linux Debug" />
 			<Option target="Linux Release" />
 		</Unit>
 		<Unit filename="mp3code/L3.h" />
@@ -604,6 +656,7 @@
 		<Unit filename="ui/ui_syscalls.cpp" />
 		<Unit filename="unix/Makefile">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="unix/linux_glimp.cpp">
 			<Option target="&lt;{~None~}&gt;" />
@@ -620,9 +673,11 @@
 		</Unit>
 		<Unit filename="unix/q3test.spec.sh">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="unix/qasm.h">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="unix/snd_mixa.s">
 			<Option target="&lt;{~None~}&gt;" />
@@ -635,6 +690,7 @@
 		</Unit>
 		<Unit filename="unix/unix_glw.h">
 			<Option target="Linux Release" />
+			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="unix/unix_main.cpp">
 			<Option target="&lt;{~None~}&gt;" />
