@@ -130,6 +130,77 @@ void IN_KeyUp( kbutton_t *b ) {
 	b->active = qfalse;
 }
 
+#ifdef CROUCH
+void IN_ToggleKeyDown( kbutton_t *b ) {
+	int k;
+	char    *c;
+	unsigned uptime;
+
+	c = Cmd_Argv( 1 );
+	if ( c[0] ) {
+		k = atoi( c );
+	} else {
+		k = -1;     // typed manually at the console for continuous down
+	}
+
+	if ( k == b->down[0] || k == b->down[1] ) {
+		return;     // repeating key
+	}
+
+	if ( !b->down[0] ) {
+		b->down[0] = k;
+	} else if ( !b->down[1] ) {
+		b->down[1] = k;
+	} else {
+		Com_Printf( "Three keys down for a button!\n" );
+		return;
+	}
+
+	b->active = 1-b->active;	// toggle
+	// save timestamp for partial frame summing
+	c = Cmd_Argv( 2 );
+	uptime = atoi( c );
+	if (b->active)
+		b->downtime = uptime;
+	else 
+	{
+		if ( uptime ) {
+			b->msec += uptime - b->downtime;
+		} else {
+			b->msec += frame_msec / 2;
+		}
+	}
+	b->wasPressed = b->active;
+}
+
+void IN_ToggleKeyUp( kbutton_t *b ) {
+	int k;
+	char    *c;
+
+	c = Cmd_Argv( 1 );
+	if ( c[0] ) {
+		k = atoi( c );
+	} else {
+		// typed manually at the console, assume for unsticking, so clear all
+		b->down[0] = b->down[1] = 0;
+		b->active = qfalse;
+		return;
+	}
+
+	if ( b->down[0] == k ) {
+		b->down[0] = 0;
+	} else if ( b->down[1] == k ) {
+		b->down[1] = 0;
+	} else {
+		return;     // key up without coresponding down (menu pass through)
+	}
+	if ( b->down[0] || b->down[1] ) {
+		return;     // some other key is still holding it down
+	}
+
+}
+#endif
+
 
 
 /*
@@ -175,10 +246,29 @@ float CL_KeyState( kbutton_t *key ) {
 
 
 
+#ifdef CROUCH
+void IN_UpDown( void ) {in_down.active = 0; IN_KeyDown(&in_up);}
+#else
 void IN_UpDown(void) {IN_KeyDown(&in_up);}
+#endif
 void IN_UpUp(void) {IN_KeyUp(&in_up);}
+#ifdef CROUCH
+void IN_DownDown( void ) {IN_ToggleKeyDown(&in_down);}
+void IN_DownUp( void ) 
+{
+	if (in_forward.active || in_back.active || in_moveleft.active || in_moveright.active)
+		IN_KeyUp(&in_down);
+	else
+#ifdef JOYSTICK
+		if ((cl.joystickAxis[AXIS_SIDE]>10) || (cl.joystickAxis[AXIS_SIDE]<-10) || (cl.joystickAxis[AXIS_FORWARD]>10) || (cl.joystickAxis[AXIS_FORWARD]<-10))
+			IN_KeyUp(&in_down);
+#endif
+		IN_ToggleKeyUp(&in_down);
+}
+#else
 void IN_DownDown(void) {IN_KeyDown(&in_down);}
 void IN_DownUp(void) {IN_KeyUp(&in_down);}
+#endif
 void IN_LeftDown(void) {IN_KeyDown(&in_left);}
 void IN_LeftUp(void) {IN_KeyUp(&in_left);}
 void IN_RightDown(void) {IN_KeyDown(&in_right);}
@@ -369,7 +459,11 @@ void CL_JoystickMove( usercmd_t *cmd ) {
 		anglespeed = 0.001f * cls.frametime;
 	}
 
+#ifdef PANDORA
+	if ( in_strafe.active ) {
+#else
 	if ( !in_strafe.active ) {
+#endif
 		cl.viewangles[YAW] += anglespeed * (cl_yawspeed->value / 100.0f) * cl.joystickAxis[AXIS_SIDE];
 	} else {
 		cmd->rightmove = ClampChar( cmd->rightmove + cl.joystickAxis[AXIS_SIDE] );

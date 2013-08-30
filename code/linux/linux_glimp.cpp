@@ -27,12 +27,12 @@
 
 #ifdef HAVE_GLES
 #include "EGL/egl.h"
-//#include <SDL/SDL.h>
-//#include "../es/eglport.h"
+#include <X11/Xatom.h>
 #else
 #include "linux_glw.h"
 #endif
 #include "linux_local.h"
+
 
 #ifndef HAVE_GLES
 #include <GL/glx.h>
@@ -40,7 +40,6 @@
 
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
-#include <X11/Xatom.h>
 
 
 #include <X11/extensions/xf86vmode.h>
@@ -63,89 +62,6 @@ static Display *dpy = NULL;
 static int scrnum;
 static Window win = 0;
 #ifdef HAVE_GLES
-
-/*
-static int firstclear = 1;
-
-void myglClear(GLbitfield mask)
-{
-   if (firstclear) {
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      firstclear = 0;
-   }
-}
-*/
-/* TODO any other functions that need modifying for stereo? eg glReadPixels? */
-/*
-static GLenum draw_buffer = GL_BACK;
-static struct rect_t {
-   GLint x, y;
-   GLsizei w, h;
-} viewport = {0, 0, -1, -1}, scissor = {0, 0, -1, -1};
-
-static void fix_rect(struct rect_t *r)
-{
-   if (r->w == -1) { r->w = glConfig.vidWidth; }
-   if (r->h == -1) { r->h = glConfig.vidHeight; }
-}
-
-static void fudge_rect(struct rect_t *out, const struct rect_t *in,
-   int xshift, int xoffset)
-{
-   out->x = xoffset + (in->x >> xshift);
-   out->y = in->y;
-   out->w = (xoffset + ((in->x + in->w) >> xshift)) - out->x;
-   out->h = in->h;
-}
-
-static void update_viewport_and_scissor(void)
-{
-   int xshift = 0, xoffset = 0;
-   struct rect_t r;
-
-   switch (draw_buffer) {
-   case GL_BACK_LEFT:
-      xshift = 1;
-      break;
-   case GL_BACK_RIGHT:
-      xshift = 1;
-      xoffset = glConfig.vidWidth >> 1;
-      break;
-   }
-
-   fix_rect(&viewport);
-   fudge_rect(&r, &viewport, xshift, xoffset);
-   glViewport(r.x, r.y, r.w, r.h);
-
-   fix_rect(&scissor);
-   fudge_rect(&r, &scissor, xshift, xoffset);
-   glScissor(r.x, r.y, r.w, r.h);
-}
-
-void myglDrawBuffer(GLenum mode)
-{
-   draw_buffer = mode;
-   update_viewport_and_scissor();
-}
-
-void myglViewport(GLint x, GLint y, GLsizei width, GLsizei height)
-{
-   viewport.x = x;
-   viewport.y = y;
-   viewport.w = width;
-   viewport.h = height;
-   update_viewport_and_scissor();
-}
-
-void myglScissor(GLint x, GLint y, GLsizei width, GLsizei height)
-{
-   scissor.x = x;
-   scissor.y = y;
-   scissor.w = width;
-   scissor.h = height;
-   update_viewport_and_scissor();
-}
-*/
 void myglMultiTexCoord2f( GLenum texture, GLfloat s, GLfloat t )
 {
 	glMultiTexCoord4f(texture, s, t, 0, 1);
@@ -159,7 +75,7 @@ static EGLSurface   g_EGLWindowSurface;
 
 #else	// HAVE_GLES
 static GLXContext ctx = NULL;
-#endif  // HAVE_GLES
+#endif
 
 int num_sizes;
 XRRScreenSize *xrrs;
@@ -185,6 +101,12 @@ static cvar_t	*in_mouse;
 static cvar_t	*in_dgamouse;
 
 static cvar_t	*r_fakeFullscreen;
+
+#ifdef JOYSTICK
+cvar_t   *in_joystick      = NULL;
+cvar_t   *in_joystickDebug = NULL;
+cvar_t   *joy_threshold    = NULL;
+#endif
 
 Window root;
 qboolean dgamouse = qfalse;
@@ -224,6 +146,7 @@ void	 QGL_EnableLogging( qboolean enable )
 	(void)enable;
 }
 #endif
+
 
 /*****************************************************************************/
 
@@ -475,8 +398,11 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 	XMapRaised(dpy, win);
 
 	g_EGLWindow = (NativeWindowType)win;
+	#ifdef PANDORA
 	g_EGLDisplay  =  eglGetDisplay((EGLNativeDisplayType)EGL_DEFAULT_DISPLAY);
-//	g_EGLDisplay  =  eglGetDisplay((EGLNativeDisplayType)dpy);
+	#else
+	g_EGLDisplay  =  eglGetDisplay((EGLNativeDisplayType)dpy);
+	#endif
 
 	if(g_EGLDisplay == EGL_NO_DISPLAY) {
 		ri.Printf( PRINT_ALL, "error getting EGL display\n");
@@ -512,13 +438,14 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 			return qfalse;
 		}
 	}
-	
+
+	#ifdef PANDORA
 	g_EGLWindowSurface = eglCreateWindowSurface(g_EGLDisplay, g_EGLConfig,
 		NULL, NULL);
-	/*
+	#else
 	g_EGLWindowSurface = eglCreateWindowSurface(g_EGLDisplay, g_EGLConfig,
 		g_EGLWindow, NULL);
-	*/
+	#endif
 	if(g_EGLWindowSurface == EGL_NO_SURFACE) {
 		ri.Printf( PRINT_ALL, "error creating window surface: 0x%X\n", (int)eglGetError());
 		return qfalse;
@@ -777,21 +704,22 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 		attrib[ATTR_DEPTH_IDX] = tdepthbits; // default to 24 depth
 		attrib[ATTR_STENCIL_IDX] = tstencilbits;
 
-#if 1
-		ri.Printf( PRINT_ALL, "Attempting %d/%d/%d Color bits, %d depth, %d stencil display...", 
+#if 0
+		ri.Printf( PRINT_DEVELOPER, "Attempting %d/%d/%d Color bits, %d depth, %d stencil display...", 
 			attrib[ATTR_RED_IDX], attrib[ATTR_GREEN_IDX], attrib[ATTR_BLUE_IDX],
 			attrib[ATTR_DEPTH_IDX], attrib[ATTR_STENCIL_IDX]);
 #endif
+
 		visinfo = qglXChooseVisual(dpy, scrnum, attrib);
 		if (!visinfo) {
-#if 1
-			ri.Printf( PRINT_ALL, "failed\n");
+#if 0
+			ri.Printf( PRINT_DEVELOPER, "failed\n");
 #endif
 			continue;
 		}
 
-#if 1
-		ri.Printf( PRINT_ALL, "Successful\n");
+#if 0
+		ri.Printf( PRINT_DEVELOPER, "Successful\n");
 #endif
 
 		ri.Printf( PRINT_ALL, "Using %d/%d/%d Color bits, %d depth, %d stencil display.\n", 
@@ -808,7 +736,6 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 		ri.Printf( PRINT_ALL, "Couldn't get a visual\n" );
 		return RSERR_INVALID_MODE;
 	}
-ri.Printf( PRINT_ALL, "eglConfig choosen\n");
 
 	/* window attributes */
 	attr.background_pixel = BlackPixel(dpy, scrnum);
@@ -833,13 +760,6 @@ ri.Printf( PRINT_ALL, "eglConfig choosen\n");
 
 	if (vidmode_active)
 		XMoveWindow(dpy, win, 0, 0);
-		
-	if (fullscreen) {
-		Atom wmState = XInternAtom(dpy, "_NET_WM_STATE", False);
-		Atom wmFullscreen = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", False);
-		XChangeProperty(dpy, win, wmState, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wmFullscreen, 1);	
-	}
-
 
 
 	XFlush(dpy);
@@ -847,7 +767,7 @@ ri.Printf( PRINT_ALL, "eglConfig choosen\n");
 	ctx = qglXCreateContext(dpy, visinfo, NULL, True);
 
 	qglXMakeCurrent(dpy, win, ctx);
-
+#endif	//HAVE_GLES
 	return RSERR_OK;
 }
 
@@ -965,7 +885,7 @@ static void GLW_InitTextureCompression( void )
 			}
 		}
 	}
-	#endif
+#endif	//HAVE_GLES
 }
 
 /*
@@ -984,10 +904,11 @@ static void GLW_InitExtensions( void )
 
 	// Select our tc scheme
 	GLW_InitTextureCompression();
-	#ifdef HAVE_GLES
+
+#ifdef HAVE_GLES
 	glConfig.textureEnvAddAvailable = qtrue;
 	ri.Printf( PRINT_ALL, "...using GL_EXT_texture_env_add\n" );
-	#else
+#else
 	// GL_EXT_texture_env_add
 	glConfig.textureEnvAddAvailable = qfalse;
 	if ( strstr( glConfig.extensions_string, "EXT_texture_env_add" ) )
@@ -999,23 +920,21 @@ static void GLW_InitExtensions( void )
 		}
 		else
 		{
-		#endif
 			glConfig.textureEnvAddAvailable = qfalse;
 			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_texture_env_add\n" );
-		#ifndef HAVE_GLES
 		}
 	}
 	else
 	{
 		ri.Printf( PRINT_ALL, "...GL_EXT_texture_env_add not found\n" );
 	}
-	#endif
+#endif
+
+#ifndef HAVE_GLES	
 	// GL_EXT_texture_filter_anisotropic
-	#ifdef HAVE_GLES	
-	glConfig.textureFilterAnisotropicAvailable = qtrue;
-	#else
 	glConfig.textureFilterAnisotropicAvailable = qfalse;
 	if ( strstr( glConfig.extensions_string, "EXT_texture_filter_anisotropic" ) )
+#endif
 	{
 		glConfig.textureFilterAnisotropicAvailable = qtrue;
 		ri.Printf( PRINT_ALL, "...GL_EXT_texture_filter_anisotropic available\n" );
@@ -1030,24 +949,25 @@ static void GLW_InitExtensions( void )
 		}
 		ri.Cvar_Set( "r_ext_texture_filter_anisotropic_avail", "1" );
 	}
+#ifndef HAVE_GLES
 	else
 	{
 		ri.Printf( PRINT_ALL, "...GL_EXT_texture_filter_anisotropic not found\n" );
 		ri.Cvar_Set( "r_ext_texture_filter_anisotropic_avail", "0" );
 	}
-	#endif
-	// GL_EXT_clamp_to_edge
-	#ifdef HAVE_GLES
+#endif
+#ifdef HAVE_GLES
 	glConfig.clampToEdgeAvailable = qtrue;
 	ri.Printf( PRINT_ALL, "...Using GL_EXT_texture_edge_clamp\n" );
-	#else
+#else
+	// GL_EXT_clamp_to_edge
 	glConfig.clampToEdgeAvailable = qfalse;
 	if ( strstr( glConfig.extensions_string, "GL_EXT_texture_edge_clamp" ) )
 	{
 		glConfig.clampToEdgeAvailable = qtrue;
 		ri.Printf( PRINT_ALL, "...Using GL_EXT_texture_edge_clamp\n" );
 	}
-	#endif
+#endif
 
 	// WGL_EXT_swap_control
 	// LAvaPort - what is this - do we need it?
@@ -1066,12 +986,25 @@ static void GLW_InitExtensions( void )
 	qglMultiTexCoord2fARB = NULL;
 	qglActiveTextureARB = NULL;
 	qglClientActiveTextureARB = NULL;
-	#ifdef HAVE_GLES
-	glConfig.maxActiveTextures = 2;	///*SEB*/
+#ifdef HAVE_GLES
+	qglGetIntegerv( GL_MAX_TEXTURE_UNITS, &glConfig.maxActiveTextures );
+	//ri.Printf( PRINT_ALL, "...not using GL_ARB_multitexture, %i texture units\n", glConfig.maxActiveTextures );
+	//glConfig.maxActiveTextures=4;
 	qglMultiTexCoord2fARB = myglMultiTexCoord2f;
-	qglActiveTextureARB = &glActiveTexture;
-	qglClientActiveTextureARB = &glClientActiveTexture;
-	#else
+	qglActiveTextureARB = glActiveTexture;
+	qglClientActiveTextureARB = glClientActiveTexture;
+	if ( glConfig.maxActiveTextures > 1 )
+	{
+		ri.Printf( PRINT_ALL, "...using GL_ARB_multitexture (%i texture units)\n", glConfig.maxActiveTextures );
+	}
+	else
+	{
+		qglMultiTexCoord2fARB = NULL;
+		qglActiveTextureARB = NULL;
+		qglClientActiveTextureARB = NULL;
+		ri.Printf( PRINT_ALL, "...not using GL_ARB_multitexture, < 2 texture units\n" );
+	}
+#else
 	if ( strstr( glConfig.extensions_string, "GL_ARB_multitexture" )  )
 	{
 		if ( r_ext_multitexture->integer )
@@ -1106,11 +1039,12 @@ static void GLW_InitExtensions( void )
 	{
 		ri.Printf( PRINT_ALL, "...GL_ARB_multitexture not found\n" );
 	}
-	#endif
+#endif
+
 	// GL_EXT_compiled_vertex_array
 	qglLockArraysEXT = NULL;
 	qglUnlockArraysEXT = NULL;
-	#ifndef HAVE_GLES
+#ifndef HAVE_GLES
 	if ( strstr( glConfig.extensions_string, "GL_EXT_compiled_vertex_array" ) )
 	{
 		if ( r_ext_compiled_vertex_array->integer )
@@ -1128,17 +1062,18 @@ static void GLW_InitExtensions( void )
 		}
 	}
 	else
+#endif
 	{
 		ri.Printf( PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n" );
 	}
-	#endif
-	#ifdef HAVE_GLES
+
+	qglPointParameterfEXT = NULL;
+	qglPointParameterfvEXT = NULL;
+#ifdef HAVE_GLES
 	qglPointParameterfEXT = &glPointParameterf;
 	qglPointParameterfvEXT = &glPointParameterfv;
 	ri.Printf( PRINT_ALL, "...using GL_EXT_point_parameters\n" );
-	#else
-	qglPointParameterfEXT = NULL;
-	qglPointParameterfvEXT = NULL;
+#else
 	if ( strstr( glConfig.extensions_string, "GL_EXT_point_parameters" ) )
 	{
 		if ( r_ext_compiled_vertex_array->integer || 1)
@@ -1160,7 +1095,8 @@ static void GLW_InitExtensions( void )
 	{
 		ri.Printf( PRINT_ALL, "...GL_EXT_point_parameters not found\n" );
 	}
-	#endif
+#endif
+
 #ifdef _NPATCH
 	// GL_ATI_pn_triangles
 	qglPNTrianglesiATI = NULL;
@@ -1201,22 +1137,22 @@ static qboolean GLW_LoadOpenGL()
 	char buffer[1024];
 	qboolean fullscreen;
 
-	#ifdef HAVE_GLES
+#ifdef HAVE_GLES
 	strcpy( buffer, "libGLES_CM.so" );
-	#else
+#else
 	strcpy( buffer, OPENGL_DRIVER_NAME );
-	#endif
+#endif
 
 	ri.Printf( PRINT_ALL, "...loading %s: ", buffer );
 
 	// load the QGL layer
 	if ( QGL_Init( buffer ) ) 
 	{
-		#ifdef HAVE_GLES
+#ifdef PANDORA
 		fullscreen = qtrue;
-		#else
+#else
 		fullscreen = r_fullscreen->integer;
-		#endif
+#endif
 
 		// create the window and set up the context
 		if ( !GLW_StartDriverAndSetMode( buffer, r_mode->integer, fullscreen ) )
@@ -1250,7 +1186,7 @@ void GLimp_EndFrame (void)
 	//
 	// swapinterval stuff
 	//
-	#ifndef HAVE_GLES
+#ifndef HAVE_GLES
 	if ( r_swapInterval->modified ) {
 		r_swapInterval->modified = qfalse;
 
@@ -1260,19 +1196,17 @@ void GLimp_EndFrame (void)
 			//}
 		}
 	}
-	#endif
+#endif
 
-	#ifdef HAVE_GLES
-//ri.Printf(PRINT_ALL, "SwapBuffers\n");
+#ifdef HAVE_GLES
 	eglSwapBuffers(g_EGLDisplay, g_EGLWindowSurface);
-//	EGL_SwapBuffers();
-	#else
+#else
 	// don't flip if drawing to front buffer
 	if ( stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
 	{
 		qglXSwapBuffers(dpy, win);
 	}
-	#endif
+#endif
 
 	// check logging
 	QGL_EnableLogging( r_logFile->integer );
@@ -1336,7 +1270,7 @@ void GLimp_Init( void )
 	// stubbed or broken drivers may have reported 0...
 	if ( glConfig.maxTextureSize <= 0 ) 
 	{
-		glConfig.maxTextureSize = 1024;
+		glConfig.maxTextureSize = 0;
 	}
 
 	//
@@ -1423,26 +1357,27 @@ void GLimp_Shutdown( void )
 
 	// restore gamma.  We do this first because 3Dfx's extension needs a valid OGL subsystem
 	WG_RestoreGamma();
-	#ifdef HAVE_GLES
+
+#ifdef HAVE_GLES
 	if (!g_EGLWindowSurface || !dpy)
-	#else
+#else
 	if (!ctx || !dpy)
-	#endif
+#endif
 		return;
 	IN_DeactivateMouse();
 	XAutoRepeatOn(dpy);
 	if (dpy) {
-		#ifdef HAVE_GLES
+#ifdef HAVE_GLES
 		eglMakeCurrent( g_EGLDisplay, NULL, NULL, EGL_NO_CONTEXT );
 		if (g_EGLContext)
 			eglDestroyContext(g_EGLDisplay, g_EGLContext);
 		if (g_EGLWindowSurface)
 			eglDestroySurface(g_EGLDisplay, g_EGLWindowSurface);
 		eglTerminate(g_EGLDisplay);
-		#else
+#else
 		if (ctx)
 			qglXDestroyContext(dpy, ctx);
-		#endif
+#endif
 		if (win)
 			XDestroyWindow(dpy, win);
 		if (vidmode_active)
@@ -1461,13 +1396,13 @@ void GLimp_Shutdown( void )
 	vidmode_active = qfalse;
 	dpy = NULL;
 	win = 0;
-	#ifdef HAVE_GLES
+#ifdef HAVE_GLES
 	g_EGLWindowSurface = NULL;
 	g_EGLContext = NULL;
 	g_EGLDisplay = NULL;
-	#else
+#else
 	ctx = NULL;
-	#endif
+#endif
 
 	// close the r_logFile
 	if ( glw_state.log_fp )
@@ -2047,6 +1982,13 @@ void IN_DeactivateMouse( void )
 
 void IN_Init(void)
 {
+	#ifdef JOYSTICK
+	in_joystick = Cvar_Get( "in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH );
+	in_joystickDebug = Cvar_Get( "in_debugjoystick", "0", CVAR_TEMP );
+	joy_threshold = Cvar_Get( "joy_threshold", "0.30", CVAR_ARCHIVE ); // FIXME: in_joythreshold
+	IN_StartupJoystick();
+	#endif
+
 	// mouse variables
     in_mouse = Cvar_Get ("in_mouse", "1", CVAR_ARCHIVE);
     in_dgamouse = Cvar_Get ("in_dgamouse", "1", CVAR_ARCHIVE);

@@ -893,8 +893,22 @@ void CMistyFog2::Render(CWorldEffectsSystem *system)
 
 	#ifdef HAVE_GLES
 	// have to draw each Quad one by one...
-	for (int i=0; i<(MISTYFOG_HEIGHT-1)*(MISTYFOG_WIDTH-1)*4; i+=4)
-		qglDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, mIndexes+i*3);
+	unsigned short indexes[(MISTYFOG_HEIGHT-1)*(MISTYFOG_WIDTH-1)*6];
+	unsigned int *mindexes = (unsigned int*)mIndexes;
+	int idx = 0;
+	/*for (int i=0; i<(MISTYFOG_HEIGHT-1)*(MISTYFOG_WIDTH-1)*4; i+=4)
+		qglDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, mIndexes+i*3);*/
+	for (int i=0; i<(MISTYFOG_HEIGHT-1)*(MISTYFOG_WIDTH-1)*4; i+=4) {
+		indexes[idx+0] = mindexes[i];
+		indexes[idx+1] = mindexes[i+1];
+		indexes[idx+2] = mindexes[i+2];
+		idx+=3;
+		indexes[idx+0] = mindexes[i];
+		indexes[idx+1] = mindexes[i+2];
+		indexes[idx+2] = mindexes[i+3];
+		idx+=3;
+	}
+	qglDrawElements(GL_TRIANGLE_FAN, idx, GL_UNSIGNED_SHORT, indexes);
 	#else
 	if (qglLockArraysEXT) 
 	{
@@ -1808,6 +1822,12 @@ void CSnowSystem::Render(void)
 	GL_State(GLS_ALPHA);
 	qglDisable(GL_TEXTURE_2D);
 #ifdef HAVE_GLES
+	GLboolean text = qglIsEnabled(GL_TEXTURE_COORD_ARRAY);
+	GLboolean glcol = qglIsEnabled(GL_COLOR_ARRAY);
+	if (text)
+		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	if (glcol)
+		qglDisableClientState( GL_COLOR_ARRAY );
 	qglPointSize(2.0);
 #else
 	if (qglPointParameterfEXT)
@@ -1825,7 +1845,8 @@ void CSnowSystem::Render(void)
 #endif
 	item = mSnowList;
 	#ifdef HAVE_GLES
-	GLfloat vtx[3];
+	GLfloat vtx[3*mMaxSnowflakes];
+	int idx = 0;
 	#else
 	qglBegin(GL_POINTS);
 	#endif
@@ -1834,16 +1855,22 @@ void CSnowSystem::Render(void)
 		if (item->flags & PARTICLE_FLAG_RENDER)
 		{
 			#ifdef HAVE_GLES
-			vtx[0]=item->pos[0]; vtx[1]=item->pos[1]; vtx[2]=item->pos[2];
-			qglVertexPointer  ( 3, GL_FLOAT, 0, vtx );
-			qglDrawArrays( GL_POINTS, 0, 1 );
+			vtx[idx*3+0]=item->pos[0]; vtx[idx*3+1]=item->pos[1]; vtx[idx*3+2]=item->pos[2];
+			idx++;
 			#else
 			qglVertex3fv(item->pos);
 			#endif
 		}
 		item++;
 	}
-	#ifndef HAVE_GLES
+	#ifdef HAVE_GLES
+	qglVertexPointer  ( 3, GL_FLOAT, 0, vtx );
+	qglDrawArrays( GL_POINTS, 0, idx );
+	if (glcol)
+		qglEnableClientState( GL_COLOR_ARRAY );
+	if (text)
+		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	#else
 	qglEnd();
 	#endif
 	qglEnable(GL_TEXTURE_2D);

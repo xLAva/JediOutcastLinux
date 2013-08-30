@@ -2384,7 +2384,7 @@ static qboolean PM_TryRoll( void )
 	int		anim = -1;
 	AngleVectors( fwdAngles, fwd, right, NULL );
 	//FIXME: trace ahead for clearance to roll
-	if ( pm->cmd.forwardmove )
+	if ( pm->cmd.forwardmove && (pm->cmd.forwardmove >= fabsf(pm->cmd.rightmove) ) )	/*SEB*/
 	{
 		if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) 
 		{

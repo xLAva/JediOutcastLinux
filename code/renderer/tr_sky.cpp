@@ -353,10 +353,12 @@ static void DrawSkySide( struct image_s *image, const int mins[2], const int max
 	GL_Bind( image );
 
 	#ifdef HAVE_GLES
+	/*
 	GLfloat vtx[3*1024];	// arbitrary sized
 	GLfloat tex[2*1024];
-	int idx;
-	#endif
+	*/
+	unsigned short indexes[(SKY_SUBDIVISIONS+1)*(SKY_SUBDIVISIONS+1)*6];
+	int idx = 0;
 	
 	GLboolean text = qglIsEnabled(GL_TEXTURE_COORD_ARRAY);
 	GLboolean glcol = qglIsEnabled(GL_COLOR_ARRAY);
@@ -364,10 +366,12 @@ static void DrawSkySide( struct image_s *image, const int mins[2], const int max
 		qglDisableClientState(GL_COLOR_ARRAY);
 	if (!text)
 		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	#endif
+
 	for ( t = mins[1]+HALF_SKY_SUBDIVISIONS; t < maxs[1]+HALF_SKY_SUBDIVISIONS; t++ )
 	{
 		#ifdef HAVE_GLES
-		idx=0;
+		int start=2;
 		#else
 		qglBegin( GL_TRIANGLE_STRIP );
 		#endif
@@ -375,12 +379,39 @@ static void DrawSkySide( struct image_s *image, const int mins[2], const int max
 		for ( s = mins[0]+HALF_SKY_SUBDIVISIONS; s <= maxs[0]+HALF_SKY_SUBDIVISIONS; s++ )
 		{
 			#ifdef HAVE_GLES
-			memcpy(tex+idx*2, s_skyTexCoords[t][s], sizeof(GLfloat)*2);
+			/*memcpy(tex+idx*2, s_skyTexCoords[t][s], sizeof(GLfloat)*2);
 			memcpy(vtx+idx*3, s_skyPoints[t][s], sizeof(GLfloat)*3);
 			idx++;
 			memcpy(tex+idx*2, s_skyTexCoords[t+1][s], sizeof(GLfloat)*2);
 			memcpy(vtx+idx*3, s_skyPoints[t+1][s], sizeof(GLfloat)*3);
-			idx++;
+			idx++;*/
+			if (start==2) {
+				indexes[idx+0] = t*(SKY_SUBDIVISIONS+1)+s;
+				indexes[idx+1] = (t+1)*(SKY_SUBDIVISIONS+1)+s;
+				idx+=2;
+				start=1;
+			} else if (start==1) {
+				// Triangle 1
+				indexes[idx+0] =  t*(SKY_SUBDIVISIONS+1)+s;
+				idx++;
+				// Triangle 2
+				indexes[idx+0] = indexes [idx-1];
+				indexes[idx+1] = indexes [idx-2];
+				indexes[idx+2] = (t+1)*(SKY_SUBDIVISIONS+1)+s;
+				idx+=3;
+				start=0;
+			} else {
+				// Triangle 1
+				indexes[idx+0] = indexes [idx-3];
+				indexes[idx+1] = indexes [idx-1];
+				indexes[idx+2] =  t*(SKY_SUBDIVISIONS+1)+s;
+				idx+=3;
+				// Triangle 2
+				indexes[idx+0] = indexes [idx-1];
+				indexes[idx+1] = indexes [idx-2];
+				indexes[idx+2] = (t+1)*(SKY_SUBDIVISIONS+1)+s;
+				idx+=3;
+			}
 			#else
 			qglTexCoord2fv( s_skyTexCoords[t][s] );
 			qglVertex3fv( s_skyPoints[t][s] );
@@ -392,14 +423,17 @@ static void DrawSkySide( struct image_s *image, const int mins[2], const int max
 
 		#ifdef HAVE_GLES
 
-		qglVertexPointer (3, GL_FLOAT, 0, vtx);
+		/*qglVertexPointer (3, GL_FLOAT, 0, vtx);
 		qglTexCoordPointer(2, GL_FLOAT, 0, tex);
-		qglDrawArrays(GL_TRIANGLE_STRIP, 0, idx);
+		qglDrawArrays(GL_TRIANGLE_STRIP, 0, idx);*/
 		#else
 		qglEnd();
 		#endif
 	}
 	#ifdef HAVE_GLES
+	qglVertexPointer (3, GL_FLOAT, 0, s_skyPoints);
+	qglTexCoordPointer(2, GL_FLOAT, 0, s_skyTexCoords);
+	qglDrawElements(GL_TRIANGLES, idx, GL_UNSIGNED_SHORT, indexes);
 	if (glcol)
 		qglEnableClientState(GL_COLOR_ARRAY);
 	if (!text)
