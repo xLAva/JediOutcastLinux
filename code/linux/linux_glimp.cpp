@@ -1587,6 +1587,21 @@ static void uninstall_grabs(void)
 //	XSync(dpy, True);
 }
 
+#define MAX_MOUSE_BUTTONS 9
+
+static int mouseConvert[MAX_MOUSE_BUTTONS] =
+{
+	A_MOUSE1,
+	A_MOUSE3,
+	A_MOUSE2,	
+	A_MWHEELUP,
+	A_MWHEELDOWN,
+	A_UNDEFINED_7,
+	A_UNDEFINED_8,
+	A_MOUSE4,
+	A_MOUSE5,
+};
+
 static void HandleEvents(void)
 {
 	int b;
@@ -1660,39 +1675,27 @@ static void HandleEvents(void)
 			break;
 
 		case ButtonPress:
-			if (event.xbutton.button == 4) {
-				Sys_QueEvent( 0, SE_KEY, A_MWHEELUP, qtrue, 0, NULL );
-			} else if (event.xbutton.button == 5) {
-				Sys_QueEvent( 0, SE_KEY, A_MWHEELDOWN, qtrue, 0, NULL );
-			} else {
-				b=-1;
-				if (event.xbutton.button == 1)
-					b = 0;
-				else if (event.xbutton.button == 2)
-					b = 2;
-				else if (event.xbutton.button == 3)
-					b = 1;
-				Sys_QueEvent( 0, SE_KEY, A_MOUSE1 + b, qtrue, 0, NULL );
+		{
+			int buttonNr = event.xbutton.button - 1;
+			if (buttonNr >= 0 && buttonNr < MAX_MOUSE_BUTTONS)
+			{
+				Sys_QueEvent( 0, SE_KEY, mouseConvert[buttonNr], qtrue, 0, NULL );
 			}
+
 			break;
+		}
 
 		case ButtonRelease:
-			if (event.xbutton.button == 4) {
-				Sys_QueEvent( 0, SE_KEY, A_MWHEELUP, qfalse, 0, NULL );
-			} else if (event.xbutton.button == 5) {
-				Sys_QueEvent( 0, SE_KEY, A_MWHEELDOWN, qfalse, 0, NULL );
-			} else {
-				b=-1;
-				if (event.xbutton.button == 1)
-					b = 0;
-				else if (event.xbutton.button == 2)
-					b = 2;
-				else if (event.xbutton.button == 3)
-					b = 1;
-				Sys_QueEvent( 0, SE_KEY, A_MOUSE1 + b, qfalse, 0, NULL );
-			}
-			break;
+		{
+			int buttonNr = event.xbutton.button - 1;
+			if (buttonNr >= 0 && buttonNr < MAX_MOUSE_BUTTONS)
+			{
+				Sys_QueEvent( 0, SE_KEY, mouseConvert[buttonNr], qfalse, 0, NULL );
+			}		
 
+			break;
+		}
+    
 		case CreateNotify :
 			win_x = event.xcreatewindow.x;
 			win_y = event.xcreatewindow.y;
