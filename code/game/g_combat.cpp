@@ -2193,7 +2193,7 @@ extern cvar_t	*g_iscensored;
 #ifdef GERMAN_CENSORED
 	if ( 0 ) //germany == censorship
 #else
-	if ( !g_iscensored->integer && ( g_dismemberment->integer || g_saberRealisticCombat->integer > 1 ) && mod == MOD_SABER )//only lightsaber
+    if ( /*!g_iscensored->integer &&*/ ( g_dismemberment->integer || g_saberRealisticCombat->integer > 1 ) && mod == MOD_SABER )//only lightsaber
 #endif
 	{//FIXME: don't do strcmps here
 		if ( G_StandardHumanoid( self->NPC_type ) 

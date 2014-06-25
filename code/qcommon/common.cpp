@@ -1934,14 +1934,14 @@ void Com_Init( char *commandLine ) {
 		Com_Printf ("--- Common Initialization Complete ---\n");
 
 //HACKERY FOR THE DEUTSCH		
-		if ( (Cvar_VariableIntegerValue("ui_iscensored") == 1) 	//if this was on before, set it again so it gets its flags
-			|| sp_language->integer == SP_LANGUAGE_GERMAN )
-		{
-			Cvar_Get( "ui_iscensored",   "1", CVAR_ARCHIVE|CVAR_ROM|CVAR_INIT|CVAR_CHEAT|CVAR_NORESTART);
-			Cvar_Set( "ui_iscensored",   "1");	//just in case it was archived
-			Cvar_Get( "g_dismemberment", "0", CVAR_ARCHIVE|CVAR_ROM|CVAR_INIT|CVAR_CHEAT);
-			Cvar_Set( "g_dismemberment", "0");	//just in case it was archived
-		}
+//		if ( (Cvar_VariableIntegerValue("ui_iscensored") == 1) 	//if this was on before, set it again so it gets its flags
+//			|| sp_language->integer == SP_LANGUAGE_GERMAN )
+//		{
+//			Cvar_Get( "ui_iscensored",   "1", CVAR_ARCHIVE|CVAR_ROM|CVAR_INIT|CVAR_CHEAT|CVAR_NORESTART);
+//			Cvar_Set( "ui_iscensored",   "1");	//just in case it was archived
+//			Cvar_Get( "g_dismemberment", "0", CVAR_ARCHIVE|CVAR_ROM|CVAR_INIT|CVAR_CHEAT);
+//			Cvar_Set( "g_dismemberment", "0");	//just in case it was archived
+//		}
 	}
 
 	catch (const char* reason) {
