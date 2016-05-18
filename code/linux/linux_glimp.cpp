@@ -1440,6 +1440,10 @@ static char *XLateKey(XKeyEvent *ev, int *key)
 			*key = *(unsigned char *)buf;
 			if (*key >= 'A' && *key <= 'Z')
 				*key = *key - 'A' + 'a';
+			// if ctrl is pressed, the keys are not between 'A' and 'Z', for instance ctrl-z == 26 ^Z ^C etc.
+			// see https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=19
+			else if (*key >= 1 && *key <= 26)
+				*key = *key + 'a' - 1;
 			break;
 	} 
 
