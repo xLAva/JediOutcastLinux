@@ -1335,11 +1335,12 @@ static char *XLateKey(XKeyEvent *ev, int *key)
 	static qboolean setup = qfalse;
 	int i;
 
+	bool isCtrlPressed = (ev->state & ControlMask) == ControlMask;
 	*key = 0;
 
 	XLookupString(ev, buf, sizeof buf, &keysym, 0);
 
-// ri.Printf( PRINT_ALL, "keysym=%04X\n", (int)keysym);
+	//ri.Printf( PRINT_ALL, "keysym=%04X state=%u isCtrlPressed=%u buf='%s'\n", (int)keysym, ev->state, isCtrlPressed, buf);
 	switch(keysym)
 	{
 		case XK_KP_Page_Up:	
@@ -1435,12 +1436,24 @@ static char *XLateKey(XKeyEvent *ev, int *key)
 		case XK_KP_Add:  *key = A_KP_PLUS; break;
 		case XK_KP_Subtract: *key = A_KP_MINUS; break;
 		//case XK_KP_Divide: *key = K_KP_SLASH; break;
+		
+		case XK_space: *key = ' '; break;
 
 		default:
+		{
 			*key = *(unsigned char *)buf;
 			if (*key >= 'A' && *key <= 'Z')
+			{
 				*key = *key - 'A' + 'a';
+			}
+			else if (isCtrlPressed && *key >= 1 && *key <= 26)
+			{
+				// if ctrl is pressed, the keys are not between 'A' and 'Z', for instance ctrl-z == 26 ^Z ^C etc.
+				// see https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=19
+				*key = *key + 'a' - 1;
+			}
 			break;
+		}
 	} 
 
 	return buf;
