@@ -12,307 +12,163 @@ cmake_minimum_required(VERSION 2.6)
 
 project(jk2)
 
-set(CMAKE_BUILD_TYPE "RELEASE")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wno-write-strings -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-cpp -fexceptions -m32 -ffast-math -DLINUX -DNDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-write-strings -Wno-conversion-null -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-cpp -fexceptions -m32 -ffast-math -fno-operator-names -DLINUX -DNDEBUG")
+set(PLATFORM_WIN32 0)
+set(PLATFORM_MACOS 0)
+set(PLATFORM_LINUX 0)
 
-set(GAME_SOURCE_FILES
-	code/cgame/FX_ATSTMain.cpp
-	code/cgame/FX_Blaster.cpp
-	code/cgame/FX_Bowcaster.cpp
-	code/cgame/FX_BryarPistol.cpp
-	code/cgame/FX_DEMP2.cpp
-	code/cgame/FX_Disruptor.cpp
-	code/cgame/FX_Emplaced.cpp
-	code/cgame/FX_Flechette.cpp
-	code/cgame/FX_HeavyRepeater.cpp
-	code/cgame/FX_RocketLauncher.cpp
-	code/cgame/FxParsing.cpp
-	code/cgame/FxPrimitives.cpp
-	code/cgame/FxScheduler.cpp
-	code/cgame/FxSystem.cpp
-	code/cgame/FxTemplate.cpp
-	code/cgame/FxUtil.cpp
-	code/cgame/cg_camera.cpp
-	code/cgame/cg_consolecmds.cpp
-	code/cgame/cg_credits.cpp
-	code/cgame/cg_draw.cpp
-	code/cgame/cg_drawtools.cpp
-	code/cgame/cg_effects.cpp
-	code/cgame/cg_ents.cpp
-	code/cgame/cg_event.cpp
-	code/cgame/cg_headers.cpp
-	code/cgame/cg_info.cpp
-	code/cgame/cg_lights.cpp
-	code/cgame/cg_localents.cpp
-	code/cgame/cg_main.cpp
-	code/cgame/cg_marks.cpp
-	code/cgame/cg_players.cpp
-	code/cgame/cg_playerstate.cpp
-	code/cgame/cg_predict.cpp
-	code/cgame/cg_scoreboard.cpp
-	code/cgame/cg_servercmds.cpp
-	code/cgame/cg_snapshot.cpp
-	code/cgame/cg_syscalls.cpp
-	code/cgame/cg_text.cpp
-	code/cgame/cg_view.cpp
-	code/cgame/cg_weapons.cpp
-	code/game/AI_Atst.cpp
-	code/game/AI_Default.cpp
-	code/game/AI_Droid.cpp
-	code/game/AI_GalakMech.cpp
-	code/game/AI_Grenadier.cpp
-	code/game/AI_Howler.cpp
-	code/game/AI_ImperialProbe.cpp
-	code/game/AI_Interrogator.cpp
-	code/game/AI_Jedi.cpp
-	code/game/AI_Mark1.cpp
-	code/game/AI_Mark2.cpp
-	code/game/AI_MineMonster.cpp
-	code/game/AI_Remote.cpp
-	code/game/AI_Seeker.cpp
-	code/game/AI_Sentry.cpp
-	code/game/AI_Sniper.cpp
-	code/game/AI_Stormtrooper.cpp
-	code/game/AI_Utils.cpp
-	code/game/G_Timer.cpp
-	code/game/NPC.cpp
-	code/game/NPC_behavior.cpp
-	code/game/NPC_combat.cpp
-	code/game/NPC_goal.cpp
-	code/game/NPC_misc.cpp
-	code/game/NPC_move.cpp
-	code/game/NPC_reactions.cpp
-	code/game/NPC_senses.cpp
-	code/game/NPC_sounds.cpp
-	code/game/NPC_spawn.cpp
-	code/game/NPC_stats.cpp
-	code/game/NPC_utils.cpp
-	code/game/Q3_Interface.cpp
-	code/game/Q3_Registers.cpp
-	code/game/bg_misc.cpp
-	code/game/bg_pangles.cpp
-	code/game/bg_panimate.cpp
-	code/game/bg_pmove.cpp
-	code/game/bg_slidemove.cpp
-	code/game/g_ICARUS.cpp
-	code/game/g_active.cpp
-	code/game/g_breakable.cpp
-	code/game/g_camera.cpp
-	code/game/g_client.cpp
-	code/game/g_cmds.cpp
-	code/game/g_combat.cpp
-	code/game/g_functions.cpp
-	code/game/g_fx.cpp
-	code/game/g_headers.cpp
-	code/game/g_inventory.cpp
-	code/game/g_itemLoad.cpp
-	code/game/g_items.cpp
-	code/game/g_local.cpp
-	code/game/g_main.cpp
-	code/game/g_mem.cpp
-	code/game/g_misc.cpp
-	code/game/g_misc_model.cpp
-	code/game/g_missile.cpp
-	code/game/g_mover.cpp
-	code/game/g_nav.cpp
-	code/game/g_navigator.cpp
-	code/game/g_navnew.cpp
-	code/game/g_object.cpp
-	code/game/g_objectives.cpp
-	code/game/g_ref.cpp
-	code/game/g_roff.cpp
-	code/game/g_savegame.cpp
-	code/game/g_session.cpp
-	code/game/g_spawn.cpp
-	code/game/g_svcmds.cpp
-	code/game/g_target.cpp
-	code/game/g_trigger.cpp
-	code/game/g_turret.cpp
-	code/game/g_usable.cpp
-	code/game/g_utils.cpp
-	code/game/g_weapon.cpp
-	code/game/g_weaponLoad.cpp
-	code/game/game.def
-	code/game/genericparser2.cpp
-	code/game/q_math.cpp
-	code/game/q_shared.cpp
-	code/game/wp_saber.cpp
+message("system name: ${CMAKE_SYSTEM_NAME}")
+
+if(WIN32)
+    set(PLATFORM_WIN32 1)
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+    set(PLATFORM_MACOS 1)
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+    set(PLATFORM_LINUX 1)
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "")
+    set(CMAKE_BUILD_TYPE "RELEASE")
+endif()
+
+message("Detected platform: Win32=${PLATFORM_WIN32} MacOS=${PLATFORM_MACOS} Linux=${PLATFORM_LINUX}")
+
+# msvc: Debug or Release is selected inside VisualStudio, so don't show the CMAKE_BUILD_TYPE
+if(NOT MSVC)
+    message("Build Type: ${CMAKE_BUILD_TYPE}")
+endif()
+
+
+
+file(GLOB SRC_CGAME ${PROJECT_SOURCE_DIR}/code/cgame/*.cpp ${PROJECT_SOURCE_DIR}/code/cgame/*.h)
+file(GLOB SRC_GAME ${PROJECT_SOURCE_DIR}/code/game/*.cpp ${PROJECT_SOURCE_DIR}/code/game/*.h)
+list(REMOVE_ITEM SRC_GAME ${PROJECT_SOURCE_DIR}/code/game/bg_lib.cpp)
+
+set(SRC_ICARUS
 	code/icarus/BlockStream.cpp
 	code/icarus/Instance.cpp
 	code/icarus/Sequence.cpp
 	code/icarus/Sequencer.cpp
 	code/icarus/TaskManager.cpp
+)
+
+source_group(cgame FILES ${SRC_CGAME})
+source_group(game FILES ${SRC_GAME})
+source_group(icarus FILES ${SRC_ICARUS})
+
+set(GAME_SOURCE_FILES
 	code/qcommon/tri_coll_test.cpp
 	code/ui/gameinfo.cpp
+	${SRC_CGAME}
+	${SRC_GAME}
+	${SRC_ICARUS}
 )
 
 add_library(jk2gamex86 SHARED ${GAME_SOURCE_FILES})
 set_target_properties(jk2gamex86 PROPERTIES PREFIX "")
 
+
+file(GLOB SRC_CLIENT ${PROJECT_SOURCE_DIR}/code/client/*.cpp ${PROJECT_SOURCE_DIR}/code/client/*.h)
+file(GLOB SRC_ENCRYPTION ${PROJECT_SOURCE_DIR}/code/encryption/*.cpp ${PROJECT_SOURCE_DIR}/code/encryption/*.h)
+file(GLOB SRC_GHOUL2 ${PROJECT_SOURCE_DIR}/code/ghoul2/*.cpp ${PROJECT_SOURCE_DIR}/code/ghoul2/*.h)
+file(GLOB SRC_JPEG6 ${PROJECT_SOURCE_DIR}/code/jpeg-6/*.cpp ${PROJECT_SOURCE_DIR}/code/jpeg-6/*.h)
+file(GLOB SRC_MP3CODE ${PROJECT_SOURCE_DIR}/code/mp3code/*.c ${PROJECT_SOURCE_DIR}/code/mp3code/*.h)
+file(GLOB SRC_QCOMMON ${PROJECT_SOURCE_DIR}/code/qcommon/*.cpp ${PROJECT_SOURCE_DIR}/code/qcommon/*.h)
+file(GLOB SRC_RENDERER ${PROJECT_SOURCE_DIR}/code/renderer/*.cpp ${PROJECT_SOURCE_DIR}/code/renderer/*.c ${PROJECT_SOURCE_DIR}/code/renderer/*.h)
+list(REMOVE_ITEM SRC_RENDERER ${PROJECT_SOURCE_DIR}/code/renderer/tr_flares.cpp)
+file(GLOB SRC_SERVER ${PROJECT_SOURCE_DIR}/code/server/*.cpp ${PROJECT_SOURCE_DIR}/code/server/*.h)
+file(GLOB SRC_UI ${PROJECT_SOURCE_DIR}/code/ui/*.cpp ${PROJECT_SOURCE_DIR}/code/ui/*.h)
+list(REMOVE_ITEM SRC_UI ${PROJECT_SOURCE_DIR}/code/ui/gameinfo.cpp)
+
+
+source_group(client FILES ${SRC_CLIENT})
+source_group(encryption FILES ${SRC_ENCRYPTION})
+source_group(ghoul2 FILES ${SRC_GHOUL2})
+source_group(jpeg-6 FILES ${SRC_JPEG6})
+source_group(mp3code FILES ${SRC_MP3CODE})
+source_group(qcommon FILES ${SRC_QCOMMON})
+source_group(renderer FILES ${SRC_RENDERER})
+source_group(mp3code FILES ${SRC_SERVER})
+source_group(server FILES ${SRC_GHOUL2})
+source_group(ui FILES ${SRC_UI})
+
+
+
 set(STARWARS_SOURCE_FILES
-	code/client/cl_cgame.cpp
-	code/client/cl_cin.cpp
-	code/client/cl_console.cpp
-	code/client/cl_input.cpp
-	code/client/cl_keys.cpp
-	code/client/cl_main.cpp
-	code/client/cl_mp3.cpp
-	code/client/cl_parse.cpp
-	code/client/cl_scrn.cpp
-	code/client/cl_ui.cpp
-	code/client/snd_ambient.cpp
-	code/client/snd_dma.cpp
-	code/client/snd_mem.cpp
-	code/client/snd_mix.cpp
-	code/client/snd_music.cpp
-	code/client/vmachine.cpp
-	code/encryption/buffer.cpp
-	code/encryption/cpp_interface.cpp
-	code/encryption/sockets.cpp
 	code/game/genericparser2.cpp
 	code/game/q_math.cpp
 	code/game/q_shared.cpp
-	code/ghoul2/G2_API.cpp
-	code/ghoul2/G2_bolts.cpp
-	code/ghoul2/G2_bones.cpp
-	code/ghoul2/G2_misc.cpp
-	code/ghoul2/G2_surfaces.cpp
-	code/jpeg-6/jcapimin.cpp
-	code/jpeg-6/jccoefct.cpp
-	code/jpeg-6/jccolor.cpp
-	code/jpeg-6/jcdctmgr.cpp
-	code/jpeg-6/jchuff.cpp
-	code/jpeg-6/jcinit.cpp
-	code/jpeg-6/jcmainct.cpp
-	code/jpeg-6/jcmarker.cpp
-	code/jpeg-6/jcmaster.cpp
-	code/jpeg-6/jcomapi.cpp
-	code/jpeg-6/jcparam.cpp
-	code/jpeg-6/jcphuff.cpp
-	code/jpeg-6/jcprepct.cpp
-	code/jpeg-6/jcsample.cpp
-	code/jpeg-6/jctrans.cpp
-	code/jpeg-6/jdapimin.cpp
-	code/jpeg-6/jdapistd.cpp
-	code/jpeg-6/jdatadst.cpp
-	code/jpeg-6/jdatasrc.cpp
-	code/jpeg-6/jdcoefct.cpp
-	code/jpeg-6/jdcolor.cpp
-	code/jpeg-6/jddctmgr.cpp
-	code/jpeg-6/jdhuff.cpp
-	code/jpeg-6/jdinput.cpp
-	code/jpeg-6/jdmainct.cpp
-	code/jpeg-6/jdmarker.cpp
-	code/jpeg-6/jdmaster.cpp
-	code/jpeg-6/jdpostct.cpp
-	code/jpeg-6/jdsample.cpp
-	code/jpeg-6/jdtrans.cpp
-	code/jpeg-6/jerror.cpp
-	code/jpeg-6/jfdctflt.cpp
-	code/jpeg-6/jidctflt.cpp
-	code/jpeg-6/jmemmgr.cpp
-	code/jpeg-6/jmemnobs.cpp
-	code/jpeg-6/jutils.cpp
-	code/linux/linux_console.cpp
-	code/linux/linux_gamma.cpp
-	code/linux/linux_glimp.cpp
-	code/linux/linux_main.cpp
-	code/linux/linux_qgl.cpp
-	code/linux/linux_snddma.cpp
-	code/linux/xvidmode.cpp
-	code/mp3code/cdct.c
-	code/mp3code/csbt.c
-	code/mp3code/csbtL3.c
-	code/mp3code/csbtb.c
-	code/mp3code/cup.c
-	code/mp3code/cupL1.c
-	code/mp3code/cupini.c
-	code/mp3code/cupl3.c
-	code/mp3code/cwin.c
-	code/mp3code/cwinb.c
-	code/mp3code/cwinm.c
-	code/mp3code/hwin.c
-	code/mp3code/l3dq.c
-	code/mp3code/l3init.c
-	code/mp3code/mdct.c
-	code/mp3code/mhead.c
-	code/mp3code/msis.c
-	code/mp3code/towave.c
-	code/mp3code/uph.c
-	code/mp3code/upsf.c
-	code/mp3code/wavep.c
-	code/qcommon/cm_load.cpp
-	code/qcommon/cm_patch.cpp
-	code/qcommon/cm_polylib.cpp
-	code/qcommon/cm_test.cpp
-	code/qcommon/cm_trace.cpp
-	code/qcommon/cmd.cpp
-	code/qcommon/common.cpp
-	code/qcommon/cvar.cpp
-	code/qcommon/files.cpp
-	code/qcommon/hstring.cpp
-	code/qcommon/md4.cpp
-	code/qcommon/msg.cpp
-	code/qcommon/net_chan.cpp
-	code/qcommon/strip.cpp
-	code/qcommon/unzip.cpp
-	code/renderer/matcomp.c
-	code/renderer/tr_animation.cpp
-	code/renderer/tr_backend.cpp
-	code/renderer/tr_bsp.cpp
-	code/renderer/tr_cmds.cpp
-	code/renderer/tr_curve.cpp
-	code/renderer/tr_draw.cpp
-	code/renderer/tr_font.cpp
-	code/renderer/tr_ghoul2.cpp
-	code/renderer/tr_image.cpp
-	code/renderer/tr_init.cpp
-	code/renderer/tr_jpeg_interface.cpp
-	code/renderer/tr_light.cpp
-	code/renderer/tr_main.cpp
-	code/renderer/tr_marks.cpp
-	code/renderer/tr_mesh.cpp
-	code/renderer/tr_model.cpp
-	code/renderer/tr_noise.cpp
-	code/renderer/tr_quicksprite.cpp
-	code/renderer/tr_scene.cpp
-	code/renderer/tr_shade.cpp
-	code/renderer/tr_shade_calc.cpp
-	code/renderer/tr_shader.cpp
-	code/renderer/tr_shadows.cpp
-	code/renderer/tr_sky.cpp
-	code/renderer/tr_stl.cpp
-	code/renderer/tr_surface.cpp
-	code/renderer/tr_surfacesprites.cpp
-	code/renderer/tr_world.cpp
-	code/renderer/tr_worldeffects.cpp
-	code/server/exe_headers.cpp
-	code/server/sv_ccmds.cpp
-	code/server/sv_client.cpp
-	code/server/sv_game.cpp
-	code/server/sv_init.cpp
-	code/server/sv_main.cpp
-	code/server/sv_savegame.cpp
-	code/server/sv_snapshot.cpp
-	code/server/sv_world.cpp
-	code/ui/ui_atoms.cpp
-	code/ui/ui_connect.cpp
-	code/ui/ui_debug.cpp
-	code/ui/ui_main.cpp
-	code/ui/ui_shared.cpp
-	code/ui/ui_syscalls.cpp
+	${SRC_CLIENT}
+	${SRC_ENCRYPTION}
+	${SRC_GHOUL2}
+	${SRC_JPEG6}
+	${SRC_MP3CODE}
+	${SRC_QCOMMON}
+	${SRC_RENDERER}
+	${SRC_SERVER}
+	${SRC_UI}
+	${SRC_LINUX}
 )
 
-set (EXTRA_LIBS ${EXTRA_LIBS} dl)
-set (EXTRA_LIBS ${EXTRA_LIBS} openal)
-set (EXTRA_LIBS ${EXTRA_LIBS} GL)
-set (EXTRA_LIBS ${EXTRA_LIBS} X11)
-set (EXTRA_LIBS ${EXTRA_LIBS} Xxf86vm)
-set (EXTRA_LIBS ${EXTRA_LIBS} Xrandr)
-set (EXTRA_LIBS ${EXTRA_LIBS} rt)
-set (EXTRA_LIBS ${EXTRA_LIBS} pthread)
-set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "-m32")
+
+if(PLATFORM_LINUX)
+    file(GLOB SRC_LINUX ${PROJECT_SOURCE_DIR}/code/linux/*.cpp ${PROJECT_SOURCE_DIR}/code/linux/*.h)
+    source_group(linux FILES ${SRC_LINUX})
+endif()
+
+
+set(STARWARS_SOURCE_FILES ${STARWARS_SOURCE_FILES} ${SRC_WIN32} ${SRC_LINUX})
+
+if(MSVC)
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG")
+
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG")
+
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} ${CMAKE_C_FLAGS_RELEASE}")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${CMAKE_CXX_FLAGS_RELEASE}")
+
+else()
+    set(DISABLE_WARNINGS_C "-Wno-write-strings -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare")
+    set(DISABLE_WARNINGS_CXX "-Wno-write-strings -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-conversion-null")
+
+    set(COMPILER_FLAGS_C "-m32 -fexceptions -ffast-math")
+    set(COMPILER_FLAGS_CXX "-m32 -fexceptions -ffast-math -fno-operator-names")
+
+    if(PLATFORM_LINUX)
+        #set NDEBUG even on debug builds - asserts are killing us otherwise
+        set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DLINUX -DNDEBUG")
+
+        set(DISABLE_WARNINGS_C "${DISABLE_WARNINGS_C} -Wno-cpp")
+        set(DISABLE_WARNINGS_CXX "${DISABLE_WARNINGS_CXX} -Wno-cpp")
+
+    endif()
+
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${CUSTOM_COMPILE_FLAGS_ALL} ${DISABLE_WARNINGS_C} ${COMPILER_FLAGS_C}")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CUSTOM_COMPILE_FLAGS_ALL} ${DISABLE_WARNINGS_CXX} ${COMPILER_FLAGS_CXX}")
+
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g ${CUSTOM_COMPILE_FLAGS_ALL} ${DISABLE_WARNINGS_C} ${COMPILER_FLAGS_C}")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g ${CUSTOM_COMPILE_FLAGS_ALL} ${DISABLE_WARNINGS_CXX} ${COMPILER_FLAGS_CXX}")
+endif()
+
+if(PLATFORM_WIN32)
+	set (EXECUTABLE_FLAG WIN32)
+	set (EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_CURRENT_SOURCE_DIR}/OpenAL32.lib)
+	set (EXTRA_LIBS ${EXTRA_LIBS} winmm.lib)
+	set (EXTRA_LIBS ${EXTRA_LIBS} wsock32.lib)
+endif()
+
+if(PLATFORM_LINUX)
+	set (EXTRA_LIBS ${EXTRA_LIBS} dl)
+	set (EXTRA_LIBS ${EXTRA_LIBS} openal)
+	set (EXTRA_LIBS ${EXTRA_LIBS} GL)
+	set (EXTRA_LIBS ${EXTRA_LIBS} X11)
+	set (EXTRA_LIBS ${EXTRA_LIBS} Xxf86vm)
+	set (EXTRA_LIBS ${EXTRA_LIBS} Xrandr)
+	set (EXTRA_LIBS ${EXTRA_LIBS} rt)
+	set (EXTRA_LIBS ${EXTRA_LIBS} pthread)
+	set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "-m32")
+endif()
 
 add_executable(jk2sp ${STARWARS_SOURCE_FILES})
 target_link_libraries (jk2sp  ${EXTRA_LIBS})
