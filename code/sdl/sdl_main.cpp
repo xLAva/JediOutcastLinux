@@ -27,14 +27,101 @@
 #include <algorithm>
 
 #include <dlfcn.h>
+#include <sys/sendfile.h>
 
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
-#include "linux_local.h"
+#include "sdl_local.h"
 
 // Used to determine CD Path
 static char programpath[MAX_OSPATH];
+
+
+/*
+==================
+Sys_GetFileTime()
+==================
+*/
+
+
+bool Sys_GetFileTime(const char* psFileName, time_t &ft)
+{
+	bool bSuccess = false;
+
+	struct stat attrib;
+	int error = stat(psFileName, &attrib);
+	if (error != 0)
+	{
+		return false;
+	}
+	
+	ft = attrib.st_mtime;
+
+	return bSuccess;
+}
+
+
+/*
+==================
+Sys_FileOutOfDate()
+==================
+*/
+
+qboolean Sys_FileOutOfDate( const char* psFinalFileName, const char* psDataFileName  )
+{
+	time_t ftFinalFile, ftDataFile;
+
+	if (Sys_GetFileTime(psFinalFileName, ftFinalFile) && Sys_GetFileTime(psDataFileName, ftDataFile))
+	{
+		// timer res only accurate to within 2 seconds on FAT, so can't do exact compare...
+		//
+		//LONG l = CompareFileTime( &ftFinalFile, &ftDataFile );
+		
+		if (  (abs(ftFinalFile - ftDataFile) <= 2 )	)
+		{
+			return false;	// file not out of date, ie use it.
+		}
+		return true;	// flag return code to copy over a replacement version of this file
+	}
+
+
+	// extra error check, report as suspicious if you find a file locally but not out on the net.,.
+	//
+	if (com_developer->integer)
+	{
+		if (!Sys_GetFileTime(psDataFileName, ftDataFile))
+		{
+			Com_Printf( "Sys_FileOutOfDate: reading %s but it's not on the net!\n", psFinalFileName);
+		}
+	}
+
+	return false;
+}
+
+qboolean Sys_CopyFile(const char* lpExistingFileName, const char* lpNewFileName, qboolean bOverWrite)
+{
+	qboolean bOk = qtrue;
+	int read_fd;
+	int write_fd;
+	struct stat stat_buf;
+	off_t offset = 0;
+
+	/* Open the input file. */
+	read_fd = open (lpExistingFileName, O_RDONLY);
+	/* Stat the input file to obtain its size. */
+	fstat (read_fd, &stat_buf);
+	/* Open the output file for writing, with the same permissions as the
+	 source file. */
+	write_fd = open (lpNewFileName, O_WRONLY | O_CREAT, stat_buf.st_mode);
+	/* Blast the bytes from one file to the other. */
+	sendfile (write_fd, read_fd, &offset, stat_buf.st_size);
+	/* Close up. */
+	close (read_fd);
+	close (write_fd);
+
+	return bOk;
+}
 
 /*
 ==================
@@ -65,21 +152,21 @@ Sys_Error
 ================
 */
 void Sys_Error( const char *error, ... ) {
-	va_list     argptr;
-	char        string[1024];
+  va_list     argptr;
+  char        string[1024];
 
-	// change stdin to non blocking
-	fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
+  // change stdin to non blocking
+  fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
 
-	Com_ShutdownZoneMemory();
-	Com_ShutdownHunkMemory();
+  //Sys_Shutdown(); -> LAvaPort - we might need it
 
-	va_start (argptr,error);
-	vsprintf (string,error,argptr);
-	va_end (argptr);
-	fprintf(stderr, "Error: %s\n", string);
+  va_start (argptr,error);
+  vsprintf (string,error,argptr);
+  va_end (argptr);
+  fprintf(stderr, "Error: %s\n", string);
 
-	exit (1);
+  exit (1);
+	
 }
 
 
@@ -89,9 +176,8 @@ Sys_Quit
 ================
 */
 void Sys_Quit( void ) {
-  	Com_ShutdownZoneMemory();
-  	Com_ShutdownHunkMemory();
-	fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
+	//Sys_Shutdown(); -> LAvaPort - we might need it
+  fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
 	exit (0);
 }
 
@@ -178,10 +264,9 @@ int Sys_Milliseconds (void)
 
 /*
 ==============
-Sys_DefaultCDPath - same as in unix_shared.cpp
+Sys_DefaultCDPath
 ==============
 */
-
 char *Sys_DefaultCDPath(void)
 {
 	if (*programpath)
@@ -192,7 +277,7 @@ char *Sys_DefaultCDPath(void)
 
 /*
 ==============
-Sys_DefaultBasePath - same as in unix_shared.cpp
+Sys_DefaultBasePath
 ==============
 */
 
@@ -204,7 +289,7 @@ char *Sys_DefaultBasePath(void)
 
 	if ((p = getenv("HOME")) != NULL) {
 		Q_strncpyz(basepath, p, sizeof(basepath));
-		Q_strcat(basepath, sizeof(basepath), "/.jk2");
+		Q_strcat(basepath, sizeof(basepath), "/.jk3-ja");
 		if (mkdir(basepath, 0777)) {
 			if (errno != EEXIST) 
 				Sys_Error("Unable to create directory \"%s\", error is %s(%d)\n", basepath, strerror(errno), errno);
@@ -213,6 +298,7 @@ char *Sys_DefaultBasePath(void)
 	}
 	return ""; // assume current dir
 }
+
 
 void SetProgramPath(char *path)
 {
@@ -254,7 +340,9 @@ int alphasortIgnoreCase(const struct dirent ** a, const struct dirent **b)
 }
 
 
+
 #define	MAX_FOUND_FILES	0x1000
+
 
 char **Sys_ListFiles( const char *directory, const char *extension, int *numfiles, qboolean wantsubs )
 {
@@ -380,106 +468,6 @@ char *Sys_GetClipboardData(void)
 }
 
 
-
-sem_t	renderCommandsEvent;
-sem_t	renderCompletedEvent;
-sem_t	renderActiveEvent;
-
-void (*glimpRenderThread)( void );
-
-void* GLimp_RenderThreadWrapper( void *stub ) {
-	glimpRenderThread();
-
-#if 0
-	// unbind the context before we die
-	qglXMakeCurrent(dpy, None, NULL);
-#endif
-}
-/*
-=======================
-GLimp_SpawnRenderThread
-=======================
-*/
-pthread_t	renderThreadHandle;
-qboolean GLimp_SpawnRenderThread( void (*function)( void ) ) {
-
-	sem_init( &renderCommandsEvent, 0, 0 );
-	sem_init( &renderCompletedEvent, 0, 0 );
-	sem_init( &renderActiveEvent, 0, 0 );
-
-	glimpRenderThread = function;
-
-	if (pthread_create( &renderThreadHandle, NULL,
-		GLimp_RenderThreadWrapper, NULL)) {
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-static	void	*smpData;
-static	int		glXErrors;
-
-void *GLimp_RendererSleep( void ) {
-	void	*data;
-
-#if 0
-	if ( !qglXMakeCurrent(dpy, None, NULL) ) {
-		glXErrors++;
-	}
-#endif
-
-//	ResetEvent( renderActiveEvent );
-
-	// after this, the front end can exit GLimp_FrontEndSleep
-	sem_post ( &renderCompletedEvent );
-
-	sem_wait ( &renderCommandsEvent );
-
-#if 0
-	if ( !qglXMakeCurrent(dpy, win, ctx) ) {
-		glXErrors++;
-	}
-#endif
-
-//	ResetEvent( renderCompletedEvent );
-//	ResetEvent( renderCommandsEvent );
-
-	data = smpData;
-
-	// after this, the main thread can exit GLimp_WakeRenderer
-	sem_post ( &renderActiveEvent );
-
-	return data;
-}
-
-
-void GLimp_FrontEndSleep( void ) {
-	sem_wait ( &renderCompletedEvent );
-
-#if 0
-	if ( !qglXMakeCurrent(dpy, win, ctx) ) {
-		glXErrors++;
-	}
-#endif
-}
-
-
-void GLimp_WakeRenderer( void *data ) {
-	smpData = data;
-
-#if 0
-	if ( !qglXMakeCurrent(dpy, None, NULL) ) {
-		glXErrors++;
-	}
-#endif
-
-	// after this, the renderer can continue through GLimp_RendererSleep
-	sem_post( &renderCommandsEvent );
-
-	sem_wait( &renderActiveEvent );
-}
-
 /*
 ========================================================================
 
@@ -515,7 +503,7 @@ void *Sys_GetGameAPI (void *parms)
 	char	name[MAX_OSPATH];
 	char	cwd[MAX_OSPATH];
 #ifdef __i386__
-	const char *gamename = "jk2gamex86.so";
+	const char *gamename = "jagamex86.so";
 
 #ifdef NDEBUG
 	const char *debugdir = "Release";
@@ -530,17 +518,7 @@ void *Sys_GetGameAPI (void *parms)
 
 	// check the current debug directory first for development purposes
 	getcwd (cwd, sizeof(cwd));
-
-	if (*programpath) 
-	{
-		Com_sprintf (name, sizeof(name), "%s/%s/%s", programpath, debugdir, gamename);
-	}
-
-	else 
-	{
-		Com_sprintf (name, sizeof(name), "%s/%s/%s", cwd, debugdir, gamename);
-	}
-	
+	Com_sprintf (name, sizeof(name), "%s/%s/%s", cwd, debugdir, gamename);
 	game_library = dlopen (name, RTLD_LAZY );
 	if (game_library)
 	{
@@ -549,13 +527,10 @@ void *Sys_GetGameAPI (void *parms)
 	else
 	{
 		// check the current directory for other development purposes
-
-		if (*programpath) 
-		{
-			Com_sprintf (name, sizeof(name), "%s/%s", programpath, gamename);
-		} else {
-			Com_sprintf (name, sizeof(name), "%s/%s", cwd, gamename);
-		}
+	  	if (*programpath)
+		  Com_sprintf (name, sizeof(name), "%s/%s", programpath, gamename);
+		else
+		  Com_sprintf (name, sizeof(name), "%s/%s", cwd, gamename);
 
 		game_library = dlopen (name, RTLD_LAZY );
 		if (game_library)

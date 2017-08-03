@@ -12,6 +12,8 @@ cmake_minimum_required(VERSION 2.6)
 
 project(jk2)
 
+set(USE_SDL2 1)
+
 set(PLATFORM_WIN32 0)
 set(PLATFORM_MACOS 0)
 set(PLATFORM_LINUX 0)
@@ -110,12 +112,77 @@ set(STARWARS_SOURCE_FILES
 )
 
 
-if(PLATFORM_LINUX)
-    file(GLOB SRC_LINUX ${PROJECT_SOURCE_DIR}/code/linux/*.cpp ${PROJECT_SOURCE_DIR}/code/linux/*.h)
-    source_group(linux FILES ${SRC_LINUX})
+
+# now handle platfom specific stuff
+if(USE_SDL2)
+
+    # platform independend sdl stuff
+    set(SSF_SDL2 ${SSF_SDL2}
+        ${PROJECT_SOURCE_DIR}/code/sdl/sdl_local.h
+        ${PROJECT_SOURCE_DIR}/code/sdl/sdl_glw.h
+        ${PROJECT_SOURCE_DIR}/code/sdl/sdl_gamma.cpp
+        ${PROJECT_SOURCE_DIR}/code/sdl/sdl_glimp.cpp
+        ${PROJECT_SOURCE_DIR}/code/sdl/sdl_qgl.cpp
+        ${PROJECT_SOURCE_DIR}/code/sdl/sdl_snddma.cpp
+    )
+
+    source_group(sdl FILES ${SSF_SDL2})
+    set(STARWARS_SOURCE_FILES ${STARWARS_SOURCE_FILES} ${SSF_SDL2})
+
+    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_SDL2")
+
+    if(PLATFORM_WIN32)
+
+        set(SSF_WIN32 ${SSF_WIN32}
+            ${PROJECT_SOURCE_DIR}/code/win32/win_main.cpp
+            ${PROJECT_SOURCE_DIR}/code/win32/win_shared.cpp
+            ${PROJECT_SOURCE_DIR}/code/win32/win_syscon.cpp
+        )
+
+        include_directories("${EXTERNAL_LIB_PATH}/SDL2-2.0.3/include")
+
+        add_library(imp_sdl2 STATIC IMPORTED)
+        set_property(TARGET imp_sdl2 PROPERTY IMPORTED_LOCATION "${EXTERNAL_LIB_PATH}/SDL2-2.0.3/lib/x86/SDL2.lib")
+
+        set(EXTRA_LIBS ${EXTRA_LIBS} imp_sdl2)
+    elseif(PLATFORM_MACOS)
+        # mac sdl
+
+        set(SSF_MACOS ${SSF_MACOS}
+            ${PROJECT_SOURCE_DIR}/code/sdl/sdl_console.cpp
+            ${PROJECT_SOURCE_DIR}/code/mac/mac_main_sdl.cpp
+        )
+
+
+        include_directories( /Library/Frameworks )
+        FIND_LIBRARY(SDL2_LIBRARY SDL2)
+        MARK_AS_ADVANCED (SDL2_LIBRARY)
+        set(EXTRA_LIBS ${EXTRA_LIBS} ${SDL2_LIBRARY})
+
+    else()
+        # linux sdl
+        
+        set(SSF_LINUX ${SSF_LINUX}
+            ${PROJECT_SOURCE_DIR}/code/sdl/sdl_console.cpp
+            ${PROJECT_SOURCE_DIR}/code/linux/linux_main.cpp
+        )
+
+        set(EXTRA_LIBS ${EXTRA_LIBS} SDL2)
+    endif()
+else()
+    if(PLATFORM_LINUX)
+        file(GLOB SRC_LINUX ${PROJECT_SOURCE_DIR}/code/linux/*.cpp ${PROJECT_SOURCE_DIR}/code/linux/*.h)
+        source_group(linux FILES ${SRC_LINUX})
+    endif()
 endif()
 
 
+
+# add platform specific files
+source_group(win32 FILES ${SSF_WIN32})
+source_group(linux FILES ${SSF_LINUX})
+source_group(mac FILES ${SSF_MACOS})
+set(STARWARS_SOURCE_FILES ${STARWARS_SOURCE_FILES} ${SSF_WIN32} ${SSF_LINUX} ${SSF_MACOS})
 set(STARWARS_SOURCE_FILES ${STARWARS_SOURCE_FILES} ${SRC_WIN32} ${SRC_LINUX})
 
 if(MSVC)
@@ -140,7 +207,7 @@ else()
         set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DLINUX -DNDEBUG")
 
         set(DISABLE_WARNINGS_C "${DISABLE_WARNINGS_C} -Wno-cpp")
-        set(DISABLE_WARNINGS_CXX "${DISABLE_WARNINGS_CXX} -Wno-cpp")
+        set(DISABLE_WARNINGS_CXX "${DISABLE_WARNINGS_CXX} -Wno-cpp -std=c++98")
 
     endif()
 

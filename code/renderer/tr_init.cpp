@@ -166,15 +166,15 @@ Ghoul2 Insert End
 */
 
 
-//void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
-//void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
-//void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
-//
-//void ( APIENTRY * qglLockArraysEXT)( GLint, GLint);
-//void ( APIENTRY * qglUnlockArraysEXT) ( void );
-//
-//void ( APIENTRY * qglPointParameterfEXT)( GLenum, GLfloat);
-//void ( APIENTRY * qglPointParameterfvEXT)( GLenum, GLfloat *);
+void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
+void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
+void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
+
+void ( APIENTRY * qglLockArraysEXT)( GLint, GLint);
+void ( APIENTRY * qglUnlockArraysEXT) ( void );
+
+void ( APIENTRY * qglPointParameterfEXT)( GLenum, GLfloat);
+void ( APIENTRY * qglPointParameterfvEXT)( GLenum, GLfloat *);
 
 #ifdef _NPATCH
 void ( APIENTRY * qglPNTrianglesiATI )( GLenum pname, GLint param );
