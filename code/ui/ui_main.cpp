@@ -20,6 +20,8 @@ USER INTERFACE MAIN
 
 #include "../qcommon/stv_version.h"
 
+using namespace std;
+
 #define LISTBUFSIZE 10240
 
 static struct 
@@ -287,8 +289,8 @@ void Text_PaintWithCursor(float x, float y, float scale, vec4_t color, const cha
 	// now print the cursor as well...
 	//
 	char sTemp[1024];
-	int iCopyCount = std::min((int)strlen(text), cursorPos);
-		iCopyCount = std::min(iCopyCount,(int)sizeof(sTemp));
+	int iCopyCount = min((int)strlen(text), cursorPos);
+		iCopyCount = min(iCopyCount,(int)sizeof(sTemp));
 
 	// copy text into temp buffer for pixel measure...
 	//

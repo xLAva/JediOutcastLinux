@@ -251,3 +251,20 @@ endif()
 add_executable(jk2sp ${EXECUTABLE_FLAG} ${STARWARS_SOURCE_FILES})
 target_link_libraries (jk2sp  ${EXTRA_LIBS})
 set_target_properties (jk2sp PROPERTIES COMPILE_DEFINITIONS "_JK2EXE;_M_IX86")
+
+if(PLATFORM_WIN32)
+	add_custom_command(TARGET jk2gamex86 POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2gamex86>/jk2gamex86.dll" "${PROJECT_SOURCE_DIR}/binary/win32/"
+		COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2gamex86>/jk2gamex86.pdb" "${PROJECT_SOURCE_DIR}/binary/win32/"
+	)
+
+	set_property(TARGET jk2sp APPEND PROPERTY LINK_FLAGS /stack:0x800000)
+	add_custom_command(TARGET jk2sp POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2sp>/jk2sp.exe" "${PROJECT_SOURCE_DIR}/binary/win32/"
+		COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2sp>/jk2sp.pdb" "${PROJECT_SOURCE_DIR}/binary/win32/"
+	)
+
+	set_target_properties(jk2sp PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/binary/win32/")
+
+endif()
+

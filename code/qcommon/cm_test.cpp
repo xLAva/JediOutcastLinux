@@ -32,7 +32,7 @@ void CM_CleanLeafCache(void)
 	hlist<pair<CPoint,int> >::iterator l;
 	for(l=pointToLeaf.begin();l!=pointToLeaf.end();l++)
 	{
-		pointToLeaf.erase(l);
+		l = pointToLeaf.erase(l);
 	}
 /*
 	for(l=pointToContents.begin();l!=pointToContents.end();l++)

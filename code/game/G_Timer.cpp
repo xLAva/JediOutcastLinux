@@ -51,25 +51,29 @@ void TIMER_Save( void )
 
 	for ( j = 0, ent = &g_entities[0]; j < MAX_GENTITIES; j++, ent++ )
 	{
-		int numTimers = g_timers[ent->s.number].size();
-		int	i;
+		int numTimers = g_timers[j].size();
 
 		//Write out the timer information
 		gi.AppendToSaveGame('TIME', (void *)&numTimers, sizeof(numTimers));
 		
 		timer_m::iterator	ti;
 
-		for ( i = 0, ti = g_timers[ j ].begin(); i < numTimers; i++, ti++ )
+		for (ti = g_timers[j].begin(); ti != g_timers[j].end(); ++ti)
 		{
-			const char *id = ((*ti).first).c_str();
-			int			length = strlen( id );
+			std::string timerID = ti->first;
+			int time = ti->second;
+
+			const char *id = timerID.c_str();
+			int			length = strlen( id ) + 1;
+
+			assert( length < 1024 );//This will cause problems when loading the timer if longer
 
 			//Write out the string size and data
 			gi.AppendToSaveGame('TSLN', (void *) &length, sizeof(length) );
 			gi.AppendToSaveGame('TSNM', (void *) id, length );
 
 			//Write out the timer data
-			gi.AppendToSaveGame('TDTA', (void *) &(*ti).second, sizeof( (*ti).second ) );
+			gi.AppendToSaveGame('TDTA', (void *) &time, sizeof(time) );
 		}
 	}
 }

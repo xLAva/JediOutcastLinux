@@ -716,20 +716,16 @@ inline float Q_flrand(float min, float max) {
 
 // Returns an integer min <= x <= max (ie inclusive)
 inline int Q_irand(int min, int max) {
-  //LAvaPort (not sure but I think it is possible to get more then max!!
-	max++; //so it can round down
+	//max++; //so it can round down
 	//return ((rand() * (max - min)) >> 15) + min;
 	//int r = ((rand() * (max - min)) >> 15) + min;
 	
-	if (max == min)
+	if (max <= min)
 	{
-		// avoid division by 0
 		return min;
 	}
 	
-	//int r= ((rand() /(RAND_MAX/(max-min)) ))+min;
-	//printf("Q_irand: min=%d, max=%d, r=%d\n", min, max, r);
-	return ((rand() /(RAND_MAX/(max-min)) ))+min;
+	return (rand() %  (max - min + 1)) + min;
 }
 
 //returns a float between 0 and 1.0

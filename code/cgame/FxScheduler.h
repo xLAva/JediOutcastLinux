@@ -68,8 +68,18 @@ private:
 public:
 
 	void	AddHandle( int item )	{ mMediaList.push_back( item );	}
-	int		GetHandle()				{ if (mMediaList.size()==0) {return 0;}
-										else {return mMediaList[irand(0,mMediaList.size()-1)];} }
+	int		GetHandle()				
+	{ 
+		if (mMediaList.size()==0) 
+		{
+			return 0;
+		}
+		else 
+		{
+			int index = irand(0, mMediaList.size()-1);
+			return mMediaList[index];
+		} 
+	}
 
 	void operator=(const CMediaHandles &that );
 };

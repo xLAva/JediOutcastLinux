@@ -413,12 +413,12 @@ void S_Init( void ) {
 	Cmd_AddCommand("mp3_calcvols", S_MP3_CalcVols_f);
 	Cmd_AddCommand("s_dynamic", S_SetDynamicMusic_f);
 
-	cv = Cvar_Get("s_UseOpenAL" , "0",CVAR_ARCHIVE|CVAR_LATCH);
+	cv = Cvar_Get("s_UseOpenAL" , "1",CVAR_ARCHIVE|CVAR_LATCH);
 	s_UseOpenAL = !!(cv->integer);
-  //LAvaPort - ugly
-  #ifdef __linux__
-  s_UseOpenAL = true;
-  #endif
+	//LAvaPort - ugly
+
+	s_UseOpenAL = true;
+
 
 	if (s_UseOpenAL)
 	{
