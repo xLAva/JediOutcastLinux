@@ -1,0 +1,22 @@
+WINDOWS:
+
+Get the sources here:
+https://www.libsdl.org/release/SDL2-devel-2.0.5-VC.zip
+
+Extract sdl2 into this folder. No building is required.
+
+
+MACOS:
+
+Get the sources here:
+https://www.libsdl.org/release/SDL2-2.0.5.dmg
+
+Follow the installation instructions for system wide installation.
+
+
+LINUX:
+Just install the sdl2 library from the repository of your distribution.
+
+For example on Ubuntu:
+sudo apt-get install libsdl2-dev:i386
+
