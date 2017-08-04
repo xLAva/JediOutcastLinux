@@ -144,10 +144,10 @@ if(USE_SDL2)
             ${PROJECT_SOURCE_DIR}/code/win32/win_syscon.cpp
         )
 
-        include_directories("${EXTERNAL_LIB_PATH}/SDL2-2.0.3/include")
+        include_directories("${EXTERNAL_LIB_PATH}/SDL2-2.0.5/include")
 
         add_library(imp_sdl2 STATIC IMPORTED)
-        set_property(TARGET imp_sdl2 PROPERTY IMPORTED_LOCATION "${EXTERNAL_LIB_PATH}/SDL2-2.0.3/lib/x86/SDL2.lib")
+        set_property(TARGET imp_sdl2 PROPERTY IMPORTED_LOCATION "${EXTERNAL_LIB_PATH}/SDL2-2.0.5/lib/x86/SDL2.lib")
 
         set(EXTRA_LIBS ${EXTRA_LIBS} imp_sdl2)
     elseif(PLATFORM_MACOS)
