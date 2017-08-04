@@ -297,7 +297,7 @@ int GLW_SetMode(int mode, qboolean fullscreen )
 	#endif
 	
     VID_Printf(PRINT_ALL, "Create Window %dx%d at %dx%d\n", s_windowWidth, s_windowHeight, displayPosX, displayPosY);
-    s_pSdlWindow = SDL_CreateWindow("Jasp HMD", displayPosX, displayPosY, s_windowWidth, s_windowHeight, windowFlags);
+    s_pSdlWindow = SDL_CreateWindow("Jedi Knight 2 SP", displayPosX, displayPosY, s_windowWidth, s_windowHeight, windowFlags);
 	
 
 	if (!s_pSdlWindow)
