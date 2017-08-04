@@ -679,7 +679,10 @@ void Q_strncpyz( char *dest, const char *src, int destsize, qboolean bBarfIfTooL
 			Com_Error(ERR_FATAL,"String dest buffer too small to hold string \"%s\"",src);
 		}
 	}
-	strncpy( dest, src, destsize-1 );
+	if (dest != src)
+	{
+		strncpy( dest, src, destsize-1 );
+	}
     dest[destsize-1] = 0;
 }
 /*                 

@@ -124,7 +124,7 @@ public:
 	typedef T&       reference;
 	typedef const T& const_reference;
 	typedef size_t    size_type;
-	typedef ptrdiff_t difference_type;
+	typedef std::ptrdiff_t difference_type;
 	
 	template <class U>
 	struct rebind 
@@ -200,16 +200,16 @@ bool operator!= (const CMapPool<T1>&,
    return true;
 }
 
-template <class K,class V,class Compare = less<K> >
+template <class K,class V,class Compare = std::less<K> >
 class hmap : public std::map<K,V,Compare,CMapPool<V> >{};
 
-template <class K,class V,class Compare = less<K> >
+template <class K,class V,class Compare = std::less<K> >
 class hmultimap : public std::multimap<K,V,Compare,CMapPool<V> >{};
 
-template <class K,class Compare = less<K> >
+template <class K,class Compare = std::less<K> >
 class hset : public std::set<K,Compare,CMapPool<K> >{};
 
-template <class K,class Compare = less<K> >
+template <class K,class Compare = std::less<K> >
 class hmultiset : public std::multiset<K,Compare,CMapPool<K> >{};
 
 template <class K>

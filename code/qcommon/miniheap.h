@@ -22,10 +22,12 @@ void ResetHeap()
 
 // initialise the heap
 CMiniHeap(int size)
+	:mHeap(nullptr)
+	,mCurrentHeap(nullptr)
+	,mSize(size)
+	,mMaxAlloc(0)
 {
 	mHeap = (char *)Z_Malloc(size, TAG_GHOUL2, qtrue);
-	mSize = size;
-	mMaxAlloc=0;
 	if (mHeap)
 	{
 		ResetHeap();

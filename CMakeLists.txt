@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project(jk2)
 
-set(USE_SDL2 0)
+set(USE_SDL2 1)
 
 set(PLATFORM_WIN32 0)
 set(PLATFORM_MACOS 0)
@@ -204,7 +204,7 @@ else()
     set(DISABLE_WARNINGS_CXX "-Wno-write-strings -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-conversion-null")
 
     set(COMPILER_FLAGS_C "-m32 -fexceptions -ffast-math")
-    set(COMPILER_FLAGS_CXX "-m32 -fexceptions -ffast-math -fno-operator-names -std=c++98")
+    set(COMPILER_FLAGS_CXX "-m32 -fexceptions -ffast-math -fno-operator-names")
 
     if(PLATFORM_LINUX)
         #set NDEBUG even on debug builds - asserts are killing us otherwise

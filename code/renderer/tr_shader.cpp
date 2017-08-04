@@ -1854,7 +1854,9 @@ void ParseSort( const char **text )
 
 typedef struct {
 	char	*name;
-	int		clearSolid, surfaceFlags, contents;
+	int		clearSolid;
+	unsigned int surfaceFlags;
+	unsigned int contents;
 } infoParm_t;
 		
 

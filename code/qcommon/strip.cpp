@@ -329,7 +329,7 @@ void cStrings::Clear(void)
 
 	if (Reference)
 	{
-		delete Reference;
+		delete[] Reference;
 		Reference = NULL;
 	}
 }
@@ -352,7 +352,7 @@ void cStrings::SetReference(char *newReference)
 {
 	if (Reference)
 	{
-		delete Reference;
+		delete[] Reference;
 		Reference = NULL;
 	}
 
@@ -461,7 +461,7 @@ void cStringsSingle::Clear(void)
 
 	if (Text)
 	{
-		delete Text;
+		delete[] Text;
 		Text = NULL;
 	}
 }
@@ -473,7 +473,7 @@ void cStringsSingle::SetText(const char *newText)
 
 	if (Text)
 	{
-		delete Text;
+		delete[] Text;
 		Text = NULL;
 	}
 
@@ -643,7 +643,7 @@ cStringPackage::~cStringPackage(void)
 {
 	if (Reference)
 	{
-		delete Reference;
+		delete[] Reference;
 		Reference = NULL;
 	}
 }
@@ -652,7 +652,7 @@ void cStringPackage::SetReference(char *newReference)
 {
 	if (Reference)
 	{
-		delete Reference;
+		delete[] Reference;
 		Reference = NULL;
 	}
 
@@ -714,7 +714,7 @@ bool cStringPackage::Load(char *FileName )
 
 	Load(buffer, Size );
 
-	delete buffer;
+	delete[] buffer;
 
 	return true;
 }

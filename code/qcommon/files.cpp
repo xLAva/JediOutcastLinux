@@ -813,7 +813,10 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 					// set the file position in the zip file (also sets the current file info)
 					unzSetCurrentFileInfoPosition(pak->handle, pakFile->pos);
 					// copy the file info into the unzip structure
-					memcpy( zfi, pak->handle, sizeof(unz_s));
+					if (zfi != pak->handle)
+					{
+						memcpy( zfi, pak->handle, sizeof(unz_s));
+					}
 					// we copy this back into the structure
 					zfi->file = temp;
 					// open the file in the zip

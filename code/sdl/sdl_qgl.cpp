@@ -3144,7 +3144,7 @@ qboolean QGL_Init( const char *dllname )
 	//VID_Printf( PRINT_ALL, "...calling LoadLibrary( '%s.dll' ): ", dllname );
 
     int ret = SDL_GL_LoadLibrary(NULL);
-    glw_state.OpenGLLib = ret == 0;
+    glw_state.OpenGLLib = (ret == 0);
 
     if (!glw_state.OpenGLLib)
 	{

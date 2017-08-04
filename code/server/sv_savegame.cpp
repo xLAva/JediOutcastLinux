@@ -1108,7 +1108,7 @@ void DeCompress_RLE(byte *pOut, const byte *pIn, int iDecompressedBytesRemaining
 //
 qboolean Verify_RLE(const byte *pOut, const byte *pIn, int iDecompressedBytesRemaining)
 {
-	signed char count;
+	signed char count = 0;
 	const byte *pOutEnd = &pOut[iDecompressedBytesRemaining];
 	
 	while (iDecompressedBytesRemaining > 0) 

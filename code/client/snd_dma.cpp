@@ -256,6 +256,7 @@ const GUID DSPROPSETID_EAX30_ListenerProperties
 const GUID DSPROPSETID_EAX30_BufferProperties
 				= { 0xa8fa6881, 0xb476,	0x11d3, { 0xbd, 0xb9, 0x0, 0xc0, 0xf0, 0x2d, 0xdf, 0x87} };
 
+
 /**************************************************************************************************\
 *
 *	End of Open AL Specific

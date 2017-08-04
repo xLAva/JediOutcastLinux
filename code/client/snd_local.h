@@ -11,8 +11,8 @@
 // Open AL Specific
 #include "OpenAL/al.h"
 #include "OpenAL/alc.h"
-#ifdef _WINDOWS
 #include "eax/eax.h"
+#ifdef _WINDOWS
 #include "eax/eaxman.h"
 #endif
 
