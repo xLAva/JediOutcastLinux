@@ -171,8 +171,10 @@ int GLW_SetMode(int mode, qboolean fullscreen )
 	if (mode == 10)
 	{
 		// use main display resolution
-		SDL_DisplayMode dm;
-		int ret = SDL_GetDesktopDisplayMode(0, &dm);
+		int display_count = 0, display_index = 0, mode_index = 0;
+		SDL_DisplayMode dm = { SDL_PIXELFORMAT_UNKNOWN, 0, 0, 0, 0 };
+
+		int ret = SDL_GetDisplayMode(0, mode_index, &dm);
 		if (ret == 0)
 		{
 			glConfig.vidWidth = dm.w;
@@ -274,7 +276,7 @@ int GLW_SetMode(int mode, qboolean fullscreen )
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, stencilbits);
 	
 	
-	int windowFlags = SDL_WINDOW_OPENGL;
+	int windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI;
 	if (fullscreen)
 	{
 		windowFlags |= SDL_WINDOW_FULLSCREEN;
@@ -369,7 +371,7 @@ int GLW_SetMode(int mode, qboolean fullscreen )
 	
 	if (!fixedDeviceResolution)
 	{
-		SDL_GetWindowSize(s_pSdlWindow, &actualWidth, &actualHeight);
+		SDL_GL_GetDrawableSize(s_pSdlWindow, &actualWidth, &actualHeight);
 		glConfig.vidWidth = actualWidth;
 		glConfig.vidHeight = actualHeight;
 	}
@@ -1677,3 +1679,114 @@ void Sys_SendKeyEvents (void)
 {
 	HandleEvents();
 }
+
+#ifdef _WINDOWS
+
+
+/*
+===========================================================
+
+SMP acceleration
+
+===========================================================
+*/
+
+HANDLE	renderCommandsEvent;
+HANDLE	renderCompletedEvent;
+HANDLE	renderActiveEvent;
+
+void (*glimpRenderThread)( void );
+
+void GLimp_RenderThreadWrapper( void ) {
+	glimpRenderThread();
+
+	SDL_GL_MakeCurrent(s_pSdlWindow, nullptr);
+}
+
+/*
+=======================
+GLimp_SpawnRenderThread
+=======================
+*/
+HANDLE	renderThreadHandle;
+int		renderThreadId;
+qboolean GLimp_SpawnRenderThread( void (*function)( void ) ) {
+
+	renderCommandsEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+	renderCompletedEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+	renderActiveEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+
+	glimpRenderThread = function;
+
+	renderThreadHandle = CreateThread(
+	   NULL,	// LPSECURITY_ATTRIBUTES lpsa,
+	   0,		// DWORD cbStack,
+	   (LPTHREAD_START_ROUTINE)GLimp_RenderThreadWrapper,	// LPTHREAD_START_ROUTINE lpStartAddr,
+	   0,			// LPVOID lpvThreadParm,
+	   0,			//   DWORD fdwCreate,
+	   (unsigned long *) &renderThreadId );
+
+	if ( !renderThreadHandle ) {
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
+static	void	*smpData;
+static	int		wglErrors;
+
+void *GLimp_RendererSleep( void ) {
+	void	*data;
+
+	if ( !SDL_GL_MakeCurrent(s_pSdlWindow, nullptr) ) {
+		wglErrors++;
+	}
+
+	ResetEvent( renderActiveEvent );
+
+	// after this, the front end can exit GLimp_FrontEndSleep
+	SetEvent( renderCompletedEvent );
+
+	WaitForSingleObject( renderCommandsEvent, INFINITE );
+
+	if ( !SDL_GL_MakeCurrent(s_pSdlWindow, sGlContext) ) {
+		wglErrors++;
+	}
+
+	ResetEvent( renderCompletedEvent );
+	ResetEvent( renderCommandsEvent );
+
+	data = smpData;
+
+	// after this, the main thread can exit GLimp_WakeRenderer
+	SetEvent( renderActiveEvent );
+
+	return data;
+}
+
+
+void GLimp_FrontEndSleep( void ) {
+	WaitForSingleObject( renderCompletedEvent, INFINITE );
+
+	if ( !SDL_GL_MakeCurrent(s_pSdlWindow, sGlContext) ) {
+		wglErrors++;
+	}
+}
+
+
+void GLimp_WakeRenderer( void *data ) {
+	smpData = data;
+
+	if ( !SDL_GL_MakeCurrent(s_pSdlWindow, nullptr) ) {
+		wglErrors++;
+	}
+
+	// after this, the renderer can continue through GLimp_RendererSleep
+	SetEvent( renderCommandsEvent );
+
+	WaitForSingleObject( renderActiveEvent, INFINITE );
+}
+
+
+#endif

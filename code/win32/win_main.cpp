@@ -23,6 +23,8 @@
 
 static char		sys_cmdline[MAX_STRING_CHARS];
 
+WinVars_t	g_wv;
+
 /*
 ==================
 Sys_LowPhysicalMemory()
@@ -915,7 +917,9 @@ void Sys_Init( void ) {
 
 	// save out a couple things in rom cvars for the renderer to access
 	Cvar_Get( "win_hinstance", va("%i", (int)g_wv.hInstance), CVAR_ROM );
+#ifndef USE_SDL2
 	Cvar_Get( "win_wndproc", va("%i", (int)MainWndProc), CVAR_ROM );
+#endif
 
 	//
 	// figure out our CPU

@@ -12,8 +12,6 @@
 #define CONSOLE_SCAN_CODE	0x29
 
 
-WinVars_t	g_wv;
-
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL (WM_MOUSELAST+1)  // message that will be supported by the OS 
 #endif

@@ -12,11 +12,12 @@
 
 #if defined(LINUX) || defined(__APPLE__)
 #include <SDL2/SDL.h>
+#define HIBYTE(W)       (unsigned char)(((W) >> 8) & 0xFF)
 #else
 #include <SDL.h>
 #endif
 
-#define HIBYTE(W)       (unsigned char)(((W) >> 8) & 0xFF)
+
 
 //static x11drv_gamma_ramp s_oldHardwareGamma;
 static uint16_t sOriginalGammaRed[256];
