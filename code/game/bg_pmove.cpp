@@ -6474,7 +6474,7 @@ qboolean PM_SaberLocked( void )
 		{//lock just ended
 			int strength = G_SaberLockStrength( gent );
 			int eStrength = G_SaberLockStrength( genemy );
-			if ( strength > 1 && eStrength > 1 && !Q_irand( 0, fabs(strength-eStrength)+1 ) )
+			if ( strength > 1 && eStrength > 1 && !Q_irand( 0, abs(strength-eStrength)+1 ) )
 			{//both knock each other down!
 				PM_SaberLockBreak( gent, genemy, LOCK_DRAW, 0 );
 			}

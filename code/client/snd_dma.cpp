@@ -211,9 +211,12 @@ void UpdateLoopingSounds();
 void AL_UpdateRawSamples();
 void S_SetLipSyncs();
 
+#ifndef _WINDOWS
 //LAvaPort
 #define LPEAXMANAGER int
 #define HINSTANCE int
+#endif 
+
 // EAX Related
 ALboolean				s_bEAX;				// Is EAX 3.0 support is available
 bool					s_bEALFileLoaded;	// Has an .eal file been loaded for the current level
@@ -421,7 +424,7 @@ void S_Init( void ) {
 		#ifdef __linux__
 		ALCDevice = alcOpenDevice(NULL); //LAvaPort
 		#else
-		ALCDevice = alcOpenDevice((ALubyte*)"DirectSound3D"); 
+		ALCDevice = alcOpenDevice("DirectSound3D"); 
 		#endif
 		if (!ALCDevice)
 			return;
@@ -5105,13 +5108,13 @@ void InitEAXManager()
 	HRESULT hr;
 
 	// Check for EAX 3.0 support
-	s_bEAX = alIsExtensionPresent((ALubyte*)"EAX3.0");
+	s_bEAX = alIsExtensionPresent("EAX3.0");
 	if (s_bEAX)
 	{
-		s_eaxSet = (EAXSet)alGetProcAddress((ALubyte*)"EAXSet");
+		s_eaxSet = (EAXSet)alGetProcAddress("EAXSet");
 		if (s_eaxSet == NULL)
 			s_bEAX = false;
-		s_eaxGet = (EAXGet)alGetProcAddress((ALubyte*)"EAXGet");
+		s_eaxGet = (EAXGet)alGetProcAddress("EAXGet");
 		if (s_eaxGet == NULL)
 			s_bEAX = false;
 	}

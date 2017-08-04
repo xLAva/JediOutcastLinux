@@ -1987,7 +1987,7 @@ int PM_AnimLength( int index, animNumber_t anim )
 	if ( ValidAnimFileIndex( index ) == false )
 		return 0;
 
-	return level.knownAnimFileSets[index].animations[anim].numFrames * fabs(level.knownAnimFileSets[index].animations[anim].frameLerp);
+	return level.knownAnimFileSets[index].animations[anim].numFrames * abs(level.knownAnimFileSets[index].animations[anim].frameLerp);
 }
 
 /*
@@ -2415,13 +2415,13 @@ void PM_SetAnimFinal(int *torsoAnim,int *legsAnim,
 		{//FIXME: allow to set a specific time?
 			if ( timeScaleMod != 1.0 )
 			{
-				PM_SetTorsoAnimTimer( gent, torsoAnimTimer, (animations[anim].numFrames - 1) * fabs(animations[anim].frameLerp) / timeScaleMod );
+				PM_SetTorsoAnimTimer( gent, torsoAnimTimer, (animations[anim].numFrames - 1) * abs(animations[anim].frameLerp) / timeScaleMod );
 			}
 			else if ( setAnimFlags & SETANIM_FLAG_HOLDLESS )
 			{	// Make sure to only wait in full 1/20 sec server frame intervals.
 				int dur;
 				
-				dur = (animations[anim].numFrames -1) * fabs(animations[anim].frameLerp);
+				dur = (animations[anim].numFrames -1) * abs(animations[anim].frameLerp);
 				//dur = ((int)(dur/50.0)) * 50;
 				//dur -= blendTime;
 				if (dur > 1)
@@ -2430,12 +2430,12 @@ void PM_SetAnimFinal(int *torsoAnim,int *legsAnim,
 				}
 				else
 				{
-					PM_SetTorsoAnimTimer( gent, torsoAnimTimer, fabs(animations[anim].frameLerp) );
+					PM_SetTorsoAnimTimer( gent, torsoAnimTimer, abs(animations[anim].frameLerp) );
 				}
 			}
 			else
 			{
-				PM_SetTorsoAnimTimer( gent, torsoAnimTimer, (animations[anim].numFrames ) * fabs(animations[anim].frameLerp) );
+				PM_SetTorsoAnimTimer( gent, torsoAnimTimer, (animations[anim].numFrames ) * abs(animations[anim].frameLerp) );
 			}
 		}
 	}
@@ -2631,13 +2631,13 @@ setAnimLegs:
 		{//FIXME: allow to set a specific time?
 			if ( timeScaleMod != 1.0 )
 			{
-				PM_SetLegsAnimTimer( gent, legsAnimTimer, (animations[anim].numFrames - 1) * fabs(animations[anim].frameLerp) / timeScaleMod );
+				PM_SetLegsAnimTimer( gent, legsAnimTimer, (animations[anim].numFrames - 1) * abs(animations[anim].frameLerp) / timeScaleMod );
 			}
 			else if ( setAnimFlags & SETANIM_FLAG_HOLDLESS )
 			{	// Make sure to only wait in full 1/20 sec server frame intervals.
 				int dur;
 				
-				dur = (animations[anim].numFrames -1) * fabs(animations[anim].frameLerp);
+				dur = (animations[anim].numFrames -1) * abs(animations[anim].frameLerp);
 				//dur = ((int)(dur/50.0)) * 50;
 				//dur -= blendTime;
 				if (dur > 1)
@@ -2646,12 +2646,12 @@ setAnimLegs:
 				}
 				else
 				{
-					PM_SetLegsAnimTimer( gent, legsAnimTimer, fabs(animations[anim].frameLerp) );
+					PM_SetLegsAnimTimer( gent, legsAnimTimer, abs(animations[anim].frameLerp) );
 				}
 			}
 			else
 			{
-				PM_SetLegsAnimTimer( gent, legsAnimTimer, (animations[anim].numFrames ) * fabs(animations[anim].frameLerp) );
+				PM_SetLegsAnimTimer( gent, legsAnimTimer, (animations[anim].numFrames ) * abs(animations[anim].frameLerp) );
 			}
 		}
 	}

@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project(jk2)
 
-set(USE_SDL2 1)
+set(USE_SDL2 0)
 
 set(PLATFORM_WIN32 0)
 set(PLATFORM_MACOS 0)
@@ -51,6 +51,11 @@ set(SRC_ICARUS
 	code/icarus/Sequence.cpp
 	code/icarus/Sequencer.cpp
 	code/icarus/TaskManager.cpp
+	code/icarus/BlockStream.h
+	code/icarus/Instance.h
+	code/icarus/Sequence.h
+	code/icarus/Sequencer.h
+	code/icarus/TaskManager.h
 )
 
 source_group(cgame FILES ${SRC_CGAME})
@@ -64,9 +69,6 @@ set(GAME_SOURCE_FILES
 	${SRC_GAME}
 	${SRC_ICARUS}
 )
-
-add_library(jk2gamex86 SHARED ${GAME_SOURCE_FILES})
-set_target_properties(jk2gamex86 PROPERTIES PREFIX "")
 
 
 file(GLOB SRC_CLIENT ${PROJECT_SOURCE_DIR}/code/client/*.cpp ${PROJECT_SOURCE_DIR}/code/client/*.h)
@@ -108,7 +110,6 @@ set(STARWARS_SOURCE_FILES
 	${SRC_RENDERER}
 	${SRC_SERVER}
 	${SRC_UI}
-	${SRC_LINUX}
 )
 
 
@@ -170,9 +171,10 @@ if(USE_SDL2)
         set(EXTRA_LIBS ${EXTRA_LIBS} SDL2)
     endif()
 else()
-    if(PLATFORM_LINUX)
-        file(GLOB SRC_LINUX ${PROJECT_SOURCE_DIR}/code/linux/*.cpp ${PROJECT_SOURCE_DIR}/code/linux/*.h)
-        source_group(linux FILES ${SRC_LINUX})
+    if(PLATFORM_WIN32)
+        file(GLOB SSF_WIN32 ${PROJECT_SOURCE_DIR}/code/win32/*.cpp ${PROJECT_SOURCE_DIR}/code/win32/*.h)
+    elseif(PLATFORM_LINUX)
+        file(GLOB SSF_LINUX ${PROJECT_SOURCE_DIR}/code/linux/*.cpp ${PROJECT_SOURCE_DIR}/code/linux/*.h)
     endif()
 endif()
 
@@ -183,14 +185,13 @@ source_group(win32 FILES ${SSF_WIN32})
 source_group(linux FILES ${SSF_LINUX})
 source_group(mac FILES ${SSF_MACOS})
 set(STARWARS_SOURCE_FILES ${STARWARS_SOURCE_FILES} ${SSF_WIN32} ${SSF_LINUX} ${SSF_MACOS})
-set(STARWARS_SOURCE_FILES ${STARWARS_SOURCE_FILES} ${SRC_WIN32} ${SRC_LINUX})
 
 if(MSVC)
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG")
-	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG /w44101")
 
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG")
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG /w44101")
 
     set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} ${CMAKE_C_FLAGS_RELEASE}")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${CMAKE_CXX_FLAGS_RELEASE}")
@@ -200,14 +201,14 @@ else()
     set(DISABLE_WARNINGS_CXX "-Wno-write-strings -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-conversion-null")
 
     set(COMPILER_FLAGS_C "-m32 -fexceptions -ffast-math")
-    set(COMPILER_FLAGS_CXX "-m32 -fexceptions -ffast-math -fno-operator-names")
+    set(COMPILER_FLAGS_CXX "-m32 -fexceptions -ffast-math -fno-operator-names -std=c++98")
 
     if(PLATFORM_LINUX)
         #set NDEBUG even on debug builds - asserts are killing us otherwise
         set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DLINUX -DNDEBUG")
 
         set(DISABLE_WARNINGS_C "${DISABLE_WARNINGS_C} -Wno-cpp")
-        set(DISABLE_WARNINGS_CXX "${DISABLE_WARNINGS_CXX} -Wno-cpp -std=c++98")
+        set(DISABLE_WARNINGS_CXX "${DISABLE_WARNINGS_CXX} -Wno-cpp")
 
     endif()
 
@@ -218,11 +219,18 @@ else()
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g ${CUSTOM_COMPILE_FLAGS_ALL} ${DISABLE_WARNINGS_CXX} ${COMPILER_FLAGS_CXX}")
 endif()
 
+add_library(jk2gamex86 SHARED ${GAME_SOURCE_FILES})
+set_target_properties(jk2gamex86 PROPERTIES PREFIX "")
+if (PLATFORM_WIN32)
+	target_link_libraries (jk2gamex86 winmm.lib)
+endif()
+
 if(PLATFORM_WIN32)
 	set (EXECUTABLE_FLAG WIN32)
-	set (EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_CURRENT_SOURCE_DIR}/OpenAL32.lib)
+	set (EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_CURRENT_SOURCE_DIR}/code/OpenAL32.lib)
 	set (EXTRA_LIBS ${EXTRA_LIBS} winmm.lib)
 	set (EXTRA_LIBS ${EXTRA_LIBS} wsock32.lib)
+	set (EXTRA_LIBS ${EXTRA_LIBS} opengl32.lib)
 endif()
 
 if(PLATFORM_LINUX)
@@ -237,6 +245,6 @@ if(PLATFORM_LINUX)
 	set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "-m32")
 endif()
 
-add_executable(jk2sp ${STARWARS_SOURCE_FILES})
+add_executable(jk2sp ${EXECUTABLE_FLAG} ${STARWARS_SOURCE_FILES})
 target_link_libraries (jk2sp  ${EXTRA_LIBS})
 set_target_properties (jk2sp PROPERTIES COMPILE_DEFINITIONS "_JK2EXE;_M_IX86")

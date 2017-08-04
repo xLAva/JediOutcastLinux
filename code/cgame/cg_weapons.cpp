@@ -1040,7 +1040,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	{
 		//add leaning offset
 		leanOffset = cg.snap->ps.leanofs * 0.25f;
-		fovOffset += fabs(cg.snap->ps.leanofs) * -0.1f;
+		fovOffset += abs(cg.snap->ps.leanofs) * -0.1f;
 	}
 	else
 	{
@@ -2549,7 +2549,7 @@ void CG_OutOfAmmoChange( void ) {
 	int		i;
 	int		original;
 
-#ifndef _IMMERSION
+#ifdef _IMMERSION
 	cgi_FF_StartFX( fffx_OutOfAmmo );
 #endif // _IMMERSION
 
@@ -2656,7 +2656,7 @@ void CG_FireWeapon( centity_t *cent, qboolean alt_fire )
 		}
 	}
 	
-#ifndef _IMMERSION
+#ifdef _IMMERSION
 	// force feedback...
 	//
 	if ( cent->gent->s.number == 0 )

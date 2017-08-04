@@ -9,6 +9,7 @@
 //#include "cg_local.h"
 #include "cg_media.h"
 
+using namespace std;
 
 #define fCARD_FADESECONDS		1.0f	// fade up time, also fade down time
 #define fCARD_SUSTAINSECONDS	2.0f	// hold time before fade down

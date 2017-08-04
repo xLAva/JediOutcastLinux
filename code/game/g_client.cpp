@@ -1202,7 +1202,7 @@ qboolean G_SetG2PlayerModelInfo( gentity_t *ent, const char *modelName, const ch
 			max = ent->mins[2];
 		}
 
-		max = fabs(max);//convert to positive to compare with maxs
+		max = abs(max);//convert to positive to compare with maxs
 		if ( max < ent->maxs[0] )
 		{
 			max = ent->maxs[0];

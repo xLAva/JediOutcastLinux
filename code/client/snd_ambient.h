@@ -19,7 +19,6 @@
 #pragma warning (pop)
 #pragma warning (disable:4503)	// decorated name length xceeded, name was truncated
 
-using namespace std;
 
 // Defines
 
@@ -99,8 +98,8 @@ public:
 protected:
 
 	int								m_numSets;
-	vector < ambientSet_t * >		m_ambientSets;
-	map	< sstring_t, ambientSet_t * >	m_setMap;
+	std::vector < ambientSet_t * >		m_ambientSets;
+	std::map	< sstring_t, ambientSet_t * >	m_setMap;
 };
 
 // Prototypes

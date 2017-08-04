@@ -101,11 +101,11 @@ public:
 	const model_t		*mod; 
 
 	// these are split for better cpu cache behavior
-	vector<SBoneCalc> mBones;
-	vector<CTransformBone> mFinalBones;
+	std::vector<SBoneCalc> mBones;
+	std::vector<CTransformBone> mFinalBones;
 
-	vector<CTransformBone> mSmoothBones; // for render smoothing
-	vector<mdxaSkel_t *>   mSkels;
+	std::vector<CTransformBone> mSmoothBones; // for render smoothing
+	std::vector<mdxaSkel_t *>   mSkels;
 
 	boneInfo_v		*rootBoneList;
 	mdxaBone_t		rootMatrix;

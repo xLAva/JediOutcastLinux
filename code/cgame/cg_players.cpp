@@ -887,7 +887,7 @@ qboolean CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, f
 		}
 		else*/
 		{
-			animFrameTime = fabs(anim->frameLerp);
+			animFrameTime = abs(anim->frameLerp);
 			
 			//special hack for player to ensure quick weapon change
 			if ( entNum == 0 )
@@ -1111,7 +1111,7 @@ void CG_PlayerAnimSounds( int animFileIndex, qboolean torso, int oldFrame, int f
 	{
 		animSounds = level.knownAnimFileSets[animFileIndex].legsAnimSnds;
 	}
-	if ( fabs(oldFrame-frame) > 1 && cg_reliableAnimSounds.integer )
+	if ( abs(oldFrame-frame) > 1 && cg_reliableAnimSounds.integer )
 	{//given a range, see if keyFrame falls in that range
 		int oldAnim, anim;
 		if ( torso )
@@ -1177,12 +1177,12 @@ void CG_PlayerAnimSounds( int animFileIndex, qboolean torso, int oldFrame, int f
 		{//exact match
 			match = qtrue;
 		}
-		else if ( fabs(oldFrame-frame) > 1 && cg_reliableAnimSounds.integer )
+		else if ( abs(oldFrame-frame) > 1 && cg_reliableAnimSounds.integer )
 		{//given a range, see if keyFrame falls in that range
 			if ( inSameAnim )
 			{//if changed anims altogether, sorry, the sound is lost
-				if ( fabs(oldFrame-animSounds[i].keyFrame) <= 3
-					 || fabs(frame-animSounds[i].keyFrame) <= 3 )
+				if ( abs(oldFrame-animSounds[i].keyFrame) <= 3
+					 || abs(frame-animSounds[i].keyFrame) <= 3 )
 				{//must be at least close to the keyframe
 					if ( animBackward )
 					{//animation plays backwards

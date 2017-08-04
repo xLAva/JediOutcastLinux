@@ -15,8 +15,9 @@
 
 #ifdef LINUX
 #include <string>
-//using namespace std;
 #endif
+
+using namespace std;
 
 extern qboolean S_FileExists( const char *psFilename );
 					

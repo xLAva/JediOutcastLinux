@@ -8,6 +8,8 @@
 #include "client.h"
 #include "snd_ambient.h"
 
+using namespace std;
+
 static const int MAX_SET_VOLUME =	255;
 
 static void AS_GetGeneralSet( ambientSet_t & );

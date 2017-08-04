@@ -130,7 +130,7 @@ field_t savefields_gClient[] =
 };
 
 
-list<sstring_t> strList;
+std::list<sstring_t> strList;
 
 
 /////////// char * /////////////
@@ -445,7 +445,7 @@ void EnumerateFields(field_t *pFields, byte *pbData, unsigned long ulChid, int i
 
 	// save out any associated strings..
 	//
-	list<sstring_t>::iterator it = strList.begin();
+	std::list<sstring_t>::iterator it = strList.begin();
 	for (unsigned int i=0; i<strList.size(); i++, ++it)
 	{
 		gi.AppendToSaveGame('STRG', (void *)(*it).c_str(), (*it).length() + 1);

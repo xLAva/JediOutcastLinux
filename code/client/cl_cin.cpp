@@ -83,8 +83,8 @@ typedef struct {
 	qboolean			looping, holdAtEnd, dirty, alterGameState, silent, shader;
 	fileHandle_t		iFile;	// 0 = none
 	e_status			status;	
-	unsigned int		startTime;
-	unsigned int		lastTime;
+	int					startTime;
+	int					lastTime;
 	long				tfps;
 	long				RoQPlayed;
 	long				ROQSize;

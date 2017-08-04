@@ -14,8 +14,6 @@ typedef sstring_t fxString_t;
 #ifndef FX_SCHEDULER_H_INC
 #define FX_SCHEDULER_H_INC
 
-using namespace std;
-
 
 #define FX_FILE_PATH	"effects"
 
@@ -65,7 +63,7 @@ class CMediaHandles
 {
 private:
 
-	vector<int>	mMediaList;
+	std::vector<int>	mMediaList;
 
 public:
 
@@ -359,7 +357,7 @@ struct SEffectTemplate
 
 	bool operator == (const char * name) const 
 	{
-		return !strcasecmp( mEffectName, name );
+		return !stricmp( mEffectName, name );
 	}
 	void operator=(const SEffectTemplate &that);
 };
@@ -398,9 +396,9 @@ private:
 	};
 
 	// this makes looking up the index based on the string name much easier
-	typedef map<fxString_t, int>				TEffectID;
+	typedef std::map<fxString_t, int>				TEffectID;
 
-	typedef list<SScheduledEffect*>			TScheduledEffect;
+	typedef std::list<SScheduledEffect*>			TScheduledEffect;
 
 	// Effects
 	SEffectTemplate		mEffectTemplates[FX_MAX_EFFECTS];

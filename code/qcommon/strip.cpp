@@ -5,6 +5,9 @@
 
 
 #include "strip.h"
+
+using namespace std;
+
 cvar_t	*sp_language;
 static cvar_t	*sp_show_strip;
 static cvar_t	*sp_leet;

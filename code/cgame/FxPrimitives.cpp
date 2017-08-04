@@ -1690,7 +1690,7 @@ Roll
 void CPoly::Rotate()
 {
 	vec3_t	temp[MAX_CPOLY_VERTS];
-	float	dif = fabs( mLastFrameTime - theFxHelper.mFrameTime );
+	float	dif = abs( mLastFrameTime - theFxHelper.mFrameTime );
 
 	// Very generous check with frameTimes
 	if ( dif > 0.5f * mLastFrameTime )

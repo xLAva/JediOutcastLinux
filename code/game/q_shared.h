@@ -27,6 +27,8 @@
 #pragma warning(disable : 4711)		// selected for automatic inline expansion
 #pragma warning(disable : 4786)		// identifier was truncated
 
+#pragma warning(disable : 4996)
+
 #endif
 
 #include <assert.h>

@@ -717,7 +717,7 @@ public:
 	bool operator()(const char *s1, const char *s2) const { return(stricmp(s1, s2) < 0); } 
 };
 
-typedef map <LPCSTR, image_t *, CStringComparator>	AllocatedImages_t;
+typedef std::map <LPCSTR, image_t *, CStringComparator>	AllocatedImages_t;
 													AllocatedImages_t AllocatedImages;
 													AllocatedImages_t::iterator itAllocatedImages;
 int giTextureBindNum = 1024;	// will be set to this anyway at runtime, but wtf?
@@ -2059,7 +2059,7 @@ public:
 	bool operator()(const char *s1, const char *s2) const { return(stricmp(s1, s2) < 0); } 
 };
 */
-typedef map<sstring_t,char * /*, CStringComparator*/ >	AnimationCFGs_t;
+typedef std::map<sstring_t,char * /*, CStringComparator*/ >	AnimationCFGs_t;
 													AnimationCFGs_t AnimationCFGs;
 
 // I added this function for development purposes (and it's VM-safe) so we don't have problems

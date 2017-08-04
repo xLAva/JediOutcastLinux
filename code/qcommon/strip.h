@@ -62,7 +62,7 @@ public:
 class cStringPackageID
 {
 private:
-	string	name;
+	std::string	name;
 	byte	reg;
 public:
 	cStringPackageID(const char *in_name, byte in_reg) { name = in_name; reg = in_reg; }
@@ -76,7 +76,7 @@ class cStringPackage
 protected:
 	unsigned char	ID;
 	unsigned char	Registration;
-	string			name;
+	std::string			name;
 	char			*Reference;
 
 public:
@@ -105,7 +105,7 @@ class cStringPackageSingle : public cStringPackage
 {
 private:
 	cStringsSingle		Strings[MAX_STRINGS];
-	map<string, int>	ReferenceTable;
+	std::map<std::string, int>	ReferenceTable;
 
 public:
 					cStringPackageSingle(const char *in, unsigned char initID = 0, char *initReference = NULL);

@@ -1,6 +1,7 @@
 // this include must remain at the top of every CPP file
 #include "common_headers.h"
 
+using namespace std;
 
 #if !defined(FX_SCHEDULER_H_INC)
 	#include "FxScheduler.h"

@@ -39,7 +39,7 @@
 #include <set>
 #include <vector>
 #pragma warning( pop )
-using namespace std;
+
 
 #include "IFC/IFC.h"
 #include "ff_utils.h"

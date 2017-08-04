@@ -997,7 +997,7 @@ void CL_StartHunkUsers( void ) {
 		cls.consoleShader = re.RegisterShader( "console" );
 		g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
 		kg.g_consoleField.widthInChars = g_console_field_width;
-#ifndef _IMMERSION
+#ifdef _IMMERSION
 		//-------
 		//	The latest Immersion Force Feedback system initializes here, not through
 		//	win32 input system. Therefore, the window handle is valid :)

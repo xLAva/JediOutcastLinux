@@ -4,7 +4,7 @@
 
 #include "g_local.h"
 
-typedef map		< string, int >	timer_m;
+typedef std::map		< std::string, int >	timer_m;
 
 timer_m	g_timers[ MAX_GENTITIES ];
 

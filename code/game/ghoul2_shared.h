@@ -11,7 +11,6 @@ Ghoul2 Insert Start
 #include <map>
 #pragma warning (pop)
 #pragma warning (disable:4503)	// decorated name length xceeded, name was truncated
-using namespace std;
 /*
 Ghoul2 Insert End
 */
@@ -128,10 +127,10 @@ struct boltInfo_t{
 
 #define MAX_GHOUL_COUNT_BITS 8 // bits required to send across the MAX_G2_MODELS inside of the networking - this is the only restriction on ghoul models possible per entity
 
-typedef vector <surfaceInfo_t> surfaceInfo_v;
-typedef vector <boneInfo_t> boneInfo_v;
-typedef vector <boltInfo_t> boltInfo_v;
-typedef vector <mdxaBone_t> mdxaBone_v;
+typedef std::vector <surfaceInfo_t> surfaceInfo_v;
+typedef std::vector <boneInfo_t> boneInfo_v;
+typedef std::vector <boltInfo_t> boltInfo_v;
+typedef std::vector <mdxaBone_t> mdxaBone_v;
 
 // defines for stuff to go into the mflags
 #define		GHOUL2_NOCOLLIDE 0x001
@@ -214,8 +213,8 @@ public:
 	virtual int New()=0;
 	virtual void Delete(int handle)=0;
 	virtual bool IsValid(int handle) const=0;
-	virtual vector<CGhoul2Info> &Get(int handle)=0;
-	virtual const vector<CGhoul2Info> &Get(int handle) const=0;
+	virtual std::vector<CGhoul2Info> &Get(int handle)=0;
+	virtual const std::vector<CGhoul2Info> &Get(int handle) const=0;
 };
 
 IGhoul2InfoArray &TheGhoul2InfoArray();
@@ -249,12 +248,12 @@ class CGhoul2Info_v
 			mItem=0;
 		}
 	}
-	vector<CGhoul2Info> &Array()
+	std::vector<CGhoul2Info> &Array()
 	{
 		assert(InfoArray().IsValid(mItem));
 		return InfoArray().Get(mItem);
 	}
-	const vector<CGhoul2Info> &Array() const
+	const std::vector<CGhoul2Info> &Array() const
 	{
 		assert(InfoArray().IsValid(mItem));
 		return InfoArray().Get(mItem);
