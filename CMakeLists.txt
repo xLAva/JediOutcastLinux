@@ -12,7 +12,34 @@ cmake_minimum_required(VERSION 2.6)
 
 project(jk2)
 
+if(NOT DEFINED USE_OCULUS_SDK_0.5)
+    set(USE_OCULUS_SDK_0.5 0)
+endif()
+
+if(NOT DEFINED USE_OCULUS_SDK_0.8)
+    set(USE_OCULUS_SDK_0.8 0)
+endif()
+
+if(NOT DEFINED USE_OCULUS_SDK_1)
+    set(USE_OCULUS_SDK_1 1)
+endif()
+
+if(NOT DEFINED FORCE_STATIC_OCULUS_SDK)
+    set(FORCE_STATIC_OCULUS_SDK 0)
+endif()
+
+if(NOT DEFINED USE_OPENHMD)
+    set(USE_OPENHMD 0)
+endif()
+
+if(NOT DEFINED EXTERNAL_LIB_PATH)
+    set(EXTERNAL_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
+endif()
+
+# doesn't work without SDL2 at the moment
 set(USE_SDL2 1)
+
+message("Used Settings: Ovr0.5=${USE_OCULUS_SDK_0.5} Ovr0.8=${USE_OCULUS_SDK_0.8} Ovr1=${USE_OCULUS_SDK_1} OvrStatic=${FORCE_STATIC_OCULUS_SDK} OpenHMD=${USE_OPENHMD}")
 
 set(PLATFORM_WIN32 0)
 set(PLATFORM_MACOS 0)
@@ -32,16 +59,16 @@ if(CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "RELEASE")
 endif()
 
-if(NOT DEFINED EXTERNAL_LIB_PATH)
-    set(EXTERNAL_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
-endif()
-
 message("Detected platform: Win32=${PLATFORM_WIN32} MacOS=${PLATFORM_MACOS} Linux=${PLATFORM_LINUX}")
+message("EXTERNAL_LIB_PATH=${EXTERNAL_LIB_PATH}")
 
 # msvc: Debug or Release is selected inside VisualStudio, so don't show the CMAKE_BUILD_TYPE
 if(NOT MSVC)
     message("Build Type: ${CMAKE_BUILD_TYPE}")
 endif()
+
+set(CUSTOM_COMPILE_FLAGS_ALL "")
+
 
 
 
@@ -62,9 +89,17 @@ set(SRC_ICARUS
 	code/icarus/TaskManager.h
 )
 
+set(GSF_HMD
+	code/hmd/GameHmd.h
+	code/hmd/GameHmd.cpp
+)
+
 source_group(cgame FILES ${SRC_CGAME})
 source_group(game FILES ${SRC_GAME})
 source_group(icarus FILES ${SRC_ICARUS})
+source_group(hmd FILES ${GSF_HMD})
+
+
 
 set(GAME_SOURCE_FILES
 	code/qcommon/tri_coll_test.cpp
@@ -72,6 +107,7 @@ set(GAME_SOURCE_FILES
 	${SRC_CGAME}
 	${SRC_GAME}
 	${SRC_ICARUS}
+	${GSF_HMD}
 )
 
 
@@ -88,6 +124,212 @@ file(GLOB SRC_UI ${PROJECT_SOURCE_DIR}/code/ui/*.cpp ${PROJECT_SOURCE_DIR}/code/
 list(REMOVE_ITEM SRC_UI ${PROJECT_SOURCE_DIR}/code/ui/gameinfo.cpp)
 
 
+
+if(USE_OCULUS_SDK_1)
+    set(SSF_HMD_OCULUS_1 ${SSF_HMD_OCULUS_1}
+        code/hmd/OculusSdk_1/HmdDeviceOculusSdk.h
+        code/hmd/OculusSdk_1/HmdDeviceOculusSdk.cpp
+    )
+    set(SSF_HMD_OCULUS_1 ${SSF_HMD_OCULUS_1}
+        code/hmd/OculusSdk_1/HmdRendererOculusSdk.h
+        code/hmd/OculusSdk_1/HmdRendererOculusSdk.cpp
+    )
+
+    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_OVR -DUSE_OVR_1")
+
+    include_directories("${EXTERNAL_LIB_PATH}/OculusSDK_1/OculusSDK/LibOVR/Include")
+    include_directories("${EXTERNAL_LIB_PATH}/OculusSDK_1/OculusSDK/LibOVRKernel/Src")
+
+    if(NOT FORCE_STATIC_OCULUS_SDK)
+        set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DOVR_DLL_IMPORT")
+
+        set(SSF_HMD_OCULUS_1 ${SSF_HMD_OCULUS_1}
+            code/hmd/OculusSdk_1/oculus_dynamic.h
+            code/hmd/OculusSdk_1/oculus_dynamic.cpp
+            code/hmd/OculusSdk_1/ovr_dynamic_funcs.h
+        )
+    else()
+        set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DFORCE_STATIC_OCULUS_SDK")
+
+        set(SSF_HMD_OCULUS_1 ${SSF_HMD_OCULUS_1}
+            code/hmd/OculusSdk_1/oculus_static.h
+        )
+
+        if(PLATFORM_WIN32)
+            
+            link_directories("C:/WinDDK/7600.16385.1/lib/ATL/i386")
+            set(EXTRA_LIBS ${EXTRA_LIBS} wsock32 ws2_32)
+            
+            set(EXTRA_LIBS ${EXTRA_LIBS} debug ${EXTERNAL_LIB_PATH}/OculusSDK_1/OculusSDK/LibOVR/Lib/Windows/Win32/Debug/VS2013/libovr.lib)
+            set(EXTRA_LIBS ${EXTRA_LIBS} optimized ${EXTERNAL_LIB_PATH}/OculusSDK_1/OculusSDK/LibOVR/Lib/Windows/Win32/Release/VS2013/libovr.lib)
+
+        elseif(PLATFORM_LINUX)
+
+
+
+        elseif(PLATFORM_MACOS)
+
+
+        endif()
+    endif()
+
+    source_group(hmd\\OculusSdk_1 FILES ${SSF_HMD_OCULUS_1})
+
+elseif(USE_OCULUS_SDK_0.8)
+    set(SSF_HMD_OCULUS_0.8 ${SSF_HMD_OCULUS_0.8}
+        code/hmd/OculusSdk_0.8/HmdDeviceOculusSdk.h
+        code/hmd/OculusSdk_0.8/HmdDeviceOculusSdk.cpp
+    )
+    set(SSF_HMD_OCULUS_0.8 ${SSF_HMD_OCULUS_0.8}
+        code/hmd/OculusSdk_0.8/HmdRendererOculusSdk.h
+        code/hmd/OculusSdk_0.8/HmdRendererOculusSdk.cpp
+    )
+
+    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_OVR -DUSE_OVR_0_8")
+
+    include_directories("${EXTERNAL_LIB_PATH}/OculusSDK_0.8/OculusSDK/LibOVR/Include")
+    include_directories("${EXTERNAL_LIB_PATH}/OculusSDK_0.8/OculusSDK/LibOVRKernel/Src")
+
+    if(NOT FORCE_STATIC_OCULUS_SDK)
+        set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DOVR_DLL_IMPORT")
+
+        set(SSF_HMD_OCULUS_0.8 ${SSF_HMD_OCULUS_0.8}
+            code/hmd/OculusSdk_0.8/oculus_dynamic.h
+            code/hmd/OculusSdk_0.8/oculus_dynamic.cpp
+            code/hmd/OculusSdk_0.8/ovr_dynamic_funcs.h
+        )
+    else()
+        set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DFORCE_STATIC_OCULUS_SDK")
+
+        if(PLATFORM_WIN32)
+            set(SSF_HMD_OCULUS_0.8 ${SSF_HMD_OCULUS_0.8}
+                code/hmd/OculusSdk_0.8/oculus_static.h
+            )
+            
+            link_directories("C:/WinDDK/7600.16385.1/lib/ATL/i386")
+            set(EXTRA_LIBS ${EXTRA_LIBS} wsock32 ws2_32)
+            
+            set(EXTRA_LIBS ${EXTRA_LIBS} debug ${EXTERNAL_LIB_PATH}/OculusSDK_0.8/OculusSDK/LibOVR/Lib/Windows/Win32/Debug/VS2013/libovr.lib)
+            set(EXTRA_LIBS ${EXTRA_LIBS} optimized ${EXTERNAL_LIB_PATH}/OculusSDK_0.8/OculusSDK/LibOVR/Lib/Windows/Win32/Release/VS2013/libovr.lib)
+
+        elseif(PLATFORM_LINUX)
+
+
+
+        elseif(PLATFORM_MACOS)
+
+
+        endif()
+    endif()
+
+    source_group(hmd\\OculusSdk_0.8 FILES ${SSF_HMD_OCULUS_0.8})
+
+elseif(USE_OCULUS_SDK_0.5)
+    set(SSF_HMD_OCULUS_0.5 ${SSF_HMD_OCULUS_0.5}
+        code/hmd/OculusSdk_0.5/HmdDeviceOculusSdk.h
+        code/hmd/OculusSdk_0.5/HmdDeviceOculusSdk.cpp
+    )
+    set(SSF_HMD_OCULUS_0.5 ${SSF_HMD_OCULUS_0.5}
+        code/hmd/OculusSdk_0.5/HmdRendererOculusSdk.h
+        code/hmd/OculusSdk_0.5/HmdRendererOculusSdk.cpp
+    )
+
+    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_OVR -DUSE_OVR_0_5")
+
+    include_directories("${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVR/Include")
+
+    if(NOT FORCE_STATIC_OCULUS_SDK)
+        set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DOVR_DLL_IMPORT")
+
+        set(SSF_HMD_OCULUS_0.5 ${SSF_HMD_OCULUS_0.5}
+            code/hmd/OculusSdk_0.5/oculus_dynamic.h
+            code/hmd/OculusSdk_0.5/oculus_dynamic.cpp
+            code/hmd/OculusSdk_0.5/ovr_dynamic_funcs.h
+        )
+    else()
+        set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DFORCE_STATIC_OCULUS_SDK")
+
+        set(SSF_HMD_OCULUS_0.5 ${SSF_HMD_OCULUS_0.5}
+            code/hmd/OculusSdk_0.5/oculus_static.h
+        )
+
+        if(PLATFORM_WIN32)
+            
+            link_directories("C:/WinDDK/7600.16385.1/lib/ATL/i386")
+            set(EXTRA_LIBS ${EXTRA_LIBS} wsock32 ws2_32)
+            
+            set(EXTRA_LIBS ${EXTRA_LIBS} debug ${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVR/Lib/Windows/Win32/Debug/VS2013/libovr.lib)
+            set(EXTRA_LIBS ${EXTRA_LIBS} optimized ${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVR/Lib/Windows/Win32/Release/VS2013/libovr.lib)
+
+        elseif(PLATFORM_LINUX)
+
+            if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+                set(EXTRA_LIBS ${EXTRA_LIBS} ${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVRKernel/Lib/Linux/i386/Debug/libOVRKernel.a)
+                set(EXTRA_LIBS ${EXTRA_LIBS} ${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVR/Lib/Linux/i386/Debug/libOVR.a)
+                set(EXTRA_LIBS ${EXTRA_LIBS} ${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVR/Lib/Linux/i386/Debug/libOVRRT32_0.so.5)
+            else()
+                set(EXTRA_LIBS ${EXTRA_LIBS} ${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVRKernel/Lib/Linux/i386/Release/libOVRKernel.a)
+                set(EXTRA_LIBS ${EXTRA_LIBS} ${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVR/Lib/Linux/i386/Release/libOVR.a)
+                set(EXTRA_LIBS ${EXTRA_LIBS} ${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVR/Lib/Linux/i386/Release/libOVRRT32_0.so.5)
+            endif()
+
+        elseif(PLATFORM_MACOS)
+
+                if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+                        set(EXTRA_LIBS ${EXTRA_LIBS} ${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVR/Lib/MacOS/Debug/i386/libovr.a)
+                else()
+                        set(EXTRA_LIBS ${EXTRA_LIBS} ${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVR/Lib/MacOS/Release/i386/libovr.a)
+                endif()
+        endif()
+    endif()
+
+    source_group(hmd\\OculusSdk_0.5 FILES ${SSF_HMD_OCULUS_0.5})
+endif()
+
+if(USE_OPENHMD)
+    set(SSF_HMD_DEVICE ${SSF_HMD_DEVICE}
+        code/hmd/HmdDevice/HmdDeviceOpenHmd.h
+        code/hmd/HmdDevice/HmdDeviceOpenHmd.cpp
+    )
+    set(SSF_HMD_RENDERER ${SSF_HMD_RENDERER}
+        code/hmd/HmdRenderer/HmdRendererOculusOpenHmd.h
+        code/hmd/HmdRenderer/HmdRendererOculusOpenHmd.cpp
+    )
+
+    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_OPENHMD -DOHMD_STATIC")
+    include_directories("${EXTERNAL_LIB_PATH}/OpenHMD/include")
+    include_directories("${EXTERNAL_LIB_PATH}/OpenHMD/src")
+
+
+    if(PLATFORM_WIN32)
+        add_library(imp_openhmd STATIC IMPORTED)
+        set_property(TARGET imp_openhmd PROPERTY IMPORTED_LOCATION "${EXTERNAL_LIB_PATH}/OpenHMD/msvc/Release/openhmd.lib")
+        set(EXTRA_LIBS ${EXTRA_LIBS} imp_openhmd)
+    elseif(PLATFORM_LINUX)
+        if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/OpenHMD/linux/debug/i386/libopenhmd.a")
+        else()
+            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/OpenHMD/linux/release/i386/libopenhmd.a")
+        endif()
+    elseif(PLATFORM_MACOS)
+        if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/OpenHMD/macos/debug/i386/libopenhmd.a")
+        else()
+            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/OpenHMD/macos/release/i386/libopenhmd.a")
+        endif()
+    endif()
+
+
+    if(UNIX)
+            set(EXTRA_LIBS ${EXTRA_LIBS} hidapi-libusb)
+    else()
+            add_library(imp_hidapi STATIC IMPORTED)
+            set_property(TARGET imp_hidapi PROPERTY IMPORTED_LOCATION "${EXTERNAL_LIB_PATH}/hidapi-0.7.0/windows/Release/hidapi.lib")
+            set(EXTRA_LIBS ${EXTRA_LIBS} imp_hidapi)
+    endif()
+endif()
+
+
 source_group(client FILES ${SRC_CLIENT})
 source_group(encryption FILES ${SRC_ENCRYPTION})
 source_group(ghoul2 FILES ${SRC_GHOUL2})
@@ -98,7 +340,10 @@ source_group(renderer FILES ${SRC_RENDERER})
 source_group(mp3code FILES ${SRC_SERVER})
 source_group(server FILES ${SRC_GHOUL2})
 source_group(ui FILES ${SRC_UI})
-
+source_group(hmd FILES ${SSF_HMD})
+source_group(hmd\\HmdDevice FILES ${SSF_HMD_DEVICE})
+source_group(hmd\\HmdRenderer FILES ${SSF_HMD_RENDERER})
+source_group(hmd\\Quake3 FILES ${SSF_HMD_QUAKE3})
 
 
 set(STARWARS_SOURCE_FILES
@@ -114,6 +359,13 @@ set(STARWARS_SOURCE_FILES
 	${SRC_RENDERER}
 	${SRC_SERVER}
 	${SRC_UI}
+	${SSF_HMD}
+	${SSF_HMD_DEVICE}
+	${SSF_HMD_RENDERER}
+	${SSF_HMD_QUAKE3}
+	${SSF_HMD_OCULUS_0.5}
+	${SSF_HMD_OCULUS_0.8}
+	${SSF_HMD_OCULUS_1}
 )
 
 
