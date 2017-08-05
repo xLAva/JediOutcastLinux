@@ -11,6 +11,10 @@
 	#include "../ghoul2/G2.h"
 #endif
 
+#include "../hmd/ClientHmd.h"
+#include "../hmd/HmdRenderer/IHmdRenderer.h"
+#include "../hmd/Quake3/ViewParamsHmdUtility.h"
+
 trGlobals_t		tr;
 
 static float	s_flipMatrix[16] = {
@@ -401,6 +405,21 @@ void R_RotateForViewer (void)
 	// transform by the camera placement
 	VectorCopy( tr.viewParms.orient.origin, origin );
 
+    bool rMatrixCreated = false;
+    int useHmd = Cvar_VariableIntegerValue("cg_useHmd");
+    if (useHmd == 1)
+    {
+        bool isSkyboxPortal = false;
+        ViewParamsHmdUtility::UpdateRenderParams(&tr, isSkyboxPortal, rMatrixCreated);
+    }
+
+    // check if the renderer handled the view matrix creation
+    if (rMatrixCreated)
+    {
+        tr.viewParms.world = tr.orient;
+        return;
+    }	
+	
 	viewerMatrix[0] = tr.viewParms.orient.axis[0][0];
 	viewerMatrix[4] = tr.viewParms.orient.axis[0][1];
 	viewerMatrix[8] = tr.viewParms.orient.axis[0][2];
@@ -506,6 +525,17 @@ void R_SetupProjection( void ) {
 
 	// dynamically compute far clip plane distance
 	SetFarClip();
+	
+	IHmdRenderer* pHmdRenderer = ClientHmd::Get()->GetRenderer();
+    if (pHmdRenderer)
+    {
+        // check if the renderer handles the projection matrix creation
+        bool matrixCreated = pHmdRenderer->GetCustomProjectionMatrix(tr.viewParms.projectionMatrix, r_znear->value, tr.viewParms.zFar, tr.viewParms.fovX);
+        if (matrixCreated)
+        {
+            return;
+        }
+    }	
 
 	//
 	// set up projection matrix

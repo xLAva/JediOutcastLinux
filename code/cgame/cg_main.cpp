@@ -11,6 +11,8 @@
 #include "cg_lights.h"
 #include "../game/g_local.h"
 
+#include "../hmd/GameHmd.h"
+
 #ifdef _IMMERSION
 #include "../ff/ff.h"
 #endif // _IMMERSION
@@ -95,6 +97,12 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 	centity_t		*cent;
 
 	switch ( command ) {
+	case CG_HMD_UPDATE_ROT:
+        GameHmd::Get()->UpdateHmd((float*)arg0);
+		return 0;	
+    case CG_HMD_UPDATE_ROT_POS:
+        GameHmd::Get()->UpdateHmd((float*)arg0, (float*)arg1);
+        return 0;	
 	case CG_INIT:
 		CG_Init( arg0 );
 		return 0;
@@ -317,6 +325,9 @@ vmCvar_t	cg_smoothPlayerPos;
 vmCvar_t	cg_smoothPlayerPlat;
 vmCvar_t	cg_smoothPlayerPlatAccel;
 
+vmCvar_t    cg_activeHmd;
+vmCvar_t    cg_useHmd;
+
 typedef struct {
 	vmCvar_t	*vmCvar;
 	char		*cvarName;
@@ -377,6 +388,9 @@ cvarTable_t		cvarTable[] = {
 	{ &cg_noPlayerAnims, "cg_noplayeranims", "0", CVAR_CHEAT },
 	{ &cg_footsteps, "cg_footsteps", "1", CVAR_CHEAT },
 
+    { &cg_activeHmd, "cg_activeHmd", "0", 0 },
+    { &cg_useHmd, "cg_useHmd", "0", 0 },
+	
 	{ &cg_thirdPerson, "cg_thirdPerson", "0", CVAR_USERINFO },
 	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "80", 0 },
 	{ &cg_thirdPersonMaxRange, "cg_thirdPersonMaxRange", "150", 0 },

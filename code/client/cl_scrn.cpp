@@ -8,6 +8,9 @@
 #include "client.h"
 #include "client_ui.h"
 
+#include "../hmd/ClientHmd.h"
+#include "../hmd/HmdRenderer/IHmdRenderer.h"
+
 extern console_t con;
 
 qboolean	scr_initialized;		// ready to draw
@@ -380,7 +383,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame ) {
 			Com_Error( ERR_FATAL, "SCR_DrawScreenField: bad cls.state" );
 			break;
 		case CA_CINEMATIC:
-			SCR_DrawCinematic();
+			SCR_DrawCinematic(stereoFrame);
 			break;
 		case CA_DISCONNECTED:
 			// force menu up
@@ -404,7 +407,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame ) {
 		case CA_ACTIVE:
 			if (CL_IsRunningInGameCinematic() || CL_InGameCinematicOnStandBy())
 			{
-				SCR_DrawCinematic();				
+				SCR_DrawCinematic(stereoFrame);				
 			}
 			else
 			{
@@ -452,6 +455,16 @@ void SCR_UpdateScreen( void ) {
 		Com_Error( ERR_FATAL, "SCR_UpdateScreen: recursively called" );
 	}
 	recursive = qtrue;
+
+    IHmdRenderer* pHmdRenderer = ClientHmd::Get()->GetRenderer();
+    if (pHmdRenderer)
+    {
+        // tell the hmd renderer the frame is starting for timing calculations
+        // EndFrame is called after rendering
+        pHmdRenderer->StartFrame();
+    }
+    
+    ClientHmd::Get()->UpdateGame();
 
 	// if running in stereo, we need to draw the frame twice
 	if ( cls.glconfig.stereoEnabled ) {

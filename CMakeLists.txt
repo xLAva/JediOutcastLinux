@@ -124,6 +124,37 @@ file(GLOB SRC_UI ${PROJECT_SOURCE_DIR}/code/ui/*.cpp ${PROJECT_SOURCE_DIR}/code/
 list(REMOVE_ITEM SRC_UI ${PROJECT_SOURCE_DIR}/code/ui/gameinfo.cpp)
 
 
+set(SSF_HMD
+	code/hmd/ClientHmd.h
+	code/hmd/ClientHmd.cpp
+	code/hmd/FactoryHmdDevice.h
+	code/hmd/FactoryHmdDevice.cpp
+    code/hmd/SearchForDisplay.h
+    code/hmd/SearchForDisplay.cpp
+)
+
+set(SSF_HMD_DEVICE
+	code/hmd/HmdDevice/IHmdDevice.h
+	code/hmd/HmdDevice/HmdDeviceMouse.h
+	code/hmd/HmdDevice/HmdDeviceMouse.cpp
+)
+
+set(SSF_HMD_RENDERER
+    code/hmd/HmdRenderer/IHmdRenderer.h
+    code/hmd/HmdRenderer/HmdRendererOculus.h
+    code/hmd/HmdRenderer/HmdRendererOculus.cpp
+    code/hmd/HmdRenderer/PlatformInfo.h
+    code/hmd/HmdRenderer/RenderTool.h
+    code/hmd/HmdRenderer/RenderTool.cpp
+)
+
+set(SSF_HMD_QUAKE3
+    code/hmd/Quake3/GameMenuHmdManager.h
+    code/hmd/Quake3/GameMenuHmdManager.cpp
+    code/hmd/Quake3/ViewParamsHmdUtility.h
+    code/hmd/Quake3/ViewParamsHmdUtility.cpp
+)
+
 
 if(USE_OCULUS_SDK_1)
     set(SSF_HMD_OCULUS_1 ${SSF_HMD_OCULUS_1}

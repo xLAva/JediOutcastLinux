@@ -780,10 +780,13 @@ qboolean RE_InitDissolve(qboolean bForceCircularExtroWipe)
 {
 //	ri.Printf( PRINT_ALL, "RE_InitDissolve()\n");
 	qboolean bReturn = qfalse;
+	
+    int activeHmd = Cvar_VariableIntegerValue("cg_activeHmd");	
 
 	if (//Dissolve.iStartTime == 0	// no point in interruping an existing one
 		//&&
 		tr.registered == qtrue		// ... stops it crashing during first cinematic before the menus... :-)
+        && activeHmd == 0 // don't dissolve hmd devices			
 		)
 	{
 		RE_KillDissolve();	// kill any that are already running

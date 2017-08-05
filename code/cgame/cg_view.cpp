@@ -12,6 +12,8 @@
 #include "../game/g_local.h"
 #include "../game/g_functions.h"
 
+#include "../hmd/GameHmd.h"
+
 #define MASK_CAMERACLIP (MASK_SOLID)
 #define CAMERA_SIZE	4
 
@@ -695,21 +697,25 @@ static void CG_OffsetThirdPersonView( void )
 	// if dead, look at killer
 	if ( cg.predicted_player_state.stats[STAT_HEALTH] <= 0 ) 
 	{
-		if ( MatrixMode )
-		{
-			if ( cg.overrides.active & CG_OVERRIDE_3RD_PERSON_ANG )
-			{
-				cameraFocusAngles[YAW] += cg.overrides.thirdPersonAngle;
-			}
-			else
-			{
-				cameraFocusAngles[YAW] = cg.predicted_player_state.stats[STAT_DEAD_YAW];
-				cameraFocusAngles[YAW] += cg_thirdPersonAngle.value;
-			}
-		}
-		else
-		{
-			cameraFocusAngles[YAW] = cg.predicted_player_state.stats[STAT_DEAD_YAW];
+		//[LAva] don't do the kill cam movement in hmd mode
+        if (!cg_useHmd.integer)
+        {		
+            if ( MatrixMode )
+            {
+                if ( cg.overrides.active & CG_OVERRIDE_3RD_PERSON_ANG )
+                {
+                    cameraFocusAngles[YAW] += cg.overrides.thirdPersonAngle;
+                }
+                else
+                {
+                    cameraFocusAngles[YAW] = cg.predicted_player_state.stats[STAT_DEAD_YAW];
+                    cameraFocusAngles[YAW] += cg_thirdPersonAngle.value;
+                }
+            }
+            else
+            {
+                cameraFocusAngles[YAW] = cg.predicted_player_state.stats[STAT_DEAD_YAW];
+            }
 		}
 	}
 	else
@@ -1012,152 +1018,155 @@ static void CG_OffsetFirstPersonView( qboolean firstPersonSaber ) {
 		return;
 	}
 
-	if ( g_entities[0].client && PM_InKnockDown( &g_entities[0].client->ps ) )
-	{
-		float perc, animLen = (float)PM_AnimLength( g_entities[0].client->clientInfo.animFileIndex, (animNumber_t)g_entities[0].client->ps.legsAnim );
-		if ( PM_InGetUp( &g_entities[0].client->ps ) || PM_InForceGetUp( &g_entities[0].client->ps ) )
-		{//start righting the view
-			perc = (float)g_entities[0].client->ps.legsAnimTimer/animLen*2;
-		}
-		else
-		{//tilt the view
-			perc = (animLen-g_entities[0].client->ps.legsAnimTimer)/animLen*2;
-		}
-		if ( perc > 1.0f )
-		{
-			perc = 1.0f;
-		}
-		angles[ROLL] = perc*40;
-		angles[PITCH] = perc*-15;
+    if (!cg_useHmd.integer)
+    {
+        if ( g_entities[0].client && PM_InKnockDown( &g_entities[0].client->ps ) )
+        {
+            float perc, animLen = (float)PM_AnimLength( g_entities[0].client->clientInfo.animFileIndex, (animNumber_t)g_entities[0].client->ps.legsAnim );
+            if ( PM_InGetUp( &g_entities[0].client->ps ) || PM_InForceGetUp( &g_entities[0].client->ps ) )
+            {//start righting the view
+                perc = (float)g_entities[0].client->ps.legsAnimTimer/animLen*2;
+            }
+            else
+            {//tilt the view
+                perc = (animLen-g_entities[0].client->ps.legsAnimTimer)/animLen*2;
+            }
+            if ( perc > 1.0f )
+            {
+                perc = 1.0f;
+            }
+            angles[ROLL] = perc*40;
+            angles[PITCH] = perc*-15;
+        }
+    
+        // add angles based on weapon kick
+        VectorAdd (angles, cg.kick_angles, angles);
+    
+        // add angles based on damage kick
+        if ( cg.damageTime ) {
+            ratio = cg.time - cg.damageTime;
+            if ( ratio < DAMAGE_DEFLECT_TIME ) {
+                ratio /= DAMAGE_DEFLECT_TIME;
+                angles[PITCH] += ratio * cg.v_dmg_pitch;
+                angles[ROLL] += ratio * cg.v_dmg_roll;
+            } else {
+                ratio = 1.0 - ( ratio - DAMAGE_DEFLECT_TIME ) / DAMAGE_RETURN_TIME;
+                if ( ratio > 0 ) {
+                    angles[PITCH] += ratio * cg.v_dmg_pitch;
+                    angles[ROLL] += ratio * cg.v_dmg_roll;
+                }
+            }
+        }
+    
+        // add pitch based on fall kick
+    #if 0
+        ratio = ( cg.time - cg.landTime) / FALL_TIME;
+        if (ratio < 0)
+            ratio = 0;
+        angles[PITCH] += ratio * cg.fall_value;
+    #endif
+    
+        // add angles based on velocity
+        VectorCopy( cg.predicted_player_state.velocity, predictedVelocity );
+    
+        delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[0]);
+        angles[PITCH] += delta * cg_runpitch.value;
+        
+        delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[1]);
+        angles[ROLL] -= delta * cg_runroll.value;
+    
+        // add angles based on bob
+    
+        // make sure the bob is visible even at low speeds
+        speed = cg.xyspeed > 200 ? cg.xyspeed : 200;
+    
+        delta = cg.bobfracsin * cg_bobpitch.value * speed;
+        if (cg.predicted_player_state.pm_flags & PMF_DUCKED)
+            delta *= 3;		// crouching
+        angles[PITCH] += delta;
+        delta = cg.bobfracsin * cg_bobroll.value * speed;
+        if (cg.predicted_player_state.pm_flags & PMF_DUCKED)
+            delta *= 3;		// crouching accentuates roll
+        if (cg.bobcycle & 1)
+            delta = -delta;
+        angles[ROLL] += delta;
+    
+    //===================================
+    
+        if ( !firstPersonSaber )//First person saber
+        {
+            // add view height
+            if ( cg.snap->ps.viewEntity > 0 && cg.snap->ps.viewEntity < ENTITYNUM_WORLD )
+            {
+                if ( &g_entities[cg.snap->ps.viewEntity] &&
+                    g_entities[cg.snap->ps.viewEntity].client &&
+                    g_entities[cg.snap->ps.viewEntity].client->ps.viewheight )
+                {
+                    origin[2] += g_entities[cg.snap->ps.viewEntity].client->ps.viewheight;
+                }
+                else
+                {
+                    origin[2] += 4;//???
+                }
+            }
+            else
+            {
+                origin[2] += cg.predicted_player_state.viewheight;
+            }
+        }
+    
+        // smooth out duck height changes
+        timeDelta = cg.time - cg.duckTime;
+        if ( timeDelta < DUCK_TIME) {
+            cg.refdef.vieworg[2] -= cg.duckChange * (DUCK_TIME - timeDelta) / DUCK_TIME;
+        }
+    
+        // add bob height
+        bob = cg.bobfracsin * cg.xyspeed * cg_bobup.value;
+        if (bob > 6) {
+            bob = 6;
+        }
+    
+        origin[2] += bob;
+    
+    
+        // add fall height
+        delta = cg.time - cg.landTime;
+        if ( delta < LAND_DEFLECT_TIME ) {
+            f = delta / LAND_DEFLECT_TIME;
+            cg.refdef.vieworg[2] += cg.landChange * f;
+        } else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME ) {
+            delta -= LAND_DEFLECT_TIME;
+            f = 1.0 - ( delta / LAND_RETURN_TIME );
+            cg.refdef.vieworg[2] += cg.landChange * f;
+        }
+    
+        // add step offset
+        CG_StepOffset();
+    
+        if(cg.snap->ps.leanofs != 0)
+        {
+            vec3_t	right;
+            //add leaning offset
+            //FIXME: when crouching, this bounces up and down?!
+            cg.refdefViewAngles[2] += (float)cg.snap->ps.leanofs/2;
+            AngleVectors(cg.refdefViewAngles, NULL, right, NULL);
+            VectorMA(cg.refdef.vieworg, (float)cg.snap->ps.leanofs, right, cg.refdef.vieworg);
+        }
+    
+        // pivot the eye based on a neck length
+    #if 0
+        {
+    #define	NECK_LENGTH		8
+        vec3_t			forward, up;
+     
+        cg.refdef.vieworg[2] -= NECK_LENGTH;
+        AngleVectors( cg.refdefViewAngles, forward, NULL, up );
+        VectorMA( cg.refdef.vieworg, 3, forward, cg.refdef.vieworg );
+        VectorMA( cg.refdef.vieworg, NECK_LENGTH, up, cg.refdef.vieworg );
+        }
+    #endif
 	}
-
-	// add angles based on weapon kick
-	VectorAdd (angles, cg.kick_angles, angles);
-
-	// add angles based on damage kick
-	if ( cg.damageTime ) {
-		ratio = cg.time - cg.damageTime;
-		if ( ratio < DAMAGE_DEFLECT_TIME ) {
-			ratio /= DAMAGE_DEFLECT_TIME;
-			angles[PITCH] += ratio * cg.v_dmg_pitch;
-			angles[ROLL] += ratio * cg.v_dmg_roll;
-		} else {
-			ratio = 1.0 - ( ratio - DAMAGE_DEFLECT_TIME ) / DAMAGE_RETURN_TIME;
-			if ( ratio > 0 ) {
-				angles[PITCH] += ratio * cg.v_dmg_pitch;
-				angles[ROLL] += ratio * cg.v_dmg_roll;
-			}
-		}
-	}
-
-	// add pitch based on fall kick
-#if 0
-	ratio = ( cg.time - cg.landTime) / FALL_TIME;
-	if (ratio < 0)
-		ratio = 0;
-	angles[PITCH] += ratio * cg.fall_value;
-#endif
-
-	// add angles based on velocity
-	VectorCopy( cg.predicted_player_state.velocity, predictedVelocity );
-
-	delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[0]);
-	angles[PITCH] += delta * cg_runpitch.value;
-	
-	delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[1]);
-	angles[ROLL] -= delta * cg_runroll.value;
-
-	// add angles based on bob
-
-	// make sure the bob is visible even at low speeds
-	speed = cg.xyspeed > 200 ? cg.xyspeed : 200;
-
-	delta = cg.bobfracsin * cg_bobpitch.value * speed;
-	if (cg.predicted_player_state.pm_flags & PMF_DUCKED)
-		delta *= 3;		// crouching
-	angles[PITCH] += delta;
-	delta = cg.bobfracsin * cg_bobroll.value * speed;
-	if (cg.predicted_player_state.pm_flags & PMF_DUCKED)
-		delta *= 3;		// crouching accentuates roll
-	if (cg.bobcycle & 1)
-		delta = -delta;
-	angles[ROLL] += delta;
-
-//===================================
-
-	if ( !firstPersonSaber )//First person saber
-	{
-		// add view height
-		if ( cg.snap->ps.viewEntity > 0 && cg.snap->ps.viewEntity < ENTITYNUM_WORLD )
-		{
-			if ( &g_entities[cg.snap->ps.viewEntity] &&
-				g_entities[cg.snap->ps.viewEntity].client &&
-				g_entities[cg.snap->ps.viewEntity].client->ps.viewheight )
-			{
-				origin[2] += g_entities[cg.snap->ps.viewEntity].client->ps.viewheight;
-			}
-			else
-			{
-				origin[2] += 4;//???
-			}
-		}
-		else
-		{
-			origin[2] += cg.predicted_player_state.viewheight;
-		}
-	}
-
-	// smooth out duck height changes
-	timeDelta = cg.time - cg.duckTime;
-	if ( timeDelta < DUCK_TIME) {
-		cg.refdef.vieworg[2] -= cg.duckChange * (DUCK_TIME - timeDelta) / DUCK_TIME;
-	}
-
-	// add bob height
-	bob = cg.bobfracsin * cg.xyspeed * cg_bobup.value;
-	if (bob > 6) {
-		bob = 6;
-	}
-
-	origin[2] += bob;
-
-
-	// add fall height
-	delta = cg.time - cg.landTime;
-	if ( delta < LAND_DEFLECT_TIME ) {
-		f = delta / LAND_DEFLECT_TIME;
-		cg.refdef.vieworg[2] += cg.landChange * f;
-	} else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME ) {
-		delta -= LAND_DEFLECT_TIME;
-		f = 1.0 - ( delta / LAND_RETURN_TIME );
-		cg.refdef.vieworg[2] += cg.landChange * f;
-	}
-
-	// add step offset
-	CG_StepOffset();
-
-	if(cg.snap->ps.leanofs != 0)
-	{
-		vec3_t	right;
-		//add leaning offset
-		//FIXME: when crouching, this bounces up and down?!
-		cg.refdefViewAngles[2] += (float)cg.snap->ps.leanofs/2;
-		AngleVectors(cg.refdefViewAngles, NULL, right, NULL);
-		VectorMA(cg.refdef.vieworg, (float)cg.snap->ps.leanofs, right, cg.refdef.vieworg);
-	}
-
-	// pivot the eye based on a neck length
-#if 0
-	{
-#define	NECK_LENGTH		8
-	vec3_t			forward, up;
- 
-	cg.refdef.vieworg[2] -= NECK_LENGTH;
-	AngleVectors( cg.refdefViewAngles, forward, NULL, up );
-	VectorMA( cg.refdef.vieworg, 3, forward, cg.refdef.vieworg );
-	VectorMA( cg.refdef.vieworg, NECK_LENGTH, up, cg.refdef.vieworg );
-	}
-#endif
 }
 
 //======================================================================
@@ -1228,6 +1237,8 @@ qboolean CG_CalcFOVFromX( float fov_x )
 	float	x;
 	float	fov_y;
 	qboolean	inwater;
+	
+    float fov_x_orig = fov_x;	
 
 	//LAvaPort
 	//better support for widescreen displays (don't cap top and bottom -> show more left and right)
@@ -1278,6 +1289,25 @@ qboolean CG_CalcFOVFromX( float fov_x )
 	}
 
 	// set it
+	if (cg_useHmd.integer)
+
+    {
+        // [LAva] this is ugly -> get a proper value from the GameHmd        
+        float defaultFov = 125;
+        float hmdFov = defaultFov;
+        
+        float f = ( cg.time - cg.zoomTime ) / ZOOM_OUT_TIME;
+        if ( cg.zoomMode && cg.zoomMode < 3 || f < 1.0 )
+        {
+            hmdFov = fov_x_orig;
+        }
+    
+        
+
+        fov_x = hmdFov;
+        fov_y = hmdFov;
+    }	
+	
 	cg.refdef.fov_x = fov_x;
 	cg.refdef.fov_y = fov_y;
 
@@ -1389,9 +1419,10 @@ static qboolean	CG_CalcFov( void ) {
 
 				// Clamp zoomFov
 				float actualFOV = (cg.overrides.active&CG_OVERRIDE_FOV) ? cg.overrides.fov : cg_fov.value;
-				if ( cg_zoomFov < MAX_ZOOM_FOV )
+				float maxZoomFov = cg_useHmd.integer ? 12 : MAX_ZOOM_FOV;
+				if ( cg_zoomFov < maxZoomFov )
 				{
-					cg_zoomFov = MAX_ZOOM_FOV;
+					cg_zoomFov = maxZoomFov;
 				}
 				else if ( cg_zoomFov > actualFOV )
 				{
@@ -1573,10 +1604,14 @@ static qboolean CG_CalcViewValues( void ) {
 #endif
 	// intermission view
 	if ( ps->pm_type == PM_INTERMISSION ) {
-		VectorCopy( ps->origin, cg.refdef.vieworg );
-		VectorCopy( ps->viewangles, cg.refdefViewAngles );
-		AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
-		return CG_CalcFov();
+		// [LAva] let the user control the camera in hmd mode
+        if (!cg_useHmd.integer)
+        {		
+            VectorCopy( ps->origin, cg.refdef.vieworg );
+            VectorCopy( ps->viewangles, cg.refdefViewAngles );
+            AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
+            return CG_CalcFov();
+		}
 	}
 
 	cg.bobcycle = ( ps->bobCycle & 128 ) >> 7;
@@ -1648,10 +1683,33 @@ static qboolean CG_CalcViewValues( void ) {
 				CG_OffsetFirstPersonView( qtrue );
 				cg.refdef.vieworg[2] += 32;
 				AngleVectors( cg.refdefViewAngles, dir, NULL, NULL );
-				VectorMA( cg.refdef.vieworg, -2, dir, cg.refdef.vieworg );
+				
+				if (cg_useHmd.integer)
+                {
+                    //[LAva] hmd: raise camera height position and remove any other angle offset
+                    cg.refdef.vieworg[2] += 36; 
+                    dir[2] = 0;
+                    VectorNormalize(dir);
+                    
+                    VectorMA( cg.refdef.vieworg, 0, dir, cg.refdef.vieworg );
+    
+                    centity_t	*playerCent = &cg_entities[0];
+                    if ( playerCent && playerCent->gent && playerCent->gent->client )
+                    {
+                        VectorCopy( cg.refdef.vieworg, playerCent->gent->client->renderInfo.eyePoint );
+                        VectorCopy( cg.refdefViewAngles, playerCent->gent->client->renderInfo.eyeAngles );
+                    }
+                }
+                else
+                {
+                    VectorMA( cg.refdef.vieworg, -2, dir, cg.refdef.vieworg );
+                }
 			}
 		}
-		CG_OffsetThirdPersonView();
+		if (!cg_useHmd.integer || cg.renderingThirdPerson)
+		{
+			CG_OffsetThirdPersonView();
+		}
 //		}
 	}  
 	else 
@@ -1703,6 +1761,27 @@ static qboolean CG_CalcViewValues( void ) {
 
 		cg.refdefViewAngles[ROLL] += ( sin( cg.time * 0.0004f )  * 7.0f * perc );
 		cg.refdefViewAngles[PITCH] += ( 26.0f * perc + sin( cg.time * 0.0011f ) * 3.0f * perc );
+	}
+
+	VectorCopy(cg.refdefViewAngles, cg.refdefViewAnglesWeapon);
+
+    cg.refdef.delta_yaw = SHORT2ANGLE(ps->delta_angles[YAW]);
+    float pitch, yaw, roll;
+    if (GameHmd::Get()->GetOrientation(pitch, yaw, roll))
+    {	
+        float inputYaw = GameHmd::Get()->GetInputYaw();
+        
+        cg.refdefViewAngles[ROLL] = roll;
+        cg.refdefViewAngles[PITCH] = pitch;
+        cg.refdefViewAngles[YAW] = yaw + inputYaw + SHORT2ANGLE(ps->delta_angles[YAW]);
+    }
+
+	float x, y, z;
+	if (GameHmd::Get()->GetPosition(x, y, z))
+	{
+		cg.refdef.vieworg[0] += x;
+		cg.refdef.vieworg[1] += y;
+		cg.refdef.vieworg[2] += z;
 	}
 
 	AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
@@ -1794,6 +1873,59 @@ extern vec3_t	serverViewOrg;
 void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView ) {
 	qboolean	inwater = qfalse;
 
+    if (stereoView == STEREO_RIGHT) 
+    {
+        cg.refdef.stereoFrame = stereoView;
+                
+        if ( !cg.snap ) {
+            CG_DrawInformation();
+            return;
+        }
+        
+        
+        //[LAva] TODO: check if we still need this
+        //theFxHelper.AdjustTime( 1 );             
+
+        
+        if ( !cg.renderingThirdPerson ) {
+            CG_DamageBlendBlob();		
+        }        
+        
+        // build the render lists
+        if ( !cg.hyperspace ) {
+            CG_AddPacketEntities();			// adter calcViewValues, so predicted player state is correct
+            CG_AddMarks();
+            CG_AddLocalEntities();
+        }
+        
+
+        
+        // Don't draw the in-view weapon when in camera mode
+        if ( !in_camera 
+            && !cg_pano.integer 
+            && cg.snap->ps.weapon != WP_SABER
+            && ( cg.snap->ps.viewEntity == 0 || cg.snap->ps.viewEntity >= ENTITYNUM_WORLD ) )
+        {
+            CG_AddViewWeapon( &cg.predicted_player_state );
+        }
+   
+        
+        if ( !cg.hyperspace ) 
+        {
+            //Add all effects
+            theFxScheduler.AddScheduledEffects( );
+        }
+    
+        // finish up the rest of the refdef
+        if ( cg.testModelEntity.hModel ) {
+            CG_AddTestModel();
+        }       
+        
+        CG_DrawActive( stereoView );
+        
+		return;
+	}
+	
 	cg.time = serverTime;
 
 	// update cvars
@@ -1881,9 +2013,11 @@ wasForceSpeed=isForceSpeed;
 		cg.renderingThirdPerson = qfalse;
 	}
 
+	cg.refdef.cameraControlled = false;
 	if ( in_camera )
 	{
 		// The camera takes over the view
+		cg.refdef.cameraControlled = true;
 		CGCam_RenderScene();		
 	}
 	else
@@ -1893,6 +2027,9 @@ wasForceSpeed=isForceSpeed;
 		// build cg.refdef
 		inwater = CG_CalcViewValues();
 	}
+	
+	// cg.refdef is 100% inisialized here -> set stereo flag
+    cg.refdef.stereoFrame = stereoView;	
 
 	// NOTE: this may completely override the camera
 	CG_RunEmplacedWeapon();

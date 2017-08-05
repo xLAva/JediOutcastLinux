@@ -1495,7 +1495,7 @@ void CIN_SetLooping(int handle, qboolean loop) {
 
 #define TC_DELAY 9000
 #define TC_STOPTIME 81000
-static void CIN_AddTextCrawl()
+static void CIN_AddTextCrawl(stereoFrame_t stereo)
 {
 	refdef_t	refdef;
 	polyVert_t	verts[4];
@@ -1513,6 +1513,7 @@ static void CIN_AddTextCrawl()
 	refdef.y = -50;
 	refdef.width = cls.glconfig.vidWidth;
 	refdef.height = cls.glconfig.vidHeight * 2; // deliberately extend off the bottom of the screen
+	refdef.stereoFrame = stereo;
 
 	// use to set shaderTime for scrolling shaders
 	refdef.time = 0; 
@@ -1830,7 +1831,7 @@ void CL_PlayInGameCinematic_f(void)
 
 // Externally-called only, and only if cls.state == CA_CINEMATIC (or CL_IsRunningInGameCinematic() == true now)
 //
-void SCR_DrawCinematic (void) 
+void SCR_DrawCinematic (stereoFrame_t stereo) 
 {
 	if (CL_InGameCinematicOnStandBy())
 	{
@@ -1841,7 +1842,7 @@ void SCR_DrawCinematic (void)
 		CIN_DrawCinematic(CL_handle);
 		if (cinTable[CL_handle].hCRAWLTEXT && (cls.realtime - CL_iPlaybackStartTime >= TC_DELAY))
 		{
-			CIN_AddTextCrawl();
+			CIN_AddTextCrawl(stereo);
 		}
 	}
 }

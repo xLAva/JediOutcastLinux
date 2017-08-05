@@ -6,6 +6,10 @@
 
 #include "tr_local.h"
 
+#include "../hmd/ClientHmd.h"
+#include "../hmd/HmdRenderer/IHmdRenderer.h"
+#include "../hmd/Quake3/GameMenuHmdManager.h"
+
 int			r_firstSceneDrawSurf;
 
 int			r_numdlights;
@@ -266,6 +270,8 @@ void RE_RenderScene( const refdef_t *fd ) {
 	if (!tr.world && !( fd->rdflags & RDF_NOWORLDMODEL ) ) {
 		ri.Error (ERR_DROP, "R_RenderScene: NULL worldmodel");
 	}
+	
+	ClientHmd::Get()->GetGameMenuHmdManager()->SetCameraControlled(fd->cameraControlled == 1);	
 
 //	memcpy( tr.refdef.text, fd->text, sizeof( tr.refdef.text ) );
 
@@ -275,6 +281,8 @@ void RE_RenderScene( const refdef_t *fd ) {
 	tr.refdef.height = fd->height;
 	tr.refdef.fov_x = fd->fov_x;
 	tr.refdef.fov_y = fd->fov_y;
+	tr.refdef.stereoFrame = fd->stereoFrame;
+    tr.refdef.delta_yaw = fd->delta_yaw;	
 
 	VectorCopy( fd->vieworg, tr.refdef.vieworg );
 	VectorCopy( fd->viewaxis[0], tr.refdef.viewaxis[0] );
@@ -364,6 +372,20 @@ void RE_RenderScene( const refdef_t *fd ) {
 #ifdef _NPATCH
 	RE_NPatchLevel(r_npatches->integer);
 #endif // _NPATCH
+	
+	IHmdRenderer* pHmdRenderer = ClientHmd::Get()->GetRenderer();
+    if (pHmdRenderer)
+    {
+        bool leftEye = tr.refdef.stereoFrame == STEREO_LEFT ||  tr.refdef.stereoFrame == STEREO_CENTER;
+        pHmdRenderer->BeginRenderingForEye(leftEye);
+        
+        // calculate body yaw
+        parms.bodyYaw = tr.refdef.delta_yaw;
+        if (!fd->cameraControlled)
+        {
+            parms.bodyYaw += ClientHmd::Get()->GetYawDiff();
+        }
+    } 	
 	
 	recursivePortalCount = 0;
 	R_RenderView( &parms );

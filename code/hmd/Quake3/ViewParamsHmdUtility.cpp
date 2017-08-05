@@ -13,10 +13,10 @@ void ViewParamsHmdUtility::UpdateRenderParams(trGlobals_t* trRef, bool isSkyBoxP
         vec3_t origin;
 
         // transform by the camera placement
-        VectorCopy( trRef->viewParms.or.origin, origin );
+        VectorCopy( trRef->viewParms.orient.origin, origin );
 
         // check if the renderer handles the view matrix creation
-        bool matrixCreated = pHmdRenderer->GetCustomViewMatrix(trRef->or.modelMatrix,
+        bool matrixCreated = pHmdRenderer->GetCustomViewMatrix(trRef->orient.modelMatrix,
                 origin[0],
                 origin[1],
                 origin[2],
@@ -24,8 +24,8 @@ void ViewParamsHmdUtility::UpdateRenderParams(trGlobals_t* trRef, bool isSkyBoxP
 
         if (matrixCreated)
         {
-            VectorCopy(origin, trRef->viewParms.or.origin);
-            VectorCopy(origin, trRef->viewParms.or.viewOrigin);
+            VectorCopy(origin, trRef->viewParms.orient.origin);
+            VectorCopy(origin, trRef->viewParms.orient.viewOrigin);
             VectorCopy(origin, trRef->viewParms.pvsOrigin);
         }
 
@@ -38,14 +38,14 @@ void ViewParamsHmdUtility::UpdateRenderParams(trGlobals_t* trRef, bool isSkyBoxP
         if (worked)
         {
             vec3_t origin;
-            VectorCopy( trRef->viewParms.or.origin, origin);
+            VectorCopy( trRef->viewParms.orient.origin, origin);
 
             for (int i=0; i<3; i++)
             {
                 origin[i] += hmdOffset[i];
             }
 
-            VectorCopy(origin, trRef->viewParms.or.origin);
+            VectorCopy(origin, trRef->viewParms.orient.origin);
         }
     }
 }

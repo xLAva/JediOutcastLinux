@@ -1292,7 +1292,38 @@ CROSSHAIR
 CG_DrawCrosshair
 =================
 */
-static void CG_DrawCrosshair( vec3_t worldPoint ) 
+
+static void CG_PlaceCrosshairInWorld(vec3_t worldPoint, float crosshairEntDist, float size, qhandle_t hShader, vec4_t ecolor)
+{
+    // [LAva] got the basics from ioquake / ioq3
+    
+    //char rendererinfos[128];
+    //trap_Cvar_VariableStringBuffer("r_zProj", rendererinfos, sizeof(rendererinfos));
+    //float zProj = atof(rendererinfos);
+
+    float xmax = tan(cg.refdef.fov_x * M_PI / 360.0f);
+    //printf("xmax=%.2f fov_x=%.2f dist=%.2f\n", xmax, cg.refdef.fov_x, crosshairEntDist);
+    
+    refEntity_t ent;
+
+    memset(&ent, 0, sizeof(ent));
+    ent.reType = RT_SPRITE;
+    ent.renderfx = RF_DEPTHHACK;
+
+    VectorCopy(worldPoint, ent.origin);
+
+    // scale the crosshair so it appears the same size for all distances
+    ent.radius = size / 1280 * xmax * crosshairEntDist;
+    ent.customShader = hShader;
+    ent.shaderRGBA[0] = ecolor[0]*255;
+    ent.shaderRGBA[1] = ecolor[1]*255;
+    ent.shaderRGBA[2] = ecolor[2]*255;
+    ent.shaderRGBA[3] = ecolor[3]*255;
+
+    cgi_R_AddRefEntityToScene(&ent);    
+}
+
+static void CG_DrawCrosshair( vec3_t worldPoint, float crosshairEntDist) 
 {
 	float		w, h;
 	qhandle_t	hShader;
@@ -1474,29 +1505,41 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 		h *= ( 1 + f );
 	}
 
-	if ( worldPoint && VectorLength( worldPoint ) )
-	{
-		if ( !CG_WorldCoordToScreenCoordFloat( worldPoint, &x, &y ) )
-		{//off screen, don't draw it
-			return;
-		}
-		x -= 320;//????
-		y -= 240;//????
-	}
-	else
-	{
-		x = cg_crosshairX.integer;
-		y = cg_crosshairY.integer;
-	}
+	bool useInWorldCrosshair = cg_useHmd.integer;
+
+    if (!useInWorldCrosshair)
+    {
+        if ( worldPoint && VectorLength( worldPoint ) )
+        {
+            if ( !CG_WorldCoordToScreenCoordFloat( worldPoint, &x, &y ) )
+            {//off screen, don't draw it
+                return;
+            }
+            x -= 320;//????
+            y -= 240;//????
+        }
+        else
+        {
+            x = cg_crosshairX.integer;
+            y = cg_crosshairY.integer;
+        }
+    }
 
 	if ( cg.snap->ps.viewEntity > 0 && cg.snap->ps.viewEntity < ENTITYNUM_WORLD )
 	{
 		if ( !Q_stricmp( "misc_panel_turret", g_entities[cg.snap->ps.viewEntity].classname ))
 		{
 			// draws a custom crosshair that is twice as large as normal
-			cgi_R_DrawStretchPic( x + cg.refdef.x + 320 - w, 
-				y + cg.refdef.y + 240 - h, 
-				w * 2, h * 2, 0, 0, 1, 1, cgs.media.turretCrossHairShader );	
+			if (useInWorldCrosshair)
+            {
+                CG_PlaceCrosshairInWorld(worldPoint, crosshairEntDist, w*2, cgs.media.turretCrossHairShader, ecolor);
+            }
+            else
+            {
+                cgi_R_DrawStretchPic( x + cg.refdef.x + 320 - w, 
+                    y + cg.refdef.y + 240 - h, 
+                    w * 2, h * 2, 0, 0, 1, 1, cgs.media.turretCrossHairShader );
+            }
 
 		}
 	}
@@ -1504,9 +1547,16 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 	{
 		hShader = cgs.media.crosshairShader[ cg_drawCrosshair.integer % NUM_CROSSHAIRS ];
 
-		cgi_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (640 - w), 
-			y + cg.refdef.y + 0.5 * (480 - h), 
-			w, h, 0, 0, 1, 1, hShader );	
+		if (useInWorldCrosshair)
+        {
+            CG_PlaceCrosshairInWorld(worldPoint, crosshairEntDist, w, hShader, ecolor);
+        }
+        else
+        {
+            cgi_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (640 - w),
+                y + cg.refdef.y + 0.5 * (480 - h),
+                w, h, 0, 0, 1, 1, hShader );
+        }
 	}
 
 	if ( cg.forceCrosshairStartTime && cg_crosshairForceHint.integer ) // drawing extra bits
@@ -1519,10 +1569,17 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 		w *= 2.0f;
 		h *= 2.0f;
 
-		cgi_R_DrawStretchPic( x + cg.refdef.x + 0.5f * ( 640 - w ), y + cg.refdef.y + 0.5f * ( 480 - h ), 
-								w, h, 
-								0, 0, 1, 1, 
-								cgs.media.forceCoronaShader ); 
+        if (useInWorldCrosshair)
+        {
+            CG_PlaceCrosshairInWorld(worldPoint, crosshairEntDist, w, cgs.media.forceCoronaShader, ecolor);        
+        }
+        else
+        {
+            cgi_R_DrawStretchPic( x + cg.refdef.x + 0.5f * ( 640 - w ), y + cg.refdef.y + 0.5f * ( 480 - h ), 
+                                    w, h, 
+                                    0, 0, 1, 1, 
+                                    cgs.media.forceCoronaShader ); 
+        }
 	}
 }
 
@@ -1830,15 +1887,16 @@ static void CG_ScanForCrosshairEntity( qboolean scanAll )
 		return;
 	}
 */
+	
+	g_crosshairEntNum = trace.entityNum;
+	g_crosshairEntDist = 4096*trace.fraction;	
+	
 	//CROSSHAIR is now always drawn from this trace so it's 100% accurate
 	if ( cg_dynamicCrosshair.integer )
 	{//draw crosshair at endpoint
-		CG_DrawCrosshair( trace.endpos );
-	}
-
-	g_crosshairEntNum = trace.entityNum;
-	g_crosshairEntDist = 4096*trace.fraction;
-
+		CG_DrawCrosshair( trace.endpos, g_crosshairEntDist );
+	}	
+	
 	if ( !traceEnt )
 	{
 		//not looking at anything
@@ -2316,11 +2374,15 @@ static void CG_Draw2D( void )
 		//CROSSHAIR is now done from the crosshair ent trace
 		if ( !cg.renderingThirdPerson && !cg_dynamicCrosshair.integer ) // disruptor draws it's own crosshair artwork; binocs draw nothing; third person draws its own crosshair
 		{
-			CG_DrawCrosshair( NULL );
+			CG_DrawCrosshair( NULL, 0 );
 		}
 
 
-		CG_DrawCrosshairNames();
+        // in hmd mode the crosshair is drawn in 3d instead of 2d space
+        if (!cg_useHmd.integer)
+        {
+            CG_DrawCrosshairNames();
+        }
 
 		CG_RunRocketLocking();
 
@@ -2457,19 +2519,26 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	VectorNormalize( vright_n );
 	VectorNormalize( vup_n );
 
-	switch ( stereoView ) {
-	case STEREO_CENTER:
+	if (cg_useHmd.integer)
+	{
 		separation = 0;
-		break;
-	case STEREO_LEFT:
-		separation = -cg_stereoSeparation.value / 2;
-		break;
-	case STEREO_RIGHT:
-		separation = cg_stereoSeparation.value / 2;
-		break;
-	default:
-		separation = 0;
-		CG_Error( "CG_DrawActive: Undefined stereoView" );
+	}
+	else
+	{
+		switch ( stereoView ) {
+		case STEREO_CENTER:
+			separation = 0;
+			break;
+		case STEREO_LEFT:
+			separation = -cg_stereoSeparation.value / 2;
+			break;
+		case STEREO_RIGHT:
+			separation = cg_stereoSeparation.value / 2;
+			break;
+		default:
+			separation = 0;
+			CG_Error( "CG_DrawActive: Undefined stereoView" );
+		}
 	}
 
 
@@ -2487,7 +2556,15 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 		cgi_R_LAGoggles();
 	}
 
+	cg.refdef.stereoFrame = stereoView;
 	// draw 3D view
+	
+	// in hmd mode the crosshair is drawn in 3d instead of 2d space
+    if (cg_useHmd.integer && !in_camera)
+    {
+        CG_DrawCrosshairNames();
+    }
+    
 	cgi_R_RenderScene( &cg.refdef );
 
 	// restore original viewpoint if running stereo

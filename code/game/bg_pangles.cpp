@@ -437,6 +437,9 @@ void PM_UpdateViewAngles( playerState_t *ps, usercmd_t *cmd, gentity_t *gent )
 		{
 			//FIXME get this limit from the NPCs stats?
 			// don't let the player look up or down more than 90 degrees
+			// always take the real angle as basis for teh delta angle calculation
+            // this should remove the delta_angle if we are back in range
+            temp = cmd->angles[i];			
 			if ( temp > pitchClampMax ) 
 			{
 				ps->delta_angles[i] = (pitchClampMax - cmd->angles[i]) & 0xffff;	//& clamp to short
@@ -447,9 +450,14 @@ void PM_UpdateViewAngles( playerState_t *ps, usercmd_t *cmd, gentity_t *gent )
 				ps->delta_angles[i] = (pitchClampMin - cmd->angles[i]) & 0xffff;	//& clamp to short
 				temp = pitchClampMin;
 			}
+			else
+            {
+                ps->delta_angles[i] = 0;
+            }			
 		}
 		if ( i == ROLL && ps->vehicleModel != 0 ) 
 		{
+			temp = cmd->angles[i];		
 			if ( temp > pitchClampMax ) 
 			{
 				ps->delta_angles[i] = (pitchClampMax - cmd->angles[i]) & 0xffff;
@@ -460,6 +468,10 @@ void PM_UpdateViewAngles( playerState_t *ps, usercmd_t *cmd, gentity_t *gent )
 				ps->delta_angles[i] = (pitchClampMin - cmd->angles[i]) & 0xffff;
 				temp = pitchClampMin;
 			}
+			else
+            {
+                ps->delta_angles[i] = 0;
+            }			
 		}
 		//FIXME: Are we losing precision here?  Is this why it jitters?
 		ps->viewangles[i] = SHORT2ANGLE(temp);

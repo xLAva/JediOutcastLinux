@@ -399,7 +399,7 @@ void CL_PlayInGameCinematic_f(void);
 qboolean CL_CheckPendingCinematic(void);
 qboolean CL_IsRunningInGameCinematic(void);
 qboolean CL_InGameCinematicOnStandBy(void);
-void SCR_DrawCinematic (void);
+void SCR_DrawCinematic (stereoFrame_t stereo);
 void SCR_RunCinematic (void);
 void SCR_StopCinematic( qboolean bAllowRefusal = qfalse );
 

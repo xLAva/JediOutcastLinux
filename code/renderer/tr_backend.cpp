@@ -5,6 +5,9 @@
 
 #include "tr_local.h"
 
+#include "../hmd/ClientHmd.h"
+#include "../hmd/HmdRenderer/IHmdRenderer.h"
+
 backEndData_t	*backEndData[SMP_FRAMES];
 
 backEndState_t	backEnd;
@@ -674,11 +677,45 @@ void	RB_SetGL2D (void) {
 	backEnd.projection2D = qtrue;
 
 	// set 2D virtual screen size
-	qglViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-	qglScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+	IHmdRenderer* pHmdRenderer = ClientHmd::Get()->GetRenderer();
+    
+	if (pHmdRenderer)
+	{
+        int x = 0;
+        int y = 0;
+        int w = glConfig.vidWidth;
+        int h = glConfig.vidHeight;
+        
+        pHmdRenderer->Get2DViewport(x, y, w, h);
+
+
+		qglViewport(x, y, w, h);
+		qglScissor(x, y, w, h);
+	}
+	else
+	{
+		qglViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+		qglScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+	}	
 	qglMatrixMode(GL_PROJECTION);
     qglLoadIdentity ();
-	qglOrtho (0, 640, 480, 0, 0, 1);
+    if (pHmdRenderer)
+    {
+        double left;
+        double right;
+        double bottom;
+        double top;
+        double zNear;
+        double zFar;
+
+        pHmdRenderer->Get2DOrtho(left, right, bottom, top, zNear, zFar);
+
+        qglOrtho(left, right, bottom, top, zNear, zFar);
+    }
+    else
+    {
+        qglOrtho (0, 640, 480, 0, 0, 1);
+    }
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
 
@@ -967,9 +1004,25 @@ RB_DrawBuffer
 const void	*RB_DrawBuffer( const void *data ) {
 	const drawBufferCommand_t	*cmd;
 
-	cmd = (const drawBufferCommand_t *)data;
-
-	qglDrawBuffer( cmd->buffer );
+    IHmdRenderer* pHmdRenderer = ClientHmd::Get()->GetRenderer();
+    if (pHmdRenderer)
+    {
+        if ( tess.numIndexes ) 
+        {
+            RB_EndSurface();	//this might change culling and other states
+        }
+    
+        cmd = (const drawBufferCommand_t *)data;
+    
+        pHmdRenderer->BeginRenderingForEye(cmd->buffer == GL_BACK_LEFT);
+    
+        backEnd.projection2D = false;    
+    }
+    else
+    {
+        cmd = (const drawBufferCommand_t *)data;
+        qglDrawBuffer( cmd->buffer );
+    }
 
 		// clear screen for debugging
 	if (tr.world && tr.refdef.doLAGoggles)

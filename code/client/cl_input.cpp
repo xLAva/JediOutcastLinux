@@ -8,6 +8,10 @@
 #include "client.h"
 #include "client_ui.h"
 
+#include "../hmd/ClientHmd.h"
+#include "../hmd/HmdDevice/IHmdDevice.h"
+#include "../hmd/HmdDevice/HmdDeviceMouse.h"
+
 unsigned	frame_msec;
 int			old_com_frameTime;
 
@@ -44,6 +48,17 @@ qboolean	in_mlooking;
 float cl_mPitchOverride = 0.0f;
 float cl_mYawOverride = 0.0f;
 
+
+static void IN_HmdRecenter(void)
+{
+    IHmdDevice* pDevice = ClientHmd::Get()->GetDevice();
+    if (pDevice == NULL)
+    {
+        return;
+    }
+    
+    pDevice->Recenter();
+}
 
 void IN_MLookDown( void ) {
 	in_mlooking = qtrue;
@@ -562,8 +577,33 @@ usercmd_t CL_CreateCmd( void ) {
 	// get basic movement from keyboard
 	CL_KeyMove (&cmd);
 
-	// get basic movement from mouse
-	CL_MouseMove( &cmd );
+    HmdDeviceMouse* pDevice = dynamic_cast<HmdDeviceMouse*>(ClientHmd::Get()->GetDevice());
+    if (pDevice != NULL)
+    {
+        vec3_t tempAngles;
+        VectorCopy(cl.viewangles, tempAngles);
+        pDevice->GetOrientationDeg(cl.viewangles[PITCH], cl.viewangles[YAW], cl.viewangles[ROLL]);
+
+        CL_MouseMove(&cmd);
+
+        pDevice->SetOrientationDeg(cl.viewangles[PITCH], cl.viewangles[YAW], cl.viewangles[ROLL]);
+//        float x;
+//        float y;
+//        float z;
+//        pDevice->GetPosition(x, y, z);
+//        x += cl.viewangles[PITCH] - tempAngles[PITCH];
+//        y += cl.viewangles[YAW] - tempAngles[YAW];
+//        z += cl.viewangles[ROLL] - tempAngles[ROLL];
+
+//        pDevice->SetPosition(x, y, z);
+        pDevice->SetPosition(1, 0, 0);
+        VectorCopy(tempAngles, cl.viewangles);
+    }
+    else
+    {
+        // get basic movement from mouse
+        CL_MouseMove( &cmd );
+    }
 
 	// get basic movement from joystick
 	CL_JoystickMove( &cmd );
@@ -580,6 +620,16 @@ usercmd_t CL_CreateCmd( void ) {
 		VectorCopy( cl_overriddenAngles, cl.viewangles );
 		cl_overrideAngles = qfalse;
 	}
+	
+	
+	float yawDiff = cl.viewangles[YAW] - oldAngles[YAW];
+
+    int useHmd = Cvar_VariableIntegerValue("cg_useHmd");
+    if (useHmd == 1)
+    {
+        ClientHmd::Get()->UpdateInputView(yawDiff, cl.viewangles[PITCH], cl.viewangles[YAW], cl.viewangles[ROLL]);
+    }
+	
 	// store out the final values
 	CL_FinishMove( &cmd );
 
@@ -874,6 +924,8 @@ void CL_InitInput( void ) {
 	//end buttons
 	Cmd_AddCommand ("+mlook", IN_MLookDown);
 	Cmd_AddCommand ("-mlook", IN_MLookUp);
+	
+	Cmd_AddCommand ("hmdrecenter", IN_HmdRecenter);
 
 	cl_nodelta = Cvar_Get ("cl_nodelta", "0", 0);
 	cl_debugMove = Cvar_Get ("cl_debugMove", "0", 0);

@@ -335,7 +335,8 @@ typedef struct {
 	// view rendering
 	refdef_t	refdef;
 	vec3_t		refdefViewAngles;		// will be converted to refdef.viewaxis
-
+    vec3_t      refdefViewAnglesWeapon;
+    
 	// zoom key
 	int			zoomMode;		// 0 - not zoomed, 1 - binoculars, 2 - disruptor weapon
 	int			zoomDir;		// -1, 1
@@ -614,6 +615,9 @@ extern	vmCvar_t		cg_reliableAnimSounds;
 extern	vmCvar_t		cg_smoothPlayerPos;
 extern	vmCvar_t		cg_smoothPlayerPlat;
 extern	vmCvar_t		cg_smoothPlayerPlatAccel;
+
+extern  vmCvar_t        cg_activeHmd;
+extern  vmCvar_t        cg_useHmd;
 
 void CG_NewClientinfo( int clientNum );
 //

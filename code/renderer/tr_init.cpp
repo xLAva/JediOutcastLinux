@@ -11,6 +11,9 @@
 #include "tr_jpeg_interface.h"
 #include "tr_font.h"
 
+#include "../hmd/ClientHmd.h"
+#include "../hmd/HmdRenderer/IHmdRenderer.h"
+
 glconfig_t	glConfig;
 glstate_t	glState;
 
@@ -180,6 +183,41 @@ void ( APIENTRY * qglPointParameterfvEXT)( GLenum, GLfloat *);
 void ( APIENTRY * qglPNTrianglesiATI )( GLenum pname, GLint param );
 #endif // _NPATCH
 
+PFNglIsRenderbufferPROC qglIsRenderbuffer = NULL;
+PFNglBindRenderbufferPROC qglBindRenderbuffer = NULL;
+PFNglDeleteRenderbuffersPROC qglDeleteRenderbuffers = NULL;
+PFNglGenRenderbuffersPROC qglGenRenderbuffers = NULL;
+PFNglRenderbufferStoragePROC qglRenderbufferStorage = NULL;
+PFNglRenderbufferStorageMultisamplePROC qglRenderbufferStorageMultisample = NULL;
+PFNglGetRenderbufferParameterivPROC qglGetRenderbufferParameteriv = NULL;
+PFNglIsFramebufferPROC qglIsFramebuffer = NULL;
+PFNglGenFramebuffersPROC qglGenFramebuffers = NULL;
+PFNglBindFramebufferPROC qglBindFramebuffer = NULL;
+PFNglDeleteFramebuffersPROC qglDeleteFramebuffers = NULL;
+PFNglCheckFramebufferStatusPROC qglCheckFramebufferStatus = NULL;
+PFNglFramebufferTexture1DPROC qglFramebufferTexture1D = NULL;
+PFNglFramebufferTexture2DPROC qglFramebufferTexture2D = NULL;
+PFNglFramebufferTexture3DPROC qglFramebufferTexture3D = NULL;
+PFNglFramebufferTextureLayerPROC qglFramebufferTextureLayer = NULL;
+PFNglFramebufferRenderbufferPROC qglFramebufferRenderbuffer = NULL;
+PFNglGetFramebufferAttachmentParameterivPROC qglGetFramebufferAttachmentParameteriv = NULL;
+PFNglBlitFramebufferPROC qglBlitFramebuffer = NULL;
+PFNglGenerateMipmapPROC qglGenerateMipmap = NULL;
+
+PFNglCreateShaderObjectARBPROC qglCreateShaderObjectARB = NULL;
+PFNglShaderSourceARBPROC qglShaderSourceARB = NULL;
+PFNglCompileShaderARBPROC qglCompileShaderARB = NULL;
+PFNglCreateProgramObjectARBPROC qglCreateProgramObjectARB = NULL;
+PFNglAttachObjectARBPROC qglAttachObjectARB = NULL;
+PFNglLinkProgramARBPROC qglLinkProgramARB = NULL;
+PFNglUseProgramObjectARBPROC qglUseProgramObjectARB = NULL;
+PFNglUniform2fARBPROC qglUniform2fARB = NULL;
+PFNglUniform2fvARBPROC qglUniform2fvARB = NULL;
+PFNglGetUniformLocationARBPROC qglGetUniformLocationARB = NULL;
+
+PFNglBindBufferPROC qglBindBuffer = NULL;
+PFNglBindVertexArrayPROC qglBindVertexArray = NULL;
+
 void RE_SetLightStyle(int style, int color);
 
 static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral,  qboolean shouldBeMult2)
@@ -226,6 +264,11 @@ static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean sh
 ** setting variables, checking GL constants, and reporting the gfx system config
 ** to the user.
 */
+
+// [LAva] ugly as hell
+static IHmdDevice* pHmdDevice = NULL;
+static IHmdRenderer* pHmdRenderer = NULL;
+
 static void InitOpenGL( void )
 {
 	//

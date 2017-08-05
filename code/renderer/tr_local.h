@@ -94,6 +94,8 @@ typedef struct {
 	qboolean	doFullbright;
 
 	int			fogIndex;	//what fog brush the vieworg is in
+	stereoFrame_t stereoFrame;
+    float       delta_yaw;	
 
 } trRefdef_t;
 
@@ -533,6 +535,7 @@ typedef struct {
 	cplane_t	frustum[4];
 	vec3_t		visBounds[2];
 	float		zFar;
+    float       bodyYaw;	
 } viewParms_t;
 
 
@@ -1347,6 +1350,8 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 
 void		GLimp_Init( void );
 void		GLimp_Shutdown( void );
+void		GLimp_DrawBuffer( int buffer );
+void		GLimp_StartFrame( void );
 void		GLimp_EndFrame( void );
 
 qboolean	GLimp_SpawnRenderThread( void (*function)( void ) );
