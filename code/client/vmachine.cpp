@@ -11,10 +11,14 @@ VIRTUAL MACHINE
 */
 int	VM_Call( int callnum, ... )
 {
-	return cgvm.entryPoint( (&callnum)[0], (&callnum)[1], (&callnum)[2], (&callnum)[3],
-		(&callnum)[4], (&callnum)[5], (&callnum)[6], (&callnum)[7],
-		(&callnum)[8],  (&callnum)[9] );
+	if (cgvm.entryPoint)
+	{
+		return cgvm.entryPoint( (&callnum)[0], (&callnum)[1], (&callnum)[2], (&callnum)[3],
+			(&callnum)[4], (&callnum)[5], (&callnum)[6], (&callnum)[7],
+			(&callnum)[8],  (&callnum)[9] );
+	}
 	
+	return -1;
 }
 
 /*

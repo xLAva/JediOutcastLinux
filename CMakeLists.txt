@@ -166,7 +166,7 @@ if(USE_OCULUS_SDK_1)
         code/hmd/OculusSdk_1/HmdRendererOculusSdk.cpp
     )
 
-    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_OVR -DUSE_OVR_1")
+    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_VR -DUSE_OVR -DUSE_OVR_1")
 
     include_directories("${EXTERNAL_LIB_PATH}/OculusSDK_1/OculusSDK/LibOVR/Include")
     include_directories("${EXTERNAL_LIB_PATH}/OculusSDK_1/OculusSDK/LibOVRKernel/Src")
@@ -216,7 +216,7 @@ elseif(USE_OCULUS_SDK_0.8)
         code/hmd/OculusSdk_0.8/HmdRendererOculusSdk.cpp
     )
 
-    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_OVR -DUSE_OVR_0_8")
+    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_VR -DUSE_OVR -DUSE_OVR_0_8")
 
     include_directories("${EXTERNAL_LIB_PATH}/OculusSDK_0.8/OculusSDK/LibOVR/Include")
     include_directories("${EXTERNAL_LIB_PATH}/OculusSDK_0.8/OculusSDK/LibOVRKernel/Src")
@@ -265,7 +265,7 @@ elseif(USE_OCULUS_SDK_0.5)
         code/hmd/OculusSdk_0.5/HmdRendererOculusSdk.cpp
     )
 
-    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_OVR -DUSE_OVR_0_5")
+    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_VR -DUSE_OVR -DUSE_OVR_0_5")
 
     include_directories("${EXTERNAL_LIB_PATH}/OculusSDK_0.5/OculusSDK/LibOVR/Include")
 
@@ -327,7 +327,7 @@ if(USE_OPENHMD)
         code/hmd/HmdRenderer/HmdRendererOculusOpenHmd.cpp
     )
 
-    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_OPENHMD -DOHMD_STATIC")
+    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_VR -DUSE_OPENHMD -DOHMD_STATIC")
     include_directories("${EXTERNAL_LIB_PATH}/OpenHMD/include")
     include_directories("${EXTERNAL_LIB_PATH}/OpenHMD/src")
 
@@ -473,6 +473,8 @@ source_group(mac FILES ${SSF_MACOS})
 set(STARWARS_SOURCE_FILES ${STARWARS_SOURCE_FILES} ${SSF_WIN32} ${SSF_LINUX} ${SSF_MACOS})
 
 if(MSVC)
+	include_directories("${EXTERNAL_LIB_PATH}/glm")
+
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG")
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CUSTOM_COMPILE_FLAGS_ALL} -DNDEBUG")
 
