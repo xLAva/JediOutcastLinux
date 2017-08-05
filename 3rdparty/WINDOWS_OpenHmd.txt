@@ -1,0 +1,7 @@
+Checkout OpenHmd from this git repository
+https://github.com/xLAva/OpenHmd
+
+into the folder 3rdparty/OpenHmd
+
+WINDOWS:
+No building required. A Windows binary is included.

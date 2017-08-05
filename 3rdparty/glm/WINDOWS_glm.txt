@@ -1,0 +1,14 @@
+WINDOWS and MACOS:
+
+Get the sources here:
+http://sourceforge.net/projects/ogl-math/files/latest/download?source=files
+
+Extract glm into this folder. No building is required.
+
+
+LINUX:
+Just install the glm library from the repository of your distribution.
+
+For example on Ubuntu:
+sudo apt-get install libglm-dev
+

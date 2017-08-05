@@ -1,0 +1,14 @@
+WINDOWS:
+
+Get the sources here:
+https://github.com/downloads/signal11/hidapi/hidapi-0.7.0.zip
+
+Extract hidapi into this folder and build it (32bit release version).
+
+
+LINUX:
+Just install the hidapi version from the repository of your distribution.
+
+For example on Ubuntu:
+sudo apt-get install libhidapi-dev:i386
+
