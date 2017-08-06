@@ -132,6 +132,8 @@ bool HmdDeviceOculusSdk::Init(bool allowDummyDevice)
         flush(std::cout);
     }
 
+    Recenter();
+
     return true;
 }
 
