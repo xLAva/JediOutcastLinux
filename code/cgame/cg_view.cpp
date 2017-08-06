@@ -1018,7 +1018,7 @@ static void CG_OffsetFirstPersonView( qboolean firstPersonSaber ) {
 		return;
 	}
 
-    if (!cg_useHmd.integer)
+    //if (!cg_useHmd.integer)
     {
         if ( g_entities[0].client && PM_InKnockDown( &g_entities[0].client->ps ) )
         {
@@ -1090,37 +1090,39 @@ static void CG_OffsetFirstPersonView( qboolean firstPersonSaber ) {
         if (cg.bobcycle & 1)
             delta = -delta;
         angles[ROLL] += delta;
-    
+    }
     //===================================
     
-        if ( !firstPersonSaber )//First person saber
+    if ( !firstPersonSaber )//First person saber
+    {
+        // add view height
+        if ( cg.snap->ps.viewEntity > 0 && cg.snap->ps.viewEntity < ENTITYNUM_WORLD )
         {
-            // add view height
-            if ( cg.snap->ps.viewEntity > 0 && cg.snap->ps.viewEntity < ENTITYNUM_WORLD )
+            if ( &g_entities[cg.snap->ps.viewEntity] &&
+                g_entities[cg.snap->ps.viewEntity].client &&
+                g_entities[cg.snap->ps.viewEntity].client->ps.viewheight )
             {
-                if ( &g_entities[cg.snap->ps.viewEntity] &&
-                    g_entities[cg.snap->ps.viewEntity].client &&
-                    g_entities[cg.snap->ps.viewEntity].client->ps.viewheight )
-                {
-                    origin[2] += g_entities[cg.snap->ps.viewEntity].client->ps.viewheight;
-                }
-                else
-                {
-                    origin[2] += 4;//???
-                }
+                origin[2] += g_entities[cg.snap->ps.viewEntity].client->ps.viewheight;
             }
             else
             {
-                origin[2] += cg.predicted_player_state.viewheight;
+                origin[2] += 4;//???
             }
         }
-    
-        // smooth out duck height changes
-        timeDelta = cg.time - cg.duckTime;
-        if ( timeDelta < DUCK_TIME) {
-            cg.refdef.vieworg[2] -= cg.duckChange * (DUCK_TIME - timeDelta) / DUCK_TIME;
+        else
+        {
+            origin[2] += cg.predicted_player_state.viewheight;
         }
+    }
     
+    // smooth out duck height changes
+    timeDelta = cg.time - cg.duckTime;
+    if ( timeDelta < DUCK_TIME) {
+        cg.refdef.vieworg[2] -= cg.duckChange * (DUCK_TIME - timeDelta) / DUCK_TIME;
+    }
+    
+    if (!cg_useHmd.integer)
+    {
         // add bob height
         bob = cg.bobfracsin * cg.xyspeed * cg_bobup.value;
         if (bob > 6) {
