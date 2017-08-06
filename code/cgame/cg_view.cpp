@@ -1688,8 +1688,7 @@ static qboolean CG_CalcViewValues( void ) {
 				
 				if (cg_useHmd.integer)
                 {
-                    //[LAva] hmd: raise camera height position and remove any other angle offset
-                    cg.refdef.vieworg[2] += 36; 
+                    //[LAva] hmd: remove any other angle offset
                     dir[2] = 0;
                     VectorNormalize(dir);
                     
