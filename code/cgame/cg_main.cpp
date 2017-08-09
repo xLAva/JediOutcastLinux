@@ -103,6 +103,9 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
     case CG_HMD_UPDATE_ROT_POS:
         GameHmd::Get()->UpdateHmd((float*)arg0, (float*)arg1);
         return 0;	
+	case CG_HMD_UPDATE_HANDS:
+		GameHmd::Get()->UpdateHands((float*)arg0, (float*)arg1, (float*)arg2, (float*)arg3);
+		return 0;
 	case CG_INIT:
 		CG_Init( arg0 );
 		return 0;
@@ -327,6 +330,7 @@ vmCvar_t	cg_smoothPlayerPlatAccel;
 
 vmCvar_t    cg_activeHmd;
 vmCvar_t    cg_useHmd;
+vmCvar_t    cg_useHmdHands;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -390,6 +394,7 @@ cvarTable_t		cvarTable[] = {
 
     { &cg_activeHmd, "cg_activeHmd", "0", 0 },
     { &cg_useHmd, "cg_useHmd", "0", 0 },
+	{ &cg_useHmdHands, "cg_useHmdHands", "0", 0 },
 	
 	{ &cg_thirdPerson, "cg_thirdPerson", "0", CVAR_USERINFO },
 	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "80", 0 },

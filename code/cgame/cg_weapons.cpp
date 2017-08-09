@@ -9,6 +9,8 @@
 #include "../game/anims.h"
 #include "../game/g_local.h"
 
+#include "../hmd/GameHmd.h"
+
 #ifdef _IMMERSION
 #include "../ff/ff.h"
 #else
@@ -787,6 +789,25 @@ void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	VectorCopy( cg.refdef.vieworg, origin );
 	VectorCopy( cg.refdefViewAnglesWeapon, angles );
 
+	// [shinyquagsire23] Change weapon position to match hands
+	vec3_t vrR;
+	float vrRX = 0, vrRY = 0, vrRZ = 0;
+	float vrRRoll = 0, vrRYaw = 0, vrRPitch = 0;
+	if (GameHmd::Get()->GetRightHandOrientation(vrRPitch, vrRYaw, vrRRoll) && GameHmd::Get()->GetRightHandPosition(vrRX, vrRY, vrRZ))
+	{
+		float c = cos(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
+		float s = sin(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
+
+		vrR[0] = -(vrRX * c - vrRY * s);
+		vrR[1] = -(vrRX * s + vrRY * c);
+		vrR[2] = -vrRZ;
+
+		
+		//Com_Printf("%f %f %f\n", c, s, cg.refdefViewAnglesWeapon[YAW]);
+		VectorAdd(origin, vrR, origin);
+	}
+	// [shinyquagsire23] END
+
 	// on odd legs, invert some angles
 	if ( cg.bobcycle & 1 ) {
 		scale = -cg.xyspeed;
@@ -1068,6 +1089,10 @@ void CG_AddViewWeapon( playerState_t *ps )
 	VectorMA( hand.origin, (cg_gun_y.value+leanOffset), cg.refdef.viewaxis[1], hand.origin );
 	VectorMA( hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin );
 
+	// [shinyquagsire23] place weapon relative to player view
+	VectorCopy(hand.origin, cent->gent->client->ps.viewangles);
+	// [shinyquagsire23] END
+
 	AnglesToAxis( angles, hand.axis );
 
 	// map torso animations to weapon animations
@@ -1113,8 +1138,18 @@ void CG_AddViewWeapon( playerState_t *ps )
 		return;
 	}
 
+	// [shinyquagsire23] Match weapon to actual rotation and position
+	angles[YAW] = 0;
+	angles[PITCH] = 0;
+	angles[ROLL] = 0;
+	// [shinyquagsire23] END
+
 	AnglesToAxis( angles, gun.axis );
-	CG_PositionEntityOnTag( &gun, &hand, weapon->handsModel, "tag_weapon");
+
+	// [shinyquagsire23] Match weapon to actual rotation and position
+	//CG_PositionEntityOnTag( &gun, &hand, weapon->handsModel, "tag_weapon");
+	CG_PositionRotatedEntityOnTag(&gun, &hand, weapon->handsModel, "tag_weapon", NULL);
+	// [shinyquagsire23] END
 
 	gun.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON;
 

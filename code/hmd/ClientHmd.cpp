@@ -131,6 +131,12 @@ void ClientHmd::UpdateGame()
     {
         VM_Call(CG_HMD_UPDATE_ROT, &angles[0]);
     }
+
+	float angles_l[3] = { 0.0f, 0.0f, 0.0f };
+	float position_l[3] = { 0.0f, 0.0f, 0.0f };
+	float angles_r[3] = { 0.0f, 0.0f, 0.0f };
+	float position_r[3] = { -4.0f, 2.0f, 0.0f };
+	VM_Call(CG_HMD_UPDATE_HANDS, &angles_l[0], &position_l[0], &angles_r[0], &position_r[0]);
 }
 
 

@@ -3487,7 +3487,14 @@ void FireWeapon( gentity_t *ent, qboolean alt_fire )
 	}
 
 	ent->alt_fire = alt_fire;
-	CalcMuzzlePoint ( ent, forward, vright, up, muzzle , 0);
+	// [shinyquagsire23] Fire in the direction that the weapon is actually facing
+	//CalcMuzzlePoint ( ent, forward, vright, up, muzzle , 0);
+
+	VectorCopy(ent->client->renderInfo.muzzlePoint, muzzle);
+	VectorCopy(ent->client->renderInfo.muzzleDir, forward);
+	VectorCopy(ent->client->renderInfo.muzzleDir, ent->client->ps.viewangles);
+	MakeNormalVectors(forward, vright, up);
+	// [shinyquagsire23] END
 
 	// fire the specific weapon
 	switch( ent->s.weapon ) 
