@@ -3,6 +3,7 @@
 #include "Quake3/GameMenuHmdManager.h"
 
 #include "../game/q_shared.h"
+#include "../client/client.h"
 #include "../client/vmachine.h"
 
 #include <memory>
@@ -25,6 +26,9 @@ ClientHmd::ClientHmd()
     ,mIsInitialized(false)
     ,mLastViewangleYaw(0)
     ,mViewangleDiff(0)
+    ,mLastViewanglePitch(0)
+    ,mViewanglePitchDiff(0)
+    ,mLastPitch(0)
 {
 
 }
@@ -59,7 +63,7 @@ void ClientHmd::Destroy()
     sClientHmd = NULL;
 }
 
-void ClientHmd::UpdateInputView(float yawDiff, float& rPitch, float& rYaw, float& rRoll)
+void ClientHmd::UpdateInputView(float yawDiff, float pitchDiff, float& rPitch, float& rYaw, float& rRoll)
 {
     if (mpDevice == NULL)
     {
@@ -76,6 +80,7 @@ void ClientHmd::UpdateInputView(float yawDiff, float& rPitch, float& rYaw, float
     mViewangleDiff = fmod(mViewangleDiff, 360.0f);
 
     mLastViewangleYaw = rYaw;
+    mLastViewanglePitch = rPitch;
 
     float pitch = 0;
     float yaw = 0;
@@ -86,12 +91,26 @@ void ClientHmd::UpdateInputView(float yawDiff, float& rPitch, float& rYaw, float
     // we need to keep render orientation and input orientation the same
     GetOrientation(pitch, yaw, roll);
 
-    rPitch = pitch;
+    if (hmd_decoupleAim->integer || false) //TODO: Check hand status
+    {
+        mViewanglePitchDiff += pitchDiff;
+        mViewanglePitchDiff += (mLastPitch - pitch);
+        mViewanglePitchDiff = fmod(mViewanglePitchDiff, 360.0f);
+
+        rPitch = pitch + mViewanglePitchDiff;
+
+        rYaw = mViewangleDiff;
+        mLastPitch = pitch;
+    }
+    else
+    {
+        rPitch = pitch;
+        rYaw = yaw + mViewangleDiff;
+    }
 
     rPitch = std::max(rPitch, -80.0f);
     rPitch = std::min(rPitch, 80.0f);
 
-    rYaw = yaw + mViewangleDiff;
     mLastViewangleYaw = rYaw;
 }
 
@@ -132,11 +151,11 @@ void ClientHmd::UpdateGame()
         VM_Call(CG_HMD_UPDATE_ROT, &angles[0]);
     }
 
-	float angles_l[3] = { 0.0f, 0.0f, 0.0f };
-	float position_l[3] = { 0.0f, 0.0f, 0.0f };
-	float angles_r[3] = { 0.0f, 0.0f, 0.0f };
-	float position_r[3] = { -4.0f, 2.0f, 0.0f };
-	VM_Call(CG_HMD_UPDATE_HANDS, &angles_l[0], &position_l[0], &angles_r[0], &position_r[0]);
+    float angles_l[3] = { 0.0f, 0.0f, 0.0f };
+    float position_l[3] = { 0.0f, 0.0f, 0.0f };
+    float angles_r[3] = { 0.0f, 0.0f, 0.0f };
+    float position_r[3] = { -4.0f, 2.0f, 0.0f };
+    VM_Call(CG_HMD_UPDATE_HANDS, &angles_l[0], &position_l[0], &angles_r[0], &position_r[0]);
 }
 
 

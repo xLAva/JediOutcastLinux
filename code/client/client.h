@@ -285,6 +285,8 @@ extern	cvar_t	*m_filter;
 
 extern	cvar_t	*cl_activeAction;
 
+extern	cvar_t	*hmd_decoupleAim;
+
 //=================================================
 
 //

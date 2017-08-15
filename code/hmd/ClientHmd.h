@@ -20,7 +20,7 @@ public:
     static ClientHmd* Get();
     static void Destroy();
 
-    void UpdateInputView(float yawDiff, float& rPitch, float& rYaw, float& rRoll);
+    void UpdateInputView(float yawDiff, float pitchDiff, float& rPitch, float& rYaw, float& rRoll);
     void UpdateGame();
     bool GetOrientation(float& rPitch, float& rYaw, float& rRoll);
     bool GetPosition(float& rX, float& rY, float& rZ);
@@ -47,6 +47,9 @@ private:
     bool mIsInitialized;
     float mLastViewangleYaw;
     float mViewangleDiff;
+    float mLastViewanglePitch;
+    float mViewanglePitchDiff;
+    float mLastPitch;
 
     static ClientHmd* sClientHmd;
 };
