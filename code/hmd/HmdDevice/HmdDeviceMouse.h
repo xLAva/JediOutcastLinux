@@ -28,6 +28,8 @@ public:
     virtual bool GetDeviceResolution(int& rWidth, int& rHeight, bool &rIsRotated, bool& rIsExtendedMode);
     virtual bool GetOrientationRad(float& rPitch, float& rYaw, float& rRoll);
     virtual bool GetPosition(float& rX, float& rY, float& rZ);
+    virtual bool GetHandOrientationRad(bool rightHand, float& rPitch, float& rYaw, float& rRoll) { return false; }
+    virtual bool GetHandPosition(bool rightHand, float& rX, float& rY, float& rZ) { return false; }
     virtual void Recenter() {}
 
     

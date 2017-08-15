@@ -249,6 +249,57 @@ bool HmdDeviceOculusSdk::GetPosition(float &rX, float &rY, float &rZ)
     return false;
 }
 
+bool HmdDeviceOculusSdk::GetHandOrientationRad(bool rightHand, float& rPitch, float& rYaw, float& rRoll)
+{
+    if (!mIsInitialized || mpHmd == nullptr)
+    {
+        return false;
+    }
+
+    // Query for the current tracking state and see if hands are available
+    ovrTrackingState ts = d_ovr_GetTrackingState(mpHmd, d_ovr_GetTimeInSeconds(), false);
+    if ((ts.HandStatusFlags[rightHand ? ovrHand_Right : ovrHand_Left] & ovrStatus_OrientationTracked))
+    {
+        ovrQuatf orientation = ts.HandPoses[rightHand ? ovrHand_Right : ovrHand_Left].ThePose.Orientation;
+
+        float quat[4];
+        quat[0] = orientation.x;
+        quat[1] = orientation.y;
+        quat[2] = orientation.z;
+        quat[3] = orientation.w;
+
+        ConvertQuatToEuler(&quat[0], rYaw, rPitch, rRoll);
+
+        return true;
+    }
+
+    return false;
+
+}
+
+
+bool HmdDeviceOculusSdk::GetHandPosition(bool rightHand, float &rX, float &rY, float &rZ)
+{
+    if (!mIsInitialized || mpHmd == nullptr || !mPositionTrackingEnabled)
+    {
+        return false;
+    }
+
+    // Query for the current tracking state and see if hands are available
+    ovrTrackingState ts = d_ovr_GetTrackingState(mpHmd, d_ovr_GetTimeInSeconds(), false);
+    if ((ts.HandStatusFlags[rightHand ? ovrHand_Right : ovrHand_Left] & ovrStatus_PositionTracked))
+    {
+        ovrVector3f pos = ts.HandPoses[rightHand ? ovrHand_Right : ovrHand_Left].ThePose.Position;
+        rX = pos.x;
+        rY = pos.y;
+        rZ = pos.z;
+
+        return true;
+    }
+
+    return false;
+}
+
 void HmdDeviceOculusSdk::Recenter()
 {
     d_ovr_RecenterTrackingOrigin(mpHmd);
