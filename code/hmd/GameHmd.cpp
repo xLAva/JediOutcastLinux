@@ -8,6 +8,7 @@ GameHmd* GameHmd::sGameHmd = NULL;
 GameHmd::GameHmd()
     :mIsInitialized(false)
     ,mUsePositionTracking(false)
+    ,mUseHands(false)
     ,mPitch(0)
     ,mYaw(0)
     ,mRoll(0)
