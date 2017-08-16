@@ -1090,8 +1090,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 	VectorMA( hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin );
 
 	// [shinyquagsire23] place weapon relative to player view
-	VectorCopy(hand.origin, cent->gent->client->ps.viewangles);
-	// [shinyquagsire23] END
+	if (GameHmd::Get()->HasHands())
+		VectorCopy(hand.origin, cent->gent->client->ps.viewangles);
 
 	AnglesToAxis( angles, hand.axis );
 
@@ -1139,17 +1139,20 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	// [shinyquagsire23] Match weapon to actual rotation and position
-	angles[YAW] = 0;
-	angles[PITCH] = 0;
-	angles[ROLL] = 0;
-	// [shinyquagsire23] END
+	if (GameHmd::Get()->HasHands())
+	{
+		angles[YAW] = 0;
+		angles[PITCH] = 0;
+		angles[ROLL] = 0;
+	}
 
 	AnglesToAxis( angles, gun.axis );
 
 	// [shinyquagsire23] Match weapon to actual rotation and position
-	//CG_PositionEntityOnTag( &gun, &hand, weapon->handsModel, "tag_weapon");
-	CG_PositionRotatedEntityOnTag(&gun, &hand, weapon->handsModel, "tag_weapon", NULL);
-	// [shinyquagsire23] END
+	if (GameHmd::Get()->HasHands())
+		CG_PositionRotatedEntityOnTag(&gun, &hand, weapon->handsModel, "tag_weapon", NULL);
+	else
+		CG_PositionEntityOnTag(&gun, &hand, weapon->handsModel, "tag_weapon");
 
 	gun.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON;
 

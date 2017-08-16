@@ -162,7 +162,7 @@ void ClientHmd::UpdateGame()
         GetHandPosition(true, position_r[0], position_r[1], position_r[2]);
         GetHandOrientation(false, angles_l[0], angles_l[1], angles_l[2]);
         GetHandOrientation(true, angles_r[0], angles_r[1], angles_r[2]);
-        VM_Call(CG_HMD_UPDATE_HANDS, &angles_l[0], &position_l[0], &angles[0], &position[0]);
+        VM_Call(CG_HMD_UPDATE_HANDS, &angles_l[0], &position_l[0], &angles_r[0], &position_r[0]);
     }
 }
 
