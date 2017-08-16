@@ -806,45 +806,49 @@ void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 		//Com_Printf("%f %f %f\n", c, s, cg.refdefViewAnglesWeapon[YAW]);
 		VectorAdd(origin, vrR, origin);
 	}
-	// [shinyquagsire23] END
+	else
+	{
+		// on odd legs, invert some angles
+		if (cg.bobcycle & 1) {
+			scale = -cg.xyspeed;
+		}
+		else {
+			scale = cg.xyspeed;
+		}
 
-	// on odd legs, invert some angles
-	if ( cg.bobcycle & 1 ) {
-		scale = -cg.xyspeed;
-	} else {
-		scale = cg.xyspeed;
-	}
+		// gun angles from bobbing
+		angles[ROLL] += scale * cg.bobfracsin * 0.0075;
+		angles[YAW] += scale * cg.bobfracsin * 0.01;
+		angles[PITCH] += cg.xyspeed * cg.bobfracsin * 0.0075;
 
-	// gun angles from bobbing
-	angles[ROLL] += scale * cg.bobfracsin * 0.0075;
-	angles[YAW] += scale * cg.bobfracsin * 0.01;
-	angles[PITCH] += cg.xyspeed * cg.bobfracsin * 0.0075;
-
-	// drop the weapon when landing
-	delta = cg.time - cg.landTime;
-	if ( delta < LAND_DEFLECT_TIME ) {
-		origin[2] += cg.landChange*0.25 * delta / LAND_DEFLECT_TIME;
-	} else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME ) {
-		origin[2] += cg.landChange*0.25 * 
-			(LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME;
-	}
+		// drop the weapon when landing
+		delta = cg.time - cg.landTime;
+		if (delta < LAND_DEFLECT_TIME) {
+			origin[2] += cg.landChange*0.25 * delta / LAND_DEFLECT_TIME;
+		}
+		else if (delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME) {
+			origin[2] += cg.landChange*0.25 *
+				(LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME;
+		}
 
 #if 0
-	// drop the weapon when stair climbing
-	delta = cg.time - cg.stepTime;
-	if ( delta < STEP_TIME/2 ) {
-		origin[2] -= cg.stepChange*0.25 * delta / (STEP_TIME/2);
-	} else if ( delta < STEP_TIME ) {
-		origin[2] -= cg.stepChange*0.25 * (STEP_TIME - delta) / (STEP_TIME/2);
-	}
+		// drop the weapon when stair climbing
+		delta = cg.time - cg.stepTime;
+		if (delta < STEP_TIME / 2) {
+			origin[2] -= cg.stepChange*0.25 * delta / (STEP_TIME / 2);
+		}
+		else if (delta < STEP_TIME) {
+			origin[2] -= cg.stepChange*0.25 * (STEP_TIME - delta) / (STEP_TIME / 2);
+		}
 #endif
 
-	// idle drift
-	scale = /*cg.xyspeed + */40;
-	fracsin = sin( cg.time * 0.001 );
-	angles[ROLL] += scale * fracsin * 0.01;
-	angles[YAW] += scale * fracsin * 0.01;
-	angles[PITCH] += (scale * 0.5f ) * fracsin * 0.01;
+		// idle drift
+		scale = /*cg.xyspeed + */40;
+		fracsin = sin(cg.time * 0.001);
+		angles[ROLL] += scale * fracsin * 0.01;
+		angles[YAW] += scale * fracsin * 0.01;
+		angles[PITCH] += (scale * 0.5f) * fracsin * 0.01;
+	}
 }
 
 /*
