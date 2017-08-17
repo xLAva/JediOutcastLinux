@@ -300,6 +300,14 @@ bool HmdDeviceOculusSdk::GetHandPosition(bool rightHand, float &rX, float &rY, f
     return false;
 }
 
+bool HmdDeviceOculusSdk::HasHand(bool rightHand)
+{
+    // Query for the current tracking state and see if hands are available
+    ovrTrackingState ts = d_ovr_GetTrackingState(mpHmd, d_ovr_GetTimeInSeconds(), false);
+
+    return (ts.HandStatusFlags[rightHand ? ovrHand_Right : ovrHand_Left] & (ovrStatus_PositionTracked | ovrStatus_OrientationTracked));
+}
+
 void HmdDeviceOculusSdk::Recenter()
 {
     d_ovr_RecenterTrackingOrigin(mpHmd);

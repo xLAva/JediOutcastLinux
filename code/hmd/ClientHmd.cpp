@@ -91,8 +91,7 @@ void ClientHmd::UpdateInputView(float yawDiff, float pitchDiff, float& rPitch, f
     // we need to keep render orientation and input orientation the same
     GetOrientation(pitch, yaw, roll);
 
-    float angles_r[3];
-    if (hmd_decoupleAim->integer || GetHandOrientation(true, angles_r[0], angles_r[1], angles_r[2]))
+    if (hmd_decoupleAim->integer || HasHand(true))
     {
         mViewanglePitchDiff += pitchDiff;
         mViewanglePitchDiff += (mLastPitch - pitch);
@@ -280,6 +279,16 @@ bool ClientHmd::GetHandPosition(bool rightHand, float& rX, float& rY, float& rZ)
     rZ = hmdPositionOffsetInGame.z;
 
     return true;
+}
+
+bool ClientHmd::HasHand(bool rightHand)
+{
+    if (mpDevice == NULL)
+    {
+        return false;
+    }
+
+    return mpDevice->HasHand(rightHand);
 }
 
 void ClientHmd::SetRenderer(IHmdRenderer* pRenderer) 

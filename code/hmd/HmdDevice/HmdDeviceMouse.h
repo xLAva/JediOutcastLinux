@@ -30,6 +30,7 @@ public:
     virtual bool GetPosition(float& rX, float& rY, float& rZ);
     virtual bool GetHandOrientationRad(bool rightHand, float& rPitch, float& rYaw, float& rRoll) { return false; }
     virtual bool GetHandPosition(bool rightHand, float& rX, float& rY, float& rZ) { return false; }
+    virtual bool HasHand(bool rightHand) { return false; }
     virtual void Recenter() {}
 
     

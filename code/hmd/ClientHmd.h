@@ -26,6 +26,7 @@ public:
     bool GetPosition(float& rX, float& rY, float& rZ);
     bool GetHandOrientation(bool rightHand, float& rPitch, float& rYaw, float& rRoll);
     bool GetHandPosition(bool rightHand, float& rX, float& rY, float& rZ);
+    bool HasHand(bool rightHand);
 
     IHmdDevice* GetDevice() { return mpDevice; }
     void SetDevice(IHmdDevice* pDevice) { mpDevice = pDevice; }
