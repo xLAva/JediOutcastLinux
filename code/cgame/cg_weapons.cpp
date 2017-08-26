@@ -802,6 +802,9 @@ void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 		vrR[1] = -(vrRX * s + vrRY * c);
 		vrR[2] = -vrRZ;
 
+		angles[PITCH] = vrRPitch;
+		angles[YAW] += vrRYaw;
+		angles[ROLL] = vrRRoll;
 		
 		//Com_Printf("%f %f %f\n", c, s, cg.refdefViewAnglesWeapon[YAW]);
 		VectorAdd(origin, vrR, origin);
@@ -1158,7 +1161,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	else
 		CG_PositionEntityOnTag(&gun, &hand, weapon->handsModel, "tag_weapon");
 
-	gun.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON;
+	gun.renderfx = (GameHmd::Get()->HasHands() ? 0 : RF_DEPTHHACK) | RF_FIRST_PERSON;
 
 //---------
 	// OK, we are making an assumption here that if we have the phaser that it is always on....

@@ -1766,19 +1766,6 @@ static qboolean CG_CalcViewValues( void ) {
 
 	VectorCopy(cg.refdefViewAngles, cg.refdefViewAnglesWeapon);
 
-	// [shinyquagsire23] Change weapon view rotation to match hands
-	float vrRRoll = 0, vrRYaw = 0, vrRPitch = 0;
-	if (GameHmd::Get()->GetRightHandOrientation(vrRPitch, vrRYaw, vrRRoll))
-	{
-		cg.refdefViewAnglesWeapon[ROLL] = vrRRoll;
-		cg.refdefViewAnglesWeapon[YAW] += vrRYaw;
-		cg.refdefViewAnglesWeapon[PITCH] = vrRPitch;
-
-		centity_t	*playerCent = &cg_entities[0];
-		VectorCopy(cg.refdefViewAnglesWeapon, playerCent->gent->client->renderInfo.muzzleDir);
-	}
-	// [shinyquagsire23] END
-
     cg.refdef.delta_yaw = SHORT2ANGLE(ps->delta_angles[YAW]);
     float pitch, yaw, roll;
     if (GameHmd::Get()->GetOrientation(pitch, yaw, roll))
