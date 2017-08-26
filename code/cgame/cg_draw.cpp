@@ -9,6 +9,8 @@
 #include "../game/objectives.h"
 #include "../game/g_local.h"
 
+#include "../hmd/GameHmd.h"
+
 void CG_DrawIconBackground(void);
 void CG_DrawMissionInformation( void );
 void CG_DrawInventorySelect( void );
@@ -1845,9 +1847,20 @@ static void CG_ScanForCrosshairEntity( qboolean scanAll )
 			}
 			else
 			{
-				extern void CalcMuzzlePoint( gentity_t *const ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint, float lead_in );
-				AngleVectors( cg_entities[0].lerpAngles, d_f, d_rt, d_up );
-				CalcMuzzlePoint( &g_entities[0], d_f, d_rt, d_up, start , 0 );
+				// [shinyquagsire23] Set crosshair start position to the muzzle point where it actually fires from when using hands
+				if (!GameHmd::Get()->HasHands())
+				{
+					extern void CalcMuzzlePoint(gentity_t *const ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint, float lead_in);
+					AngleVectors(cg_entities[0].lerpAngles, d_f, d_rt, d_up);
+					CalcMuzzlePoint( &g_entities[0], d_f, d_rt, d_up, start , 0 );
+				}
+				else
+				{
+					VectorCopy(g_entities[0].client->renderInfo.muzzlePoint, start);
+					VectorCopy(g_entities[0].client->renderInfo.muzzleDir, d_f);
+					VectorCopy(g_entities[0].client->renderInfo.muzzleDir, g_entities[0].client->ps.viewangles);
+					MakeNormalVectors(d_f, d_rt, d_up);
+				}
 			}
 			//VectorCopy( g_entities[0].client->renderInfo.muzzlePoint, start );
 			//FIXME: increase this?  Increase when zoom in?

@@ -103,6 +103,9 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
     case CG_HMD_UPDATE_ROT_POS:
         GameHmd::Get()->UpdateHmd((float*)arg0, (float*)arg1);
         return 0;	
+	case CG_HMD_UPDATE_HANDS:
+		GameHmd::Get()->UpdateHands((float*)arg0, (float*)arg1, (float*)arg2, (float*)arg3);
+		return 0;
 	case CG_INIT:
 		CG_Init( arg0 );
 		return 0;

@@ -9,6 +9,8 @@
 #include "../game/anims.h"
 #include "../game/g_local.h"
 
+#include "../hmd/GameHmd.h"
+
 #ifdef _IMMERSION
 #include "../ff/ff.h"
 #else
@@ -787,43 +789,69 @@ void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	VectorCopy( cg.refdef.vieworg, origin );
 	VectorCopy( cg.refdefViewAnglesWeapon, angles );
 
-	// on odd legs, invert some angles
-	if ( cg.bobcycle & 1 ) {
-		scale = -cg.xyspeed;
-	} else {
-		scale = cg.xyspeed;
-	}
+	// [shinyquagsire23] Change weapon position to match hands
+	vec3_t vrR;
+	float vrRX = 0, vrRY = 0, vrRZ = 0;
+	float vrRRoll = 0, vrRYaw = 0, vrRPitch = 0;
+	if (GameHmd::Get()->GetRightHandOrientation(vrRPitch, vrRYaw, vrRRoll) && GameHmd::Get()->GetRightHandPosition(vrRX, vrRY, vrRZ))
+	{
+		float c = cos(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
+		float s = sin(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
 
-	// gun angles from bobbing
-	angles[ROLL] += scale * cg.bobfracsin * 0.0075;
-	angles[YAW] += scale * cg.bobfracsin * 0.01;
-	angles[PITCH] += cg.xyspeed * cg.bobfracsin * 0.0075;
+		vrR[0] = -(vrRX * c - vrRY * s);
+		vrR[1] = -(vrRX * s + vrRY * c);
+		vrR[2] = -vrRZ;
 
-	// drop the weapon when landing
-	delta = cg.time - cg.landTime;
-	if ( delta < LAND_DEFLECT_TIME ) {
-		origin[2] += cg.landChange*0.25 * delta / LAND_DEFLECT_TIME;
-	} else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME ) {
-		origin[2] += cg.landChange*0.25 * 
-			(LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME;
+		angles[PITCH] = vrRPitch;
+		angles[YAW] += vrRYaw;
+		angles[ROLL] = vrRRoll;
+		
+		//Com_Printf("%f %f %f\n", c, s, cg.refdefViewAnglesWeapon[YAW]);
+		VectorAdd(origin, vrR, origin);
 	}
+	else
+	{
+		// on odd legs, invert some angles
+		if (cg.bobcycle & 1) {
+			scale = -cg.xyspeed;
+		}
+		else {
+			scale = cg.xyspeed;
+		}
+
+		// gun angles from bobbing
+		angles[ROLL] += scale * cg.bobfracsin * 0.0075;
+		angles[YAW] += scale * cg.bobfracsin * 0.01;
+		angles[PITCH] += cg.xyspeed * cg.bobfracsin * 0.0075;
+
+		// drop the weapon when landing
+		delta = cg.time - cg.landTime;
+		if (delta < LAND_DEFLECT_TIME) {
+			origin[2] += cg.landChange*0.25 * delta / LAND_DEFLECT_TIME;
+		}
+		else if (delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME) {
+			origin[2] += cg.landChange*0.25 *
+				(LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME;
+		}
 
 #if 0
-	// drop the weapon when stair climbing
-	delta = cg.time - cg.stepTime;
-	if ( delta < STEP_TIME/2 ) {
-		origin[2] -= cg.stepChange*0.25 * delta / (STEP_TIME/2);
-	} else if ( delta < STEP_TIME ) {
-		origin[2] -= cg.stepChange*0.25 * (STEP_TIME - delta) / (STEP_TIME/2);
-	}
+		// drop the weapon when stair climbing
+		delta = cg.time - cg.stepTime;
+		if (delta < STEP_TIME / 2) {
+			origin[2] -= cg.stepChange*0.25 * delta / (STEP_TIME / 2);
+		}
+		else if (delta < STEP_TIME) {
+			origin[2] -= cg.stepChange*0.25 * (STEP_TIME - delta) / (STEP_TIME / 2);
+		}
 #endif
 
-	// idle drift
-	scale = /*cg.xyspeed + */40;
-	fracsin = sin( cg.time * 0.001 );
-	angles[ROLL] += scale * fracsin * 0.01;
-	angles[YAW] += scale * fracsin * 0.01;
-	angles[PITCH] += (scale * 0.5f ) * fracsin * 0.01;
+		// idle drift
+		scale = /*cg.xyspeed + */40;
+		fracsin = sin(cg.time * 0.001);
+		angles[ROLL] += scale * fracsin * 0.01;
+		angles[YAW] += scale * fracsin * 0.01;
+		angles[PITCH] += (scale * 0.5f) * fracsin * 0.01;
+	}
 }
 
 /*
@@ -1068,6 +1096,10 @@ void CG_AddViewWeapon( playerState_t *ps )
 	VectorMA( hand.origin, (cg_gun_y.value+leanOffset), cg.refdef.viewaxis[1], hand.origin );
 	VectorMA( hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin );
 
+	// [shinyquagsire23] place weapon relative to player view
+	if (GameHmd::Get()->HasHands())
+		VectorCopy(hand.origin, cent->gent->client->ps.viewangles);
+
 	AnglesToAxis( angles, hand.axis );
 
 	// map torso animations to weapon animations
@@ -1113,10 +1145,23 @@ void CG_AddViewWeapon( playerState_t *ps )
 		return;
 	}
 
-	AnglesToAxis( angles, gun.axis );
-	CG_PositionEntityOnTag( &gun, &hand, weapon->handsModel, "tag_weapon");
+	// [shinyquagsire23] Match weapon to actual rotation and position
+	if (GameHmd::Get()->HasHands())
+	{
+		angles[YAW] = 0;
+		angles[PITCH] = 0;
+		angles[ROLL] = 0;
+	}
 
-	gun.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON;
+	AnglesToAxis( angles, gun.axis );
+
+	// [shinyquagsire23] Match weapon to actual rotation and position
+	if (GameHmd::Get()->HasHands())
+		CG_PositionRotatedEntityOnTag(&gun, &hand, weapon->handsModel, "tag_weapon", NULL);
+	else
+		CG_PositionEntityOnTag(&gun, &hand, weapon->handsModel, "tag_weapon");
+
+	gun.renderfx = (GameHmd::Get()->HasHands() ? 0 : RF_DEPTHHACK) | RF_FIRST_PERSON;
 
 //---------
 	// OK, we are making an assumption here that if we have the phaser that it is always on....
