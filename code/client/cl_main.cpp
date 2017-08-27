@@ -62,6 +62,7 @@ cvar_t	*cl_ingameVideo;
 
 cvar_t	*hmd_decoupleAim;
 cvar_t	*hmd_moveAimKeyholeWidth;
+cvar_t	*hmd_useHands;
 
 clientActive_t		cl;
 clientConnection_t	clc;
@@ -1183,6 +1184,7 @@ void CL_Init( void ) {
 	//
 	hmd_decoupleAim = Cvar_Get("hmd_decoupleAim", "0", CVAR_ARCHIVE);
 	hmd_moveAimKeyholeWidth = Cvar_Get("hmd_moveAimKeyholeWidth", "25.0", CVAR_ARCHIVE);
+	hmd_useHands = Cvar_Get("hmd_useHands", "0", CVAR_ARCHIVE);
 
 	// init autoswitch so the ui will have it correctly even
 	// if the cgame hasn't been started

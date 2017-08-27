@@ -237,7 +237,7 @@ bool ClientHmd::GetPosition(float& rX, float& rY, float& rZ)
 
 bool ClientHmd::GetHandOrientation(bool rightHand, float& rPitch, float& rYaw, float& rRoll)
 {
-    if (mpDevice == NULL)
+    if (mpDevice == NULL || !hmd_useHands->integer)
     {
         return false;
     }
@@ -257,7 +257,7 @@ bool ClientHmd::GetHandOrientation(bool rightHand, float& rPitch, float& rYaw, f
 
 bool ClientHmd::GetHandPosition(bool rightHand, float& rX, float& rY, float& rZ)
 {
-    if (mpDevice == NULL)
+    if (mpDevice == NULL || !hmd_useHands->integer)
     {
         return false;
     }
@@ -285,7 +285,7 @@ bool ClientHmd::GetHandPosition(bool rightHand, float& rX, float& rY, float& rZ)
 
 bool ClientHmd::HasHand(bool rightHand)
 {
-    if (mpDevice == NULL)
+    if (mpDevice == NULL || !hmd_useHands->integer)
     {
         return false;
     }
