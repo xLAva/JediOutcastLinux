@@ -250,6 +250,21 @@ bool HmdDeviceOculusSdk::GetPosition(float &rX, float &rY, float &rZ)
     return false;
 }
 
+bool HmdDeviceOculusSdk::GetHandOrientationRad(bool rightHand, float& rPitch, float& rYaw, float& rRoll)
+{
+    return false;
+}
+
+bool HmdDeviceOculusSdk::GetHandPosition(bool rightHand, float &rX, float &rY, float &rZ)
+{
+    return false;
+}
+
+bool HmdDeviceOculusSdk::HasHand(bool rightHand)
+{
+    return false;
+}
+
 void HmdDeviceOculusSdk::Recenter()
 {
     d_ovr_RecenterPose(mpHmd);
