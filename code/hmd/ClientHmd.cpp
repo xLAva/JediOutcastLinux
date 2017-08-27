@@ -156,9 +156,11 @@ void ClientHmd::UpdateGame()
     float angles_r[3];
     float position_r[3];
 
-    bool useHands = GetHandPosition(false, position_l[0], position_l[1], position_l[2]);
+    // check only the right hand for now (we don't use the left one yet)
+    bool useHands = HasHand(true);
     if (useHands)
     {
+        GetHandPosition(false, position_l[0], position_l[1], position_l[2]);
         GetHandPosition(true, position_r[0], position_r[1], position_r[2]);
         GetHandOrientation(false, angles_l[0], angles_l[1], angles_l[2]);
         GetHandOrientation(true, angles_r[0], angles_r[1], angles_r[2]);
