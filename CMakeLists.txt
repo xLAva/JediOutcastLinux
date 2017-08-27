@@ -497,7 +497,7 @@ else()
         set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DLINUX -DNDEBUG")
 
         set(DISABLE_WARNINGS_C "${DISABLE_WARNINGS_C} -Wno-cpp")
-        set(DISABLE_WARNINGS_CXX "${DISABLE_WARNINGS_CXX} -Wno-cpp")
+        set(DISABLE_WARNINGS_CXX "${DISABLE_WARNINGS_CXX} -Wno-cpp -std=c++11")
 
     endif()
 
