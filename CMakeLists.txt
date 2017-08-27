@@ -135,6 +135,7 @@ set(SSF_HMD
 
 set(SSF_HMD_DEVICE
 	code/hmd/HmdDevice/IHmdDevice.h
+	code/hmd/HmdDevice/IHmdDevice.cpp
 	code/hmd/HmdDevice/HmdDeviceMouse.h
 	code/hmd/HmdDevice/HmdDeviceMouse.cpp
 )

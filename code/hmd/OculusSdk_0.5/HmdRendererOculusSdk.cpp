@@ -166,6 +166,9 @@ bool HmdRendererOculusSdk::Init(int windowWidth, int windowHeight, PlatformInfo 
     
 
     bool worked = d_ovrHmd_ConfigureRendering(mpHmd, &cfg.Config, distortionCaps, eyeFov, mEyeRenderDesc);
+    mEyeRenderDesc[0].HmdToEyeViewOffset.x *= IPD_SCALE;
+    mEyeRenderDesc[1].HmdToEyeViewOffset.x *= IPD_SCALE;
+
     qglUseProgramObjectARB(0);
     if (!worked)
     {
@@ -503,7 +506,7 @@ bool HmdRendererOculusSdk::GetCustomViewMatrix(float* rViewMatrix, float& xPos, 
     glm::quat bodyYawRotation = glm::rotate(glm::quat(1.0f, 0.0f, 0.0f, 0.0f), (float)(DEG2RAD(-bodyYaw)), glm::vec3(0.0f, 0.0f, 1.0f));
 
     
-    float meterToGame = METER_TO_GAME;
+    float meterToGame = IHmdDevice::METER_TO_GAME;
     glm::vec3 hmdPos;
     hmdPos.x = mCurrentPosition[mEyeId].z * meterToGame;
     hmdPos.y = mCurrentPosition[mEyeId].x * meterToGame;
