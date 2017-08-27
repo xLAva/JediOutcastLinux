@@ -7,8 +7,6 @@ https://github.com/xLAva/JediOutcastLinux
 The current state is playable without any major problems.
 - loading/saving and a lot of other open issues are fixed
 
-I only had time to test the first two levels, but everything looks fine.
-
 
 Binary
 
@@ -40,28 +38,10 @@ Optional libraries on Ubuntu 12.10 64bit (different mouse access):
 sudo apt-get install libxxf86dga1:i386
 
 
-Development
-
-I used Code:Blocks as starting point for this port.
-The whole compile process is based on it, but I think it should be pretty easy to add Makefiles or other compiling structures.
-The source code is compiled with GCC.
-
-My development system: Ubuntu 12.10 64bit
-- I'm using a 64bit system, but this port is still a 32 bit program!
-
-Needed development libraries (and codeblocks):
-sudo apt-get install codeblocks g++-multilib libgl1-mesa-dev:i386 libxrandr-dev:i386 libopenal-dev:i386
-
-
 Building
 
-	cmake: These are the steps necessary to build the binaries using cmake, the directory names are only for reference,
-	       you can change them as you wish.
+If you want to build the code yourself, just follow the instructions in Build.md.
 
-			$ mkdir -p ~/src/jk2build
-			$ cd ~/src/jk2build
-			$ cmake ~/src/JediOutcastLinux 
-			$ make
 
 Known Issues:
 
