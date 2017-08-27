@@ -16,8 +16,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
-// should be the same everywhere - but it doesn't look right, so keep it seperate to experiment
-static const float METER_TO_GAME =  39.3701f; // meter to inch
 
 ClientHmd* ClientHmd::sClientHmd = NULL;
 
@@ -31,7 +29,7 @@ ClientHmd::ClientHmd()
     ,mLastViewanglePitch(0)
     ,mViewanglePitchDiff(0)
     ,mLastPitch(0)
-    ,mMeterToGameUnits(METER_TO_GAME)
+    ,mMeterToGameUnits(IHmdDevice::METER_TO_GAME)
 {
 
 }

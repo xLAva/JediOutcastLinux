@@ -47,9 +47,9 @@ public:
     virtual void SetCurrentHmdMode(HmdMode mode) = 0;
     virtual bool HasQuadWorldPosSupport() { return false; }
 
+
 protected:
-    //const float METER_TO_GAME =  39.3701f * 0.5f; // meter to inch * JA level factor 2
-    const float METER_TO_GAME =  39.3701f * 0.65f; // meter to inch * JA special factor (test value)
+    const float IPD_SCALE = 0.65f;
 
 
 };

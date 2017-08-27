@@ -88,7 +88,7 @@ private:
     ovrSession mpHmd;
     ovrLayerEyeFov mLayerMain;
     ovrLayerQuad mLayerMenu;
-    ovrVector3f mHmdToEyeViewOffset[2];
+    ovrPosef mHmdToEyePose[2];
     
     ovrEyeRenderDesc mEyeRenderDesc[2];
     ovrTextureSwapChain mEyeTextureSet[2];

@@ -33,6 +33,7 @@ public:
     
     virtual void Recenter() = 0;
 
+    static const float METER_TO_GAME;
 };
 
 #endif

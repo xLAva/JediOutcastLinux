@@ -38,7 +38,7 @@ HmdRendererOculusSdk::HmdRendererOculusSdk(HmdDeviceOculusSdk* pHmdDeviceOculusS
     ,mRenderHeight(0)
     ,mGuiScale(0.5f)
     ,mGuiOffsetFactorX(0)
-    ,mMeterToGameUnits(METER_TO_GAME)
+    ,mMeterToGameUnits(IHmdDevice::METER_TO_GAME)
     ,mAllowZooming(false)
     ,mUseMirrorTexture(true)
     ,mpDevice(pHmdDeviceOculusSdk)
@@ -169,6 +169,11 @@ bool HmdRendererOculusSdk::Init(int windowWidth, int windowHeight, PlatformInfo 
     eyeRenderDesc[1] = d_ovr_GetRenderDesc(mpHmd, ovrEye_Right, desc.DefaultEyeFov[1]);
     mHmdToEyeViewOffset[0] = eyeRenderDesc[0].HmdToEyeViewOffset;
     mHmdToEyeViewOffset[1] = eyeRenderDesc[1].HmdToEyeViewOffset;
+
+    float renderScaleFactor = IPD_SCALE;
+
+    mHmdToEyeViewOffset[0].x *= renderScaleFactor;
+    mHmdToEyeViewOffset[1].x *= renderScaleFactor;
 
 
     // Initialize our single full screen Fov layer.

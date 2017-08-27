@@ -38,7 +38,7 @@ HmdRendererOculusSdk::HmdRendererOculusSdk(HmdDeviceOculusSdk* pHmdDeviceOculusS
     ,mRenderHeight(0)
     ,mGuiScale(0.5f)
     ,mGuiOffsetFactorX(0)
-    ,mMeterToGameUnits(METER_TO_GAME)
+    ,mMeterToGameUnits(IHmdDevice::METER_TO_GAME)
     ,mAllowZooming(false)
     ,mUseMirrorTexture(true)
     ,mpDevice(pHmdDeviceOculusSdk)
@@ -195,9 +195,13 @@ bool HmdRendererOculusSdk::Init(int windowWidth, int windowHeight, PlatformInfo 
     ovrEyeRenderDesc eyeRenderDesc[2];
     eyeRenderDesc[0] = d_ovr_GetRenderDesc(mpHmd, ovrEye_Left, desc.DefaultEyeFov[0]);
     eyeRenderDesc[1] = d_ovr_GetRenderDesc(mpHmd, ovrEye_Right, desc.DefaultEyeFov[1]);
-    mHmdToEyeViewOffset[0] = eyeRenderDesc[0].HmdToEyeOffset;
-    mHmdToEyeViewOffset[1] = eyeRenderDesc[1].HmdToEyeOffset;
+    mHmdToEyePose[0] = eyeRenderDesc[0].HmdToEyePose;
+    mHmdToEyePose[1] = eyeRenderDesc[1].HmdToEyePose;
 
+    float renderScaleFactor = IPD_SCALE;
+
+    mHmdToEyePose[0].Position.x *= renderScaleFactor;
+    mHmdToEyePose[1].Position.x *= renderScaleFactor;
 
     // Initialize our single full screen Fov layer.
     mLayerMain.Header.Type      = ovrLayerType_EyeFov;
@@ -315,6 +319,7 @@ void HmdRendererOculusSdk::BeginRenderingForEye(bool leftEye)
 
     if (!mStartedRendering)
     {
+        mStartedRendering = true;
         // render begin
         //qglDisable(GL_SCISSOR_TEST);
         qglBindVertexArray(0);
@@ -323,11 +328,11 @@ void HmdRendererOculusSdk::BeginRenderingForEye(bool leftEye)
         
         qglDisable(GL_FRAMEBUFFER_SRGB);
 
-        mStartedRendering = true;
+
         
         double displayMidpointSeconds = d_ovr_GetPredictedDisplayTime(mpHmd, 0);
         ovrTrackingState hmdState = d_ovr_GetTrackingState(mpHmd, displayMidpointSeconds, ovrTrue);
-        d_ovr_CalcEyePoses(hmdState.HeadPose.ThePose, mHmdToEyeViewOffset, mLayerMain.RenderPose);
+        d_ovr_CalcEyePoses2(hmdState.HeadPose.ThePose, mHmdToEyePose, mLayerMain.RenderPose);
 
         for (int i=0; i<FBO_COUNT; i++)
         {
@@ -404,8 +409,8 @@ void HmdRendererOculusSdk::EndFrame()
 
         ovrViewScaleDesc viewScaleDesc;
         viewScaleDesc.HmdSpaceToWorldScaleInMeters = 1.0f / mMeterToGameUnits;
-        viewScaleDesc.HmdToEyeOffset[0] = mHmdToEyeViewOffset[0];
-        viewScaleDesc.HmdToEyeOffset[1] = mHmdToEyeViewOffset[1];
+        viewScaleDesc.HmdToEyePose[0] = mHmdToEyePose[0];
+        viewScaleDesc.HmdToEyePose[1] = mHmdToEyePose[1];
 
         for (int i=0; i<FBO_COUNT; i++)
         {
