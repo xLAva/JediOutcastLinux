@@ -53,6 +53,8 @@ private:
     float mLastViewanglePitch;
     float mViewanglePitchDiff;
     float mLastPitch;
+    float mMeterToGameUnits;
+
 
     static ClientHmd* sClientHmd;
 };
