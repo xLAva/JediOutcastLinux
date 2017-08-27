@@ -20,10 +20,13 @@ public:
     static ClientHmd* Get();
     static void Destroy();
 
-    void UpdateInputView(float yawDiff, float& rPitch, float& rYaw, float& rRoll);
+    void UpdateInputView(float yawDiff, float pitchDiff, float& rPitch, float& rYaw, float& rRoll);
     void UpdateGame();
     bool GetOrientation(float& rPitch, float& rYaw, float& rRoll);
     bool GetPosition(float& rX, float& rY, float& rZ);
+    bool GetHandOrientation(bool rightHand, float& rPitch, float& rYaw, float& rRoll);
+    bool GetHandPosition(bool rightHand, float& rX, float& rY, float& rZ);
+    bool HasHand(bool rightHand);
 
     IHmdDevice* GetDevice() { return mpDevice; }
     void SetDevice(IHmdDevice* pDevice) { mpDevice = pDevice; }
@@ -47,6 +50,9 @@ private:
     bool mIsInitialized;
     float mLastViewangleYaw;
     float mViewangleDiff;
+    float mLastViewanglePitch;
+    float mViewanglePitchDiff;
+    float mLastPitch;
 
     static ClientHmd* sClientHmd;
 };

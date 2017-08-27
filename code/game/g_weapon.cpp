@@ -13,6 +13,8 @@
 #include "../cgame/cg_local.h"
 #include "../game/npc_headers.h"
 
+#include "../hmd/GameHmd.h"
+
 static	vec3_t	forward, vright, up;
 static	vec3_t	muzzle;
 
@@ -3487,7 +3489,18 @@ void FireWeapon( gentity_t *ent, qboolean alt_fire )
 	}
 
 	ent->alt_fire = alt_fire;
-	CalcMuzzlePoint ( ent, forward, vright, up, muzzle , 0);
+	// [shinyquagsire23] Fire in the direction that the weapon is actually facing
+	if (GameHmd::Get()->HasHands())
+	{
+		VectorCopy(ent->client->renderInfo.muzzlePoint, muzzle);
+		VectorCopy(ent->client->renderInfo.muzzleDir, forward);
+		VectorCopy(ent->client->renderInfo.muzzleDir, ent->client->ps.viewangles);
+		MakeNormalVectors(forward, vright, up);
+	}
+	else
+	{
+		CalcMuzzlePoint(ent, forward, vright, up, muzzle, 0);
+	}
 
 	// fire the specific weapon
 	switch( ent->s.weapon ) 

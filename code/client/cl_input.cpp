@@ -623,11 +623,12 @@ usercmd_t CL_CreateCmd( void ) {
 	
 	
 	float yawDiff = cl.viewangles[YAW] - oldAngles[YAW];
+	float pitchDiff = cl.viewangles[PITCH] - oldAngles[PITCH];
 
     int useHmd = Cvar_VariableIntegerValue("cg_useHmd");
     if (useHmd == 1)
     {
-        ClientHmd::Get()->UpdateInputView(yawDiff, cl.viewangles[PITCH], cl.viewangles[YAW], cl.viewangles[ROLL]);
+        ClientHmd::Get()->UpdateInputView(yawDiff, pitchDiff, cl.viewangles[PITCH], cl.viewangles[YAW], cl.viewangles[ROLL]);
     }
 	
 	// store out the final values
