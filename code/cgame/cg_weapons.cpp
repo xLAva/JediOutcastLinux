@@ -1145,21 +1145,33 @@ void CG_AddViewWeapon( playerState_t *ps )
 		return;
 	}
 
+	AnglesToAxis(angles, gun.axis);
+
 	// [shinyquagsire23] Match weapon to actual rotation and position
-	if (GameHmd::Get()->HasHands())
-	{
-		angles[YAW] = 0;
-		angles[PITCH] = 0;
-		angles[ROLL] = 0;
+	if (GameHmd::Get()->HasHands()) {
+		vec3_t pos, pos_world;
+		orientation_t lerped;
+
+		// Stash our old hand position, reset hand position to 0, 0, 0 for transformation
+		VectorCopy(hand.origin, pos_world);
+		VectorCopy(gun.origin, hand.origin);
+
+		// Set hand axis to our rotation angles, get tag position for our rotation and subtract it out
+		// so our VR hand origin matches tag_weapon with rotation
+		AnglesToAxis(angles, hand.axis);
+		cgi_R_LerpTag(&lerped, weapon->handsModel, 0, 0, 1.0f, "tag_weapon");
+		VectorCopy(gun.origin, pos);
+		for (int i = 0; i < 3; i++)
+		{
+			VectorMA(pos, lerped.origin[i], hand.axis[i], pos);
+		}
+		VectorSubtract(hand.origin, pos, hand.origin);
+
+		// Translate hand back to world coordinates
+		VectorAdd(hand.origin, pos_world, hand.origin);
 	}
 
-	AnglesToAxis( angles, gun.axis );
-
-	// [shinyquagsire23] Match weapon to actual rotation and position
-	if (GameHmd::Get()->HasHands())
-		CG_PositionRotatedEntityOnTag(&gun, &hand, weapon->handsModel, "tag_weapon", NULL);
-	else
-		CG_PositionEntityOnTag(&gun, &hand, weapon->handsModel, "tag_weapon");
+	CG_PositionEntityOnTag(&gun, &hand, weapon->handsModel, "tag_weapon");
 
 	gun.renderfx = (GameHmd::Get()->HasHands() ? 0 : RF_DEPTHHACK) | RF_FIRST_PERSON;
 
