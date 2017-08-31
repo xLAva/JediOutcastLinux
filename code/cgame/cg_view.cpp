@@ -1775,6 +1775,14 @@ static qboolean CG_CalcViewValues( void ) {
         cg.refdefViewAngles[ROLL] = roll;
         cg.refdefViewAngles[PITCH] = pitch;
         cg.refdefViewAngles[YAW] = yaw + inputYaw + SHORT2ANGLE(ps->delta_angles[YAW]);
+
+        // We need our weapon angles to be consistent so the camera rotation 
+        // doesn't screw over our position tracking.
+        if (GameHmd::Get()->HasHands())
+        {
+            cg.refdefViewAnglesWeapon[PITCH] = 0.0f;
+            cg.refdefViewAnglesWeapon[YAW] = inputYaw + SHORT2ANGLE(ps->delta_angles[YAW]);
+        }
     }
 
 	float x, y, z;
