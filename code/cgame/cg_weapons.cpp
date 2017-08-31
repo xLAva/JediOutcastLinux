@@ -795,13 +795,19 @@ void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	if (GameHmd::Get()->GetRightHandOrientation(vrRPitch, vrRYaw, vrRRoll) && GameHmd::Get()->GetRightHandPosition(vrRX, vrRY, vrRZ))
 	{
 		vec3_t viewaxisWeapon[3];
+		vec3_t viewAnglesWeapon;
 
 		float c = cos(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
 		float s = sin(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
-		AnglesToAxis(cg.refdefViewAnglesWeapon, viewaxisWeapon);
 
-		VectorMA(origin, -(vrRX * c - vrRY * s), viewaxisWeapon[0], origin);
-		VectorMA(origin, -(vrRX * s + vrRY * c), viewaxisWeapon[1], origin);
+		// Get our weapon view angles to use for adjusting our hand position
+		VectorCopy(cg.refdefViewAnglesWeapon, viewAnglesWeapon);
+		viewAnglesWeapon[PITCH] = 0.0f;
+		viewAnglesWeapon[ROLL] = 0.0f;
+		AnglesToAxis(viewAnglesWeapon, viewaxisWeapon);
+
+		VectorMA(origin, (vrRX * c - vrRY * s), viewaxisWeapon[0], origin);
+		VectorMA(origin, (vrRX * s + vrRY * c), viewaxisWeapon[1], origin);
 		VectorMA(origin, -vrRZ, viewaxisWeapon[2], origin);
 
 		angles[PITCH] = vrRPitch;
