@@ -32,7 +32,7 @@ int			G2_IsSurfaceRendered(CGhoul2Info *ghlInfo, const char *surfaceName, surfac
 // internal bone calls - G2_Bones.cpp
 qboolean	G2_Set_Bone_Angles(CGhoul2Info *ghlInfo, boneInfo_v &blist, const char *boneName, const float *angles, const int flags,
 							   const Eorientations up, const Eorientations left, const Eorientations forward,
-							   const int blendTime, const int currentTime);
+							   const int blendTime, const int currentTime, const vec3_t offset);
 qboolean	G2_Remove_Bone (CGhoul2Info *ghlInfo, boneInfo_v &blist, const char *boneName);
 qboolean	G2_Set_Bone_Anim(CGhoul2Info *ghlInfo, boneInfo_v &blist, const char *boneName, const int startFrame, 
 							 const int endFrame, const int flags, const float animSpeed, const int currentTime, const float setFrame, const int blendTime);
@@ -54,7 +54,7 @@ int			G2_Get_Bone_Index(CGhoul2Info *ghoul2, const char *boneName, qboolean bAdd
 qboolean	G2_Set_Bone_Angles_Index(CGhoul2Info *ghlInfo, boneInfo_v &blist, const int index,
 							const float *angles, const int flags, const Eorientations yaw,
 							const Eorientations pitch, const Eorientations roll,
-							const int blendTime, const int currentTime);
+							const int blendTime, const int currentTime, const vec3_t offset);
 qboolean	G2_Set_Bone_Angles_Matrix_Index(boneInfo_v &blist, const int index,
 								   const mdxaBone_t &matrix, const int flags, 
 								   const int blendTime, const int currentTime);
@@ -116,6 +116,9 @@ qboolean	G2API_StopBoneAnim(CGhoul2Info *ghlInfo, const char *boneName);
 qboolean	G2API_SetBoneAngles(CGhoul2Info *ghlInfo, const char *boneName, const vec3_t angles, const int flags,
 								const Eorientations up, const Eorientations right, const Eorientations forward, qhandle_t *modelList,
 								int blendTime = 0, int currentTime = 0);
+qboolean	G2API_SetBoneAnglesOffset(CGhoul2Info *ghlInfo, const char *boneName, const vec3_t angles, const int flags,
+								const Eorientations up, const Eorientations right, const Eorientations forward, qhandle_t *modelList,
+								int blendTime = 0, int currentTime = 0, const vec3_t offset = NULL);
 qboolean	G2API_StopBoneAngles(CGhoul2Info *ghlInfo, const char *boneName);
 qboolean	G2API_RemoveBone(CGhoul2Info *ghlInfo, const char *boneName);
 qboolean	G2API_RemoveBolt(CGhoul2Info *ghlInfo, const int index);

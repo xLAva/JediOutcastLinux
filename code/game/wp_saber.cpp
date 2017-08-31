@@ -11,6 +11,8 @@
 #include "wp_saber.h"
 #include "../cgame/cg_local.h"
 
+#include "../hmd/GameHmd.h"
+
 #define MAX_SABER_VICTIMS 16
 static int		victimEntityNum[MAX_SABER_VICTIMS];
 static float	totalDmg[MAX_SABER_VICTIMS];
@@ -281,6 +283,7 @@ void G_CreateG2AttachedWeaponModel( gentity_t *ent, const char *psWeaponModel )
 					ent->handRBolt, ent->playerModel);
 		// set up a bolt on the end so we can get where the sabre muzzle is - we can assume this is always bolt 0
 		gi.G2API_AddBolt(&ent->ghoul2[ent->weaponModel], "*flash");
+
 	  	//gi.G2API_SetLodBias( &ent->ghoul2[ent->weaponModel], 0 );
 	}
 }
@@ -5183,6 +5186,41 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 	if ( !self->client )
 	{
 		return;
+	}
+
+	// [shinyquagsire23] Unbolt the saber if we have hands and control it manually
+	if (self->weaponModel != -1 && self->s.number == 0)
+	{
+		if (GameHmd::Get()->HasHands())
+		{
+			vec3_t viewaxisWeapon[3];
+			vec3_t viewAnglesWeapon;
+			vec3_t vrR_rot, vrR_pos, pos = { 0 }, rot = { 0 };
+			gi.G2API_DetachG2Model(&self->ghoul2[self->weaponModel]);
+
+			GameHmd::Get()->GetRightHandOrientation(vrR_rot[PITCH], vrR_rot[YAW], vrR_rot[ROLL]);
+			GameHmd::Get()->GetRightHandPosition(vrR_pos[0], vrR_pos[1], vrR_pos[2]);
+
+			float c = cos(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
+			float s = sin(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
+
+			// Get our weapon view angles to use for adjusting our hand position
+			viewAnglesWeapon[PITCH] = 0.0f;
+			viewAnglesWeapon[ROLL] = 0.0f;
+			viewAnglesWeapon[YAW] = cg.refdefViewAnglesWeapon[YAW] - 90.0f;
+			AnglesToAxis(viewAnglesWeapon, viewaxisWeapon);
+
+			VectorMA(pos, -(vrR_pos[0] * c - vrR_pos[1] * s), viewaxisWeapon[0], pos);
+			VectorMA(pos, -(vrR_pos[0] * s + vrR_pos[1] * c), viewaxisWeapon[1], pos);
+			VectorMA(pos, -vrR_pos[2], viewaxisWeapon[2], pos);
+
+			gi.G2API_SetBoneAnglesOffset(&self->ghoul2[self->weaponModel], "ModView internal default", vrR_rot, BONE_ANGLES_PREMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, 0, pos);
+		}
+		else
+		{
+			gi.G2API_AttachG2Model(&self->ghoul2[self->weaponModel], &self->ghoul2[self->playerModel], 
+						self->handRBolt, self->playerModel);
+		}
 	}
 	
 	if ( self->client->ps.saberEntityNum < 0 || self->client->ps.saberEntityNum >= ENTITYNUM_WORLD )

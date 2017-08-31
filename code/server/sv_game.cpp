@@ -424,6 +424,7 @@ Ghoul2 Insert Start
 	import.G2API_RemoveBone = G2API_RemoveBone;
 	import.G2API_RemoveGhoul2Model = G2API_RemoveGhoul2Model;
 	import.G2API_SetBoneAngles = G2API_SetBoneAngles;
+	import.G2API_SetBoneAnglesOffset = G2API_SetBoneAnglesOffset;
 	import.G2API_SetBoneAnglesMatrix = G2API_SetBoneAnglesMatrix;
 	import.G2API_SetBoneAnim = G2API_SetBoneAnim;
 	import.G2API_SetLodBias = G2API_SetLodBias;

@@ -251,6 +251,9 @@ qboolean	(*G2API_StopBoneAnim)(CGhoul2Info *ghlInfo, const char *boneName);
 qboolean	(*G2API_SetBoneAngles)(CGhoul2Info *ghlInfo, const char *boneName, const vec3_t angles,
 								   const int flags, const Eorientations up, const Eorientations right, const Eorientations forward,
 								   qhandle_t *modelList, int blendTime, int blendStart);
+qboolean	(*G2API_SetBoneAnglesOffset)(CGhoul2Info *ghlInfo, const char *boneName, const vec3_t angles, const int flags,
+								   const Eorientations up, const Eorientations left, const Eorientations forward, qhandle_t *modelList,
+								   int blendTime, int AcurrentTime, const vec3_t offset);
 qboolean	(*G2API_SetBoneAnglesMatrix)(CGhoul2Info *ghlInfo, const char *boneName, const mdxaBone_t &matrix, const int flags,
 									  qhandle_t *modelList, int blendTime, int currentTime);
 qboolean	(*G2API_StopBoneAngles)(CGhoul2Info *ghlInfo, const char *boneName);
