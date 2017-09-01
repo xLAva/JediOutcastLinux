@@ -5212,7 +5212,7 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 	// [shinyquagsire23] Unbolt the saber if we have hands and control it manually
 	if (self->weaponModel != -1 && self->s.number == 0)
 	{
-		if (GameHmd::Get()->HasHands())
+		if (GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
 		{
 			vec3_t viewaxisWeapon[3];
 			vec3_t viewAnglesWeapon;
@@ -5243,6 +5243,9 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 		}
 		else
 		{
+			vec3_t zero = { 0.0f, 0.0f, 0.0f };
+
+			gi.G2API_SetBoneAnglesOffset(&self->ghoul2[self->weaponModel], "ModView internal default", zero, BONE_ANGLES_PREMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, 0, zero);
 			gi.G2API_AttachG2Model(&self->ghoul2[self->weaponModel], &self->ghoul2[self->playerModel],
 				self->handRBolt, self->playerModel);
 		}
