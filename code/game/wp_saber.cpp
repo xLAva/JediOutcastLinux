@@ -5187,6 +5187,27 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 	{
 		return;
 	}
+	
+	if ( self->client->ps.saberEntityNum < 0 || self->client->ps.saberEntityNum >= ENTITYNUM_WORLD )
+	{//never got one
+		return;
+	}
+
+	// Check if we are throwing it, launch it if needed, update position if needed.
+	WP_SaberThrow(self, ucmd);
+
+
+	//vec3_t saberloc;
+	//vec3_t sabermins={-8,-8,-8}, sabermaxs={8,8,8};
+
+	gentity_t *saberent;
+	
+	if (self->client->ps.saberEntityNum <= 0)
+	{//WTF?!!  We lost it?
+		return;
+	}
+
+	saberent = &g_entities[self->client->ps.saberEntityNum];
 
 	// [shinyquagsire23] Unbolt the saber if we have hands and control it manually
 	if (self->weaponModel != -1 && self->s.number == 0)
@@ -5222,31 +5243,10 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 		}
 		else
 		{
-			gi.G2API_AttachG2Model(&self->ghoul2[self->weaponModel], &self->ghoul2[self->playerModel], 
-						self->handRBolt, self->playerModel);
+			gi.G2API_AttachG2Model(&self->ghoul2[self->weaponModel], &self->ghoul2[self->playerModel],
+				self->handRBolt, self->playerModel);
 		}
 	}
-	
-	if ( self->client->ps.saberEntityNum < 0 || self->client->ps.saberEntityNum >= ENTITYNUM_WORLD )
-	{//never got one
-		return;
-	}
-
-	// Check if we are throwing it, launch it if needed, update position if needed.
-	WP_SaberThrow(self, ucmd);
-
-
-	//vec3_t saberloc;
-	//vec3_t sabermins={-8,-8,-8}, sabermaxs={8,8,8};
-
-	gentity_t *saberent;
-	
-	if (self->client->ps.saberEntityNum <= 0)
-	{//WTF?!!  We lost it?
-		return;
-	}
-
-	saberent = &g_entities[self->client->ps.saberEntityNum];
 
 	//FIXME: Based on difficulty level/jedi saber combat skill, make this bounding box fatter/smaller
 	if ( self->client->ps.saberBlocked != BLOCKED_NONE )
