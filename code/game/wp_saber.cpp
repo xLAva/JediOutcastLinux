@@ -5237,7 +5237,7 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 
 			rot[PITCH] = vrR_rot[PITCH];
 			rot[YAW] = vrR_rot[PITCH];
-			rot[ROLL] = vrR_rot[YAW] - 45.0f; //TODO: This is probably dependent on the tag?
+			rot[ROLL] = vrR_rot[YAW] - 45.0f + cg_entities[self->s.number].pe.torso.yawAngle; //TODO: This is probably dependent on the tag?
 
 			gi.G2API_SetBoneAnglesOffset(&self->ghoul2[self->weaponModel], "ModView internal default", rot, BONE_ANGLES_PREMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, 0, pos);
 		}
