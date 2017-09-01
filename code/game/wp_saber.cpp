@@ -5214,7 +5214,11 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 			VectorMA(pos, -(vrR_pos[0] * s + vrR_pos[1] * c), viewaxisWeapon[1], pos);
 			VectorMA(pos, -vrR_pos[2], viewaxisWeapon[2], pos);
 
-			gi.G2API_SetBoneAnglesOffset(&self->ghoul2[self->weaponModel], "ModView internal default", vrR_rot, BONE_ANGLES_PREMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, 0, pos);
+			rot[PITCH] = vrR_rot[PITCH];
+			rot[YAW] = vrR_rot[PITCH];
+			rot[ROLL] = vrR_rot[YAW] - 45.0f; //TODO: This is probably dependent on the tag?
+
+			gi.G2API_SetBoneAnglesOffset(&self->ghoul2[self->weaponModel], "ModView internal default", rot, BONE_ANGLES_PREMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, 0, pos);
 		}
 		else
 		{
