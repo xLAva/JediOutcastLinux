@@ -5207,7 +5207,7 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 			// Rotate our weapon's position to be set up properly
 			viewAnglesWeapon[PITCH] = 0.0f;
 			viewAnglesWeapon[ROLL] = 0.0f;
-			viewAnglesWeapon[YAW] = -90.0f- (self->client->renderInfo.legsYaw - self->currentAngles[YAW]);
+			viewAnglesWeapon[YAW] = -90.0f + cg_entities[self->s.number].pe.torso.yawAngle;
 			AnglesToAxis(viewAnglesWeapon, viewaxisWeapon);
 
 			VectorMA(pos, -(vrR_pos[0] * c - vrR_pos[1] * s), viewaxisWeapon[0], pos);
