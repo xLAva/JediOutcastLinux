@@ -5204,15 +5204,15 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 			float c = cos(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
 			float s = sin(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
 
-			// Get our weapon view angles to use for adjusting our hand position
+			// Rotate our weapon's position to be set up properly
 			viewAnglesWeapon[PITCH] = 0.0f;
 			viewAnglesWeapon[ROLL] = 0.0f;
-			viewAnglesWeapon[YAW] = cg.refdefViewAnglesWeapon[YAW] - 90.0f;
+			viewAnglesWeapon[YAW] = -90.0f- (self->client->renderInfo.legsYaw - self->currentAngles[YAW]);
 			AnglesToAxis(viewAnglesWeapon, viewaxisWeapon);
 
 			VectorMA(pos, -(vrR_pos[0] * c - vrR_pos[1] * s), viewaxisWeapon[0], pos);
 			VectorMA(pos, -(vrR_pos[0] * s + vrR_pos[1] * c), viewaxisWeapon[1], pos);
-			VectorMA(pos, -vrR_pos[2], viewaxisWeapon[2], pos);
+			VectorMA(pos, -vrR_pos[2] + (cg.refdef.vieworg[2] - self->currentOrigin[2]), viewaxisWeapon[2], pos);
 
 			rot[PITCH] = vrR_rot[PITCH];
 			rot[YAW] = vrR_rot[PITCH];
