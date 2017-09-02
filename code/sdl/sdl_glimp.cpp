@@ -937,6 +937,7 @@ void InitHmdDevice()
 			IHmdInput* pHmdInput = FactoryHmdDevice::CreateInputForDevice(pHmdDevice);
 			if (pHmdInput != nullptr)
 			{
+				pHmdInput->Init();
 				VID_Printf(PRINT_ALL, "HMD Input created.\n");
 				ClientHmd::Get()->SetInput(pHmdInput);
 			}
@@ -1104,7 +1105,16 @@ void GLimp_Shutdown( void )
 
 	IN_ShutdownGameController();
 	
-#ifdef USE_VR	
+#ifdef USE_VR
+	IHmdInput* pHmdInput = ClientHmd::Get()->GetInput();
+	if (pHmdInput != nullptr)
+	{
+		ClientHmd::Get()->SetInput(nullptr);
+
+		pHmdInput->Shutdown();
+		delete pHmdInput;
+	}
+
 	IHmdRenderer* pHmdRenderer = ClientHmd::Get()->GetRenderer();
 	if (pHmdRenderer != NULL)
 	{
@@ -1448,6 +1458,22 @@ static void HandleEvents(void)
 {
     const int mouseDefaultPosX = s_windowWidth / 2;
     const int mouseDefaultPosY = s_windowHeight / 2;
+
+#ifdef USE_VR
+	bool hmdHandlesControllerInput = false;
+	IHmdInput* pHmdInput = nullptr;
+	IHmdDevice* pHmdDevice = ClientHmd::Get()->GetDevice();
+	if (pHmdDevice)
+	{
+		hmdHandlesControllerInput = pHmdDevice->HandlesControllerInput();
+		if (hmdHandlesControllerInput)
+		{
+			pHmdInput = ClientHmd::Get()->GetInput();
+			hmdHandlesControllerInput = pHmdInput != nullptr;
+		}
+	}
+#endif
+
 	int key;
 	qboolean dowarp = qfalse;
 
@@ -1464,6 +1490,18 @@ static void HandleEvents(void)
 	
 	while(SDL_PollEvent(&event)) 
 	{
+#ifdef USE_VR
+		if (hmdHandlesControllerInput)
+		{
+			if (event.type ==  SDL_CONTROLLERBUTTONDOWN
+				|| event.type == SDL_CONTROLLERBUTTONUP
+				|| event.type == SDL_CONTROLLERAXISMOTION)
+			{
+				// skip sdl controller inputs
+				continue;
+			}
+		}
+#endif
 		switch(event.type)
 		{
 		case SDL_QUIT:
@@ -1612,6 +1650,26 @@ static void HandleEvents(void)
 		mx = 0;
 		my = 0;
 	}
+
+#ifdef USE_VR
+	if (pHmdInput != nullptr)
+	{
+		size_t buttonId;
+		bool pressed;
+		while (pHmdInput->PollChangedButton(buttonId, pressed))
+		{
+			QueKeyEvent( 0, SE_KEY, A_JOY0 + buttonId, pressed ? qtrue : qfalse, 0, NULL );
+		}
+
+		size_t axisId;
+		float axisValue;
+		while (pHmdInput->PollChangedAxis(axisId, axisValue))
+		{
+			IN_GameControllerMove(axisId, axisValue);
+		}
+
+	}
+#endif
 
 }
 

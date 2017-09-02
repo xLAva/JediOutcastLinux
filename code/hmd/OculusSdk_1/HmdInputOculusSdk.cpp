@@ -34,3 +34,23 @@ HmdInputOculusSdk::~HmdInputOculusSdk()
 {
 
 }
+
+size_t HmdInputOculusSdk::GetButtonCount()
+{
+    return 0;
+}
+
+bool HmdInputOculusSdk::IsButtonPressed(size_t buttonId)
+{
+    return false;
+}
+
+size_t HmdInputOculusSdk::GetAxisCount()
+{
+    return 0;
+}
+
+float HmdInputOculusSdk::GetAxisValue(size_t axisId)
+{
+    return 0.0f;
+}

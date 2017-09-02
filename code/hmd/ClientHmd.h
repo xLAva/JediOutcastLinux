@@ -35,6 +35,7 @@ public:
     IHmdRenderer* GetRenderer() { return mpRenderer; }
     void SetRenderer(IHmdRenderer* pRenderer);
 
+    IHmdInput* GetInput() { return mpInput; }
     void SetInput(IHmdInput* pInput);
 
     float GetYawDiff() { return mViewangleDiff; }

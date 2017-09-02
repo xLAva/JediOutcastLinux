@@ -151,6 +151,8 @@ set(SSF_HMD_RENDERER
 
 set(SSF_HMD_INPUT
     code/hmd/HmdInput/IHmdInput.h
+    code/hmd/HmdInput/HmdInputBase.h
+    code/hmd/HmdInput/HmdInputBase.cpp
 )
 
 set(SSF_HMD_QUAKE3

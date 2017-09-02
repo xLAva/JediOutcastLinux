@@ -7,7 +7,7 @@
 #ifndef HMDINPUTOCULUSSDK_1_H
 #define HMDINPUTOCULUSSDK_1_H
 
-#include "../HmdInput/IHmdInput.h"
+#include "../HmdInput/HmdInputBase.h"
 
 
 #include <OVR_CAPI.h>
@@ -24,13 +24,19 @@ namespace OvrSdk_1
 {
 class HmdDeviceOculusSdk;
 
-class HmdInputOculusSdk : public IHmdInput
+class HmdInputOculusSdk : public HmdInputBase
 {
 public:
     HmdInputOculusSdk(HmdDeviceOculusSdk* pHmdDeviceOculusSdk);
     virtual ~HmdInputOculusSdk();
 
+    size_t GetButtonCount() override;
+    bool IsButtonPressed(size_t buttonId) override;
 
+    size_t GetAxisCount() override;
+    float GetAxisValue(size_t axisId) override;
+
+private:
     HmdDeviceOculusSdk* mpDevice;
 
 };
