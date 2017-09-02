@@ -11,6 +11,8 @@
 #include "wp_saber.h"
 #include "../cgame/cg_local.h"
 
+#include "../hmd/GameHmd.h"
+
 #define MAX_SABER_VICTIMS 16
 static int		victimEntityNum[MAX_SABER_VICTIMS];
 static float	totalDmg[MAX_SABER_VICTIMS];
@@ -5205,6 +5207,77 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 	}
 
 	saberent = &g_entities[self->client->ps.saberEntityNum];
+
+	// [shinyquagsire23] Bind a saber to our right hand position in first-person mode
+	if (self->s.number == 0 && GameHmd::Get()->HasHands())
+	{
+		if (!cg.renderingThirdPerson && !self->client->ps.saberInFlight && self->client->ps.weapon == WP_SABER)
+		{
+			vec3_t viewaxisWeapon[3];
+			vec3_t viewAnglesWeapon;
+			vec3_t vrR_rot, vrR_pos, pos = { 0 }, rot = { 0 };
+			vec3_t	saberMins = { -3.0f,-3.0f,-3.0f };
+			vec3_t	saberMaxs = { 3.0f,3.0f,3.0f };
+
+			// Set up saber entity to draw
+			saberent->s.eFlags &= ~EF_NODRAW;
+			saberent->svFlags |= SVF_BROADCAST;
+			saberent->svFlags &= ~SVF_NOCLIENT;
+
+			// Get our hand position/orientation, match to world rotation
+			GameHmd::Get()->GetRightHandOrientation(vrR_rot[PITCH], vrR_rot[YAW], vrR_rot[ROLL]);
+			GameHmd::Get()->GetRightHandPosition(vrR_pos[0], vrR_pos[1], vrR_pos[2]);
+			vrR_rot[YAW] += cg.refdefViewAnglesWeapon[YAW];
+
+			float c = cos(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
+			float s = sin(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
+
+			// Rotate saber to be in front of weapon view at all times
+			viewAnglesWeapon[PITCH] = 0.0f;
+			viewAnglesWeapon[ROLL] = 0.0f;
+			viewAnglesWeapon[YAW] = cg.refdefViewAnglesWeapon[YAW];
+			AnglesToAxis(viewAnglesWeapon, viewaxisWeapon);
+
+			VectorMA(pos, -(vrR_pos[0] * c - vrR_pos[1] * s), viewaxisWeapon[0], pos);
+			VectorMA(pos, -(vrR_pos[0] * s + vrR_pos[1] * c), viewaxisWeapon[1], pos);
+			VectorMA(pos, -vrR_pos[2], viewaxisWeapon[2], pos);
+			VectorAdd(pos, cg.refdef.vieworg, pos);
+
+			// Place saber in the world
+			VectorCopy(pos, saberent->currentOrigin);//muzzlePoint
+			VectorCopy(vrR_rot, saberent->currentAngles);
+			saberent->s.pos.trType = TR_STATIONARY;
+			VectorCopy(saberent->currentAngles, saberent->s.apos.trBase);
+			VectorCopy(saberent->currentOrigin, saberent->s.pos.trBase);
+			gi.linkentity(saberent);
+
+			// We're hovering, but not in a saber throw.
+			self->client->ps.saberInFlight = qfalse;
+			self->client->ps.saberEntityState = SES_HOVERING;
+			self->client->ps.saberEntityDist = 400;
+			self->client->ps.saberThrowTime = level.time;
+
+			//reset the mins
+			VectorCopy(saberMins, saberent->mins);
+			VectorCopy(saberMaxs, saberent->maxs);
+			saberent->contents = 0;
+			saberent->clipmask = MASK_SOLID | CONTENTS_LIGHTSABER;
+
+			// remove the ghoul2 sabre model on the player
+			if (self->weaponModel >= 0)
+			{
+				gi.G2API_RemoveGhoul2Model(self->ghoul2, self->weaponModel);
+				self->weaponModel = -1;
+			}
+
+			// Don't do anything else with our saber, we're good here.
+			return;
+		}
+		else if (!self->client->ps.saberInFlight && cg.renderingThirdPerson && self->weaponModel == -1)
+		{
+			WP_SaberCatch(self, saberent, false);
+		}
+	}
 
 	//FIXME: Based on difficulty level/jedi saber combat skill, make this bounding box fatter/smaller
 	if ( self->client->ps.saberBlocked != BLOCKED_NONE )
