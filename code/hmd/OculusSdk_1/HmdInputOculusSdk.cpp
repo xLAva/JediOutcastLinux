@@ -27,12 +27,24 @@ using namespace OvrSdk_1;
 HmdInputOculusSdk::HmdInputOculusSdk(HmdDeviceOculusSdk* pHmdDeviceOculusSdk)
     :mpDevice(pHmdDeviceOculusSdk)
 {
-
+    mInputState = {};
 }
 
 HmdInputOculusSdk::~HmdInputOculusSdk()
 {
 
+}
+
+void HmdInputOculusSdk::Update()
+{
+    if (mpDevice == nullptr)
+    {
+        return;
+    }
+
+    ovrSession session = mpDevice->GetHmd();
+    ovrControllerType controllerType = ovrControllerType_Touch;
+    d_ovr_GetInputState(session, controllerType, &mInputState);
 }
 
 size_t HmdInputOculusSdk::GetButtonCount()
@@ -47,10 +59,20 @@ bool HmdInputOculusSdk::IsButtonPressed(size_t buttonId)
 
 size_t HmdInputOculusSdk::GetAxisCount()
 {
-    return 0;
+    return 4;
 }
 
 float HmdInputOculusSdk::GetAxisValue(size_t axisId)
 {
-    return 0.0f;
+    ovrHandType hand = ovrHand_Right;
+    if (axisId >= 2)
+    {
+        hand = ovrHand_Left;
+    }
+
+    bool xAxis = (axisId % 2 == 1);
+
+    ovrVector2f thumbstick = mInputState.Thumbstick[hand];
+    return xAxis ? thumbstick.x : thumbstick.y;
 }
+

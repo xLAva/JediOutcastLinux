@@ -45,32 +45,40 @@ void HmdInputBase::Shutdown()
     }
 }
 
-bool HmdInputBase::PollChangedButton(size_t& rButtonId, bool& rPressed)
+void HmdInputBase::Update()
 {
     CheckButtons();
+    CheckAxis();
+}
 
-    if (mChangedButtons.size() == 0)
+bool HmdInputBase::PollChangedButton(size_t& rButtonId, bool& rPressed)
+{
+    auto it = mChangedButtons.begin();
+    if (it == mChangedButtons.end())
     {
         return false;
     }
 
-    rButtonId = mChangedButtons[0].first;
-    rPressed = mChangedButtons[0].second;
+    rButtonId = it->first;
+    rPressed = it->second;
+
+    mChangedButtons.erase(it);
 
     return true;
 }
 
 bool HmdInputBase::PollChangedAxis(size_t& rAxisId, float& rAxisValue)
 {
-    CheckAxis();
-
-    if (mChangedAxis.size() == 0)
+    auto it = mChangedAxis.begin();
+    if (it == mChangedAxis.end())
     {
-        return false;
+        false;
     }
 
-    rAxisId = mChangedAxis[0].first;
-    rAxisValue = mChangedAxis[0].second;
+    rAxisId = it->first;
+    rAxisValue = it->second;
+
+    mChangedAxis.erase(it);
 
     return true;
 }
@@ -79,7 +87,7 @@ void HmdInputBase::CheckButtons()
 {
     if (mChangedButtons.size() > 0)
     {
-        return;
+        mChangedButtons.clear();
     }
 
     for (size_t i=0; i<mButtonCount; ++i)
@@ -97,7 +105,7 @@ void HmdInputBase::CheckAxis()
 {
     if (mChangedAxis.size() > 0)
     {
-        return;
+        mChangedAxis.clear();
     }
 
     for (size_t i=0; i<mAxisCount; ++i)

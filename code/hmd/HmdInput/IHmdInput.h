@@ -19,6 +19,8 @@ public:
     virtual bool Init() = 0;
     virtual void Shutdown() = 0;
 
+    virtual void Update() = 0;
+
     virtual size_t GetButtonCount() = 0;
     virtual bool IsButtonPressed(size_t buttonId) = 0;
 

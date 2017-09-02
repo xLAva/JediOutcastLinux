@@ -21,12 +21,15 @@ public:
     bool Init() override;
     void Shutdown() override;
 
+    void Update() override;
+
     bool PollChangedButton(size_t &rButtonId, bool &rPressed) override;
     bool PollChangedAxis(size_t &rAxisId, float &rAxisValue) override;
 
+protected:
+    virtual void CheckButtons();
+    virtual void CheckAxis();
 private:
-    void CheckButtons();
-    void CheckAxis();
 
     std::vector<std::pair<size_t, bool> > mChangedButtons;
     std::vector<std::pair<size_t, float> > mChangedAxis;

@@ -30,14 +30,20 @@ public:
     HmdInputOculusSdk(HmdDeviceOculusSdk* pHmdDeviceOculusSdk);
     virtual ~HmdInputOculusSdk();
 
+    void Update() override;
+
     size_t GetButtonCount() override;
     bool IsButtonPressed(size_t buttonId) override;
 
     size_t GetAxisCount() override;
     float GetAxisValue(size_t axisId) override;
 
+protected:
+
+
 private:
     HmdDeviceOculusSdk* mpDevice;
+    ovrInputState mInputState;
 
 };
 }
