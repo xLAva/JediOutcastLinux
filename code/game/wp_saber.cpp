@@ -5229,18 +5229,26 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 			GameHmd::Get()->GetRightHandPosition(vrR_pos[0], vrR_pos[1], vrR_pos[2]);
 			vrR_rot[YAW] += cg.refdefViewAnglesWeapon[YAW];
 
-			float c = cos(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
-			float s = sin(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
-
 			// Rotate saber to be in front of weapon view at all times
 			viewAnglesWeapon[PITCH] = 0.0f;
 			viewAnglesWeapon[ROLL] = 0.0f;
 			viewAnglesWeapon[YAW] = cg.refdefViewAnglesWeapon[YAW];
 			AnglesToAxis(viewAnglesWeapon, viewaxisWeapon);
 
-			VectorMA(pos, -(vrR_pos[0] * c - vrR_pos[1] * s), viewaxisWeapon[0], pos);
-			VectorMA(pos, -(vrR_pos[0] * s + vrR_pos[1] * c), viewaxisWeapon[1], pos);
+			VectorSet(pos, 0.0, 0.0, 0.0);
+			VectorMA(pos, -vrR_pos[0], viewaxisWeapon[0], pos);
+			VectorMA(pos, -vrR_pos[1], viewaxisWeapon[1], pos);
 			VectorMA(pos, -vrR_pos[2], viewaxisWeapon[2], pos);
+			VectorCopy(pos, vrR_pos);
+
+			// Rotate the gun around us according to our weapon view yaw
+			viewAnglesWeapon[YAW] = cg.refdefViewAnglesWeapon[YAW] - cg.refdef.delta_yaw;
+			AnglesToAxis(viewAnglesWeapon, viewaxisWeapon);
+
+			VectorSet(pos, 0.0, 0.0, 0.0);
+			VectorMA(pos, vrR_pos[0], viewaxisWeapon[0], pos);
+			VectorMA(pos, vrR_pos[1], viewaxisWeapon[1], pos);
+			VectorMA(pos, vrR_pos[2], viewaxisWeapon[2], pos);
 			VectorAdd(pos, cg.refdef.vieworg, pos);
 
 			// Place saber in the world
