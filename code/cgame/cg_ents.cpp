@@ -568,7 +568,7 @@ const weaponData_t  *wData = NULL;
 				//light?  sound?
 				if ( cent->gent->owner->client && cg_entities[cent->currentState.otherEntityNum].currentState.saberActive )
 				{//saber is in-flight and active, play a sound on it
-					if ( cent->gent->owner->client->ps.saberEntityState == SES_RETURNING )
+					if ( cent->gent->owner->client->ps.saberEntityState == SES_RETURNING || cent->gent->owner->client->ps.saberEntityState == SES_OVERRIDE )
 					{
 						cgi_S_AddLoopingSound( cent->currentState.number, 
 							cent->lerpOrigin, vec3_origin, 

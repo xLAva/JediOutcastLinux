@@ -5253,7 +5253,7 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 
 			// We're hovering, but not in a saber throw.
 			self->client->ps.saberInFlight = qfalse;
-			self->client->ps.saberEntityState = SES_HOVERING;
+			self->client->ps.saberEntityState = SES_OVERRIDE;
 			self->client->ps.saberEntityDist = 400;
 			self->client->ps.saberThrowTime = level.time;
 
