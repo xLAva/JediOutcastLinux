@@ -279,6 +279,11 @@ void ClientHmd::SetRenderer(IHmdRenderer* pRenderer)
     pGameMenuHmdManager->SetHmdRenderer(pRenderer);
 }
 
+void ClientHmd::SetInput(IHmdInput* pInput)
+{
+    mpInput = pInput;
+}
+
 GameMenuHmdManager* ClientHmd::GetGameMenuHmdManager()
 {
     if (mpGameMenuHmdManager == nullptr)

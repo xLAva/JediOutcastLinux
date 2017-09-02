@@ -149,6 +149,10 @@ set(SSF_HMD_RENDERER
     code/hmd/HmdRenderer/RenderTool.cpp
 )
 
+set(SSF_HMD_INPUT
+    code/hmd/HmdInput/IHmdInput.h
+)
+
 set(SSF_HMD_QUAKE3
     code/hmd/Quake3/GameMenuHmdManager.h
     code/hmd/Quake3/GameMenuHmdManager.cpp
@@ -161,10 +165,10 @@ if(USE_OCULUS_SDK_1)
     set(SSF_HMD_OCULUS_1 ${SSF_HMD_OCULUS_1}
         code/hmd/OculusSdk_1/HmdDeviceOculusSdk.h
         code/hmd/OculusSdk_1/HmdDeviceOculusSdk.cpp
-    )
-    set(SSF_HMD_OCULUS_1 ${SSF_HMD_OCULUS_1}
         code/hmd/OculusSdk_1/HmdRendererOculusSdk.h
         code/hmd/OculusSdk_1/HmdRendererOculusSdk.cpp
+        code/hmd/OculusSdk_1/HmdInputOculusSdk.h
+        code/hmd/OculusSdk_1/HmdInputOculusSdk.cpp
     )
 
     set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_VR -DUSE_OVR -DUSE_OVR_1")
@@ -375,6 +379,7 @@ source_group(ui FILES ${SRC_UI})
 source_group(hmd FILES ${SSF_HMD})
 source_group(hmd\\HmdDevice FILES ${SSF_HMD_DEVICE})
 source_group(hmd\\HmdRenderer FILES ${SSF_HMD_RENDERER})
+source_group(hmd\\HmdInput FILES ${SSF_HMD_INPUT})
 source_group(hmd\\Quake3 FILES ${SSF_HMD_QUAKE3})
 
 
@@ -393,7 +398,8 @@ set(STARWARS_SOURCE_FILES
 	${SRC_UI}
 	${SSF_HMD}
 	${SSF_HMD_DEVICE}
-	${SSF_HMD_RENDERER}
+        ${SSF_HMD_RENDERER}
+        ${SSF_HMD_INPUT}
 	${SSF_HMD_QUAKE3}
 	${SSF_HMD_OCULUS_0.5}
 	${SSF_HMD_OCULUS_0.8}

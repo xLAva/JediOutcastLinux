@@ -933,6 +933,13 @@ void InitHmdDevice()
 				VID_Printf(PRINT_ALL, "HMD Renderer created: %s\n", pHmdRenderer->GetInfo().c_str());
 				ClientHmd::Get()->SetRenderer(pHmdRenderer);
 			}
+
+			IHmdInput* pHmdInput = FactoryHmdDevice::CreateInputForDevice(pHmdDevice);
+			if (pHmdInput != nullptr)
+			{
+				VID_Printf(PRINT_ALL, "HMD Input created.\n");
+				ClientHmd::Get()->SetInput(pHmdInput);
+			}
 		}
 	}
 }

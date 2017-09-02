@@ -9,6 +9,7 @@
 
 #include "HmdDevice/IHmdDevice.h"
 #include "HmdRenderer/IHmdRenderer.h"
+#include "HmdInput/IHmdInput.h"
 
 class FactoryHmdDevice
 {
@@ -23,6 +24,7 @@ public:
 
     static IHmdDevice* CreateHmdDevice(HmdLibrary library, bool allowDummyDevice);
     static IHmdRenderer* CreateRendererForDevice(IHmdDevice* pDevice);
+    static IHmdInput* CreateInputForDevice(IHmdDevice* pDevice);
 
 private:
     // disable copy constructor

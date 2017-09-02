@@ -8,6 +8,7 @@
 #ifdef USE_OVR_1
 #include "OculusSdk_1/HmdDeviceOculusSdk.h"
 #include "OculusSdk_1/HmdRendererOculusSdk.h"
+#include "OculusSdk_1/HmdInputOculusSdk.h"
 #endif
 
 #ifdef USE_OVR_0_8
@@ -162,4 +163,29 @@ IHmdRenderer* FactoryHmdDevice::CreateRendererForDevice(IHmdDevice* pDevice)
     }
 
     return NULL;
+}
+
+IHmdInput*FactoryHmdDevice::CreateInputForDevice(IHmdDevice* pDevice)
+{
+    if (pDevice == nullptr)
+    {
+        return nullptr;
+    }
+
+    bool handlesControllerInput = pDevice->HandlesControllerInput();
+    if (!handlesControllerInput)
+    {
+        return nullptr;
+    }
+
+#ifdef USE_OVR_1
+    OvrSdk_1::HmdDeviceOculusSdk* pOculusSdk_1 = dynamic_cast<OvrSdk_1::HmdDeviceOculusSdk*>(pDevice);
+    if (pOculusSdk_1 != nullptr)
+    {
+        OvrSdk_1::HmdInputOculusSdk* pInput = new OvrSdk_1::HmdInputOculusSdk(pOculusSdk_1);
+        return pInput;
+    }
+#endif
+
+    return nullptr;
 }

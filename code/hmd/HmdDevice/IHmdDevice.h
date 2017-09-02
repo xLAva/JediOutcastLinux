@@ -20,6 +20,7 @@ public:
     virtual std::string GetInfo() = 0;
 
     virtual bool HasDisplay() = 0;
+    virtual bool HandlesControllerInput() = 0;
     virtual std::string GetDisplayDeviceName() = 0;
     virtual bool GetDisplayPos(int& rX, int& rY) = 0;
 

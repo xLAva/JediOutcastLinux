@@ -31,6 +31,7 @@ public:
     DeviceType GetDeviceType() { return mDeviceType; }
 
     virtual bool HasDisplay();
+    virtual bool HandlesControllerInput() { return false; }
     virtual std::string GetDisplayDeviceName();
     virtual bool GetDisplayPos(int& rX, int& rY);
 
