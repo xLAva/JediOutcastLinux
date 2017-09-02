@@ -5257,6 +5257,9 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 			self->client->ps.saberEntityDist = 400;
 			self->client->ps.saberThrowTime = level.time;
 
+			// The saber should actually do something
+			cgi_Cvar_Set("g_saberRealisticCombat", "1");
+
 			//reset the mins
 			VectorCopy(saberMins, saberent->mins);
 			VectorCopy(saberMaxs, saberent->maxs);
@@ -5273,9 +5276,24 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 			// Don't do anything else with our saber, we're good here.
 			return;
 		}
-		else if (!self->client->ps.saberInFlight && cg.renderingThirdPerson && self->weaponModel == -1)
+		else if ((cg.renderingThirdPerson || self->client->ps.weapon != WP_SABER) && !self->client->ps.saberInFlight)
 		{
-			WP_SaberCatch(self, saberent, false);
+			//don't draw it
+			saberent->s.eFlags |= EF_NODRAW;
+			saberent->svFlags &= SVF_BROADCAST;
+			saberent->svFlags |= SVF_NOCLIENT;
+
+			//reset its contents/clipmask
+			saberent->contents = CONTENTS_LIGHTSABER;// | CONTENTS_SHOTCLIP;
+			saberent->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+			// We don't need this any more
+			cgi_Cvar_Set("g_saberRealisticCombat", "0");
+
+			if (self->client->ps.weapon == WP_SABER && self->weaponModel == -1)
+			{
+				G_CreateG2AttachedWeaponModel(self, self->client->ps.saberModel);
+			}
 		}
 	}
 
