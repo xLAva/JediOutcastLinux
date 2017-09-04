@@ -73,6 +73,8 @@ static bool sWindowHasFocus = qtrue;
 static qboolean sVideoModeFullscreen = qfalse;
 static bool sRelativeMouseMode = false;
 
+static bool sVirtualGamecontrollerButton[2] = {false, false};
+
 
 // Hack variable for deciding which kind of texture rectangle thing to do (for some
 // reason it acts different on radeon! It's against the spec!).
@@ -1572,7 +1574,25 @@ static void HandleEvents(void)
 			QueKeyEvent( 0, SE_KEY, A_JOY0 + event.cbutton.button, qfalse, 0, NULL );
 			break;
 		case SDL_CONTROLLERAXISMOTION:
-			IN_GameControllerMove(event.caxis.axis, event.caxis.value);
+			if (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT ||
+				event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERRIGHT)
+			{
+				int virtualIndex = event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT ? 0 : 1;
+				bool pressed = (event.caxis.value >= 0.7f);
+
+				if (sVirtualGamecontrollerButton[virtualIndex] != pressed)
+				{
+					sVirtualGamecontrollerButton[virtualIndex] = pressed;
+
+					int joyButtonId = SDL_CONTROLLER_BUTTON_MAX + virtualIndex;
+					QueKeyEvent( 0, SE_KEY, A_JOY0 + joyButtonId, pressed ? qtrue : qfalse, 0, NULL );
+				}
+			}
+			else
+			{
+				IN_GameControllerMove(event.caxis.axis, event.caxis.value);
+			}
+
 			break;            
 			
 		case SDL_WINDOWEVENT:
