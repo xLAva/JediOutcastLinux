@@ -92,7 +92,7 @@ void ClientHmd::UpdateInputView(float yawDiff, float pitchDiff, float& rPitch, f
     // we need to keep render orientation and input orientation the same
     GetOrientation(pitch, yaw, roll);
 
-    if (hmd_decoupleAim->integer || HasHand(true))
+    if (hmd_decoupleAim->integer)
     {
         mViewanglePitchDiff += pitchDiff;
         mViewanglePitchDiff += (mLastPitch - pitch);
