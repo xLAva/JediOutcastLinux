@@ -1578,7 +1578,12 @@ static void HandleEvents(void)
 				event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERRIGHT)
 			{
 				int virtualIndex = event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT ? 0 : 1;
-				bool pressed = (event.caxis.value >= 0.7f);
+				const float threshold = 0.15f; //joy_threshold->value;
+	
+				// get the floating point zero-centered, potentially-inverted data for the current axis
+				float fAxisValue = JoyToF(event.caxis.value, threshold);
+
+				bool pressed = (fAxisValue >= 0.95f);
 
 				if (sVirtualGamecontrollerButton[virtualIndex] != pressed)
 				{
