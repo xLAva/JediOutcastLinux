@@ -22,6 +22,8 @@ bool HmdInputBase::Init()
             mpLastAxisValue[i] = 0.0f;
         }
     }
+
+    return true;
 }
 
 void HmdInputBase::Shutdown()
@@ -72,7 +74,7 @@ bool HmdInputBase::PollChangedAxis(size_t& rAxisId, float& rAxisValue)
     auto it = mChangedAxis.begin();
     if (it == mChangedAxis.end())
     {
-        false;
+        return false;
     }
 
     rAxisId = it->first;

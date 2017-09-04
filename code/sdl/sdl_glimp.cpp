@@ -1493,16 +1493,19 @@ static void HandleEvents(void)
 	while(SDL_PollEvent(&event)) 
 	{
 #ifdef USE_VR
-		if (hmdHandlesControllerInput)
-		{
-			if (event.type ==  SDL_CONTROLLERBUTTONDOWN
-				|| event.type == SDL_CONTROLLERBUTTONUP
-				|| event.type == SDL_CONTROLLERAXISMOTION)
-			{
-				// skip sdl controller inputs
-				continue;
-			}
-		}
+		// disabled for now
+		// waiting for proper integration of xbox controller support into HmdInputOculusSdk
+
+		//if (hmdHandlesControllerInput)
+		//{
+		//	if (event.type ==  SDL_CONTROLLERBUTTONDOWN
+		//		|| event.type == SDL_CONTROLLERBUTTONUP
+		//		|| event.type == SDL_CONTROLLERAXISMOTION)
+		//	{
+		//		// skip sdl controller inputs
+		//		continue;
+		//	}
+		//}
 #endif
 		switch(event.type)
 		{
@@ -1679,6 +1682,8 @@ static void HandleEvents(void)
 #ifdef USE_VR
 	if (pHmdInput != nullptr)
 	{
+		pHmdInput->Update();
+
 		size_t buttonId;
 		bool pressed;
 		while (pHmdInput->PollChangedButton(buttonId, pressed))
@@ -1690,7 +1695,7 @@ static void HandleEvents(void)
 		float axisValue;
 		while (pHmdInput->PollChangedAxis(axisId, axisValue))
 		{
-			IN_GameControllerMove(axisId, axisValue);
+			IN_GameControllerMove(axisId, axisValue * 32768);
 		}
 
 	}
