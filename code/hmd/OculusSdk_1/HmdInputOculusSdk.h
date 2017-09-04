@@ -44,6 +44,7 @@ protected:
 private:
     HmdDeviceOculusSdk* mpDevice;
     ovrInputState mInputState;
+    std::vector<ovrButton> mButtonIds;
 
 };
 }

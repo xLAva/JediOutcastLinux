@@ -24,10 +24,28 @@ using namespace OVR;
 using namespace std;
 using namespace OvrSdk_1;
 
+
 HmdInputOculusSdk::HmdInputOculusSdk(HmdDeviceOculusSdk* pHmdDeviceOculusSdk)
     :mpDevice(pHmdDeviceOculusSdk)
 {
     mInputState = {};
+
+    mButtonIds.push_back(ovrButton_A);
+    mButtonIds.push_back(ovrButton_B);
+    mButtonIds.push_back(ovrButton_X);
+    mButtonIds.push_back(ovrButton_Y);
+    mButtonIds.push_back(ovrButton_Back);
+    mButtonIds.push_back(ovrButton_EnumSize);
+    mButtonIds.push_back(ovrButton_Enter);
+    mButtonIds.push_back(ovrButton_LThumb);
+    mButtonIds.push_back(ovrButton_RThumb);
+    mButtonIds.push_back(ovrButton_LShoulder);
+    mButtonIds.push_back(ovrButton_RShoulder);
+    mButtonIds.push_back(ovrButton_Up);
+    mButtonIds.push_back(ovrButton_Down);
+    mButtonIds.push_back(ovrButton_Left);
+    mButtonIds.push_back(ovrButton_Right);
+
 }
 
 HmdInputOculusSdk::~HmdInputOculusSdk()
@@ -49,12 +67,42 @@ void HmdInputOculusSdk::Update()
 
 size_t HmdInputOculusSdk::GetButtonCount()
 {
-    return 0;
+    return mButtonIds.size() + 4;
 }
 
 bool HmdInputOculusSdk::IsButtonPressed(size_t buttonId)
 {
-    return false;
+    size_t buttonCount = GetButtonCount();
+    if (buttonId >= buttonCount)
+    {
+        return false;
+    }
+
+    size_t buttonIdCount = mButtonIds.size();
+
+    if (buttonId < buttonIdCount)
+    {
+        ovrButton button = mButtonIds[buttonId];
+        if (button != ovrButton_EnumSize)
+        {
+            return (mInputState.Buttons & button);
+        }
+
+        return false;
+    }
+
+    size_t virtualButtonId = (buttonId - buttonIdCount);
+
+    ovrHandType hand = (virtualButtonId % 2) == 1 ? ovrHand_Left : ovrHand_Right;
+
+    const float pressedValue = 0.7f;
+
+    if (virtualButtonId < 2)
+    {
+        return (mInputState.IndexTrigger[hand] >= pressedValue);
+    }
+
+    return (mInputState.HandTrigger[hand] >= pressedValue);
 }
 
 size_t HmdInputOculusSdk::GetAxisCount()
