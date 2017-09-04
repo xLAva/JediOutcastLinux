@@ -22,6 +22,7 @@ ClientHmd* ClientHmd::sClientHmd = NULL;
 ClientHmd::ClientHmd()
     :mpDevice(nullptr)
     ,mpRenderer(nullptr)
+    ,mpInput(nullptr)
     ,mpGameMenuHmdManager(nullptr)
     ,mIsInitialized(false)
     ,mLastViewangleYaw(0)
