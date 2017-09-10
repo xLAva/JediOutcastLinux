@@ -11,6 +11,8 @@
 #include "../game/wp_saber.h"
 #include "../game/g_local.h"
 
+#include "../hmd/GameHmd.h"
+
 extern void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, int renderfx, int modelIndex, vec3_t origin, vec3_t angles);
 extern void CG_CheckSaberInWater( centity_t *cent, centity_t *scent, int modelIndex, vec3_t origin, vec3_t angles );
 extern void CG_ForcePushBlur( const vec3_t org );
@@ -1515,6 +1517,46 @@ Ghoul2 Insert Start
 /*
 Ghoul2 Insert End
 */
+		return;
+	}
+
+	// [shinyquagsire23] We can't interpolate VR objects, override our saber entity directly
+	if (cent->currentState.number == cg_entities[0].gent->client->ps.saberEntityNum && cg_entities[0].gent->client->ps.saberEntityState == SES_OVERRIDE)
+	{
+		vec3_t viewaxisWeapon[3];
+		vec3_t viewAnglesWeapon;
+		vec3_t vrR_rot, vrR_pos, pos = { 0 }, rot = { 0 };
+
+		// Get our hand position/orientation, match to world rotation
+		GameHmd::Get()->GetRightHandOrientation(vrR_rot[PITCH], vrR_rot[YAW], vrR_rot[ROLL]);
+		GameHmd::Get()->GetRightHandPosition(vrR_pos[0], vrR_pos[1], vrR_pos[2]);
+		vrR_rot[YAW] += cg.refdefViewAnglesWeapon[YAW];
+		vrR_rot[PITCH] += 45.0f; //TODO: Have GameHmd handle transforms for guns vs sabers? Controller grip depends on the headset.
+
+		// Rotate saber to be in front of weapon view at all times
+		viewAnglesWeapon[PITCH] = 0.0f;
+		viewAnglesWeapon[ROLL] = 0.0f;
+		viewAnglesWeapon[YAW] = cg.refdefViewAnglesWeapon[YAW];
+		AnglesToAxis(viewAnglesWeapon, viewaxisWeapon);
+
+		VectorSet(pos, 0.0, 0.0, 0.0);
+		VectorMA(pos, -vrR_pos[0], viewaxisWeapon[0], pos);
+		VectorMA(pos, -vrR_pos[1], viewaxisWeapon[1], pos);
+		VectorMA(pos, -vrR_pos[2], viewaxisWeapon[2], pos);
+		VectorCopy(pos, vrR_pos);
+
+		// Rotate the saber around us according to our weapon view yaw
+		viewAnglesWeapon[YAW] = cg.refdefViewAnglesWeapon[YAW] - cg.refdef.delta_yaw;
+		AnglesToAxis(viewAnglesWeapon, viewaxisWeapon);
+
+		VectorSet(pos, 0.0, 0.0, 0.0);
+		VectorMA(pos, vrR_pos[0], viewaxisWeapon[0], pos);
+		VectorMA(pos, vrR_pos[1], viewaxisWeapon[1], pos);
+		VectorMA(pos, vrR_pos[2], viewaxisWeapon[2], pos);
+		VectorAdd(pos, cg.refdef.vieworg, pos);
+
+		VectorCopy(pos, cent->lerpOrigin );
+		VectorCopy(vrR_rot, cent->lerpAngles);
 		return;
 	}
 	
