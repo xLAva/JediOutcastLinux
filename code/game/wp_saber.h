@@ -20,6 +20,7 @@
 #define SES_LEAVING		1
 #define SES_HOVERING	2
 #define SES_RETURNING	3
+#define SES_OVERRIDE	4
 
 #define SABER_EXTRAPOLATE_DIST 16.0f
 

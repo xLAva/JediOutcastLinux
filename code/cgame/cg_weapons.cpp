@@ -790,29 +790,40 @@ void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	VectorCopy( cg.refdefViewAnglesWeapon, angles );
 
 	// [shinyquagsire23] Change weapon position to match hands
-	float vrRX = 0, vrRY = 0, vrRZ = 0;
+	vec3_t vrR_pos;
 	float vrRRoll = 0, vrRYaw = 0, vrRPitch = 0;
-	if (GameHmd::Get()->GetRightHandOrientation(vrRPitch, vrRYaw, vrRRoll) && GameHmd::Get()->GetRightHandPosition(vrRX, vrRY, vrRZ))
+	if (GameHmd::Get()->GetRightHandOrientation(vrRPitch, vrRYaw, vrRRoll) && GameHmd::Get()->GetRightHandPosition(vrR_pos[0], vrR_pos[1], vrR_pos[2]))
 	{
 		vec3_t viewaxisWeapon[3];
 		vec3_t viewAnglesWeapon;
 
-		float c = cos(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
-		float s = sin(cg.refdefViewAnglesWeapon[YAW] * (M_PI / 180));
-
-		// Get our weapon view angles to use for adjusting our hand position
-		VectorCopy(cg.refdefViewAnglesWeapon, viewAnglesWeapon);
+		// Undo the rotation done on our hand position first so our gun stays in front of us
 		viewAnglesWeapon[PITCH] = 0.0f;
 		viewAnglesWeapon[ROLL] = 0.0f;
+		viewAnglesWeapon[YAW] = cg.refdefViewAnglesWeapon[YAW];
 		AnglesToAxis(viewAnglesWeapon, viewaxisWeapon);
 
-		VectorMA(origin, (vrRX * c - vrRY * s), viewaxisWeapon[0], origin);
-		VectorMA(origin, (vrRX * s + vrRY * c), viewaxisWeapon[1], origin);
-		VectorMA(origin, -vrRZ, viewaxisWeapon[2], origin);
+		VectorSet(origin, 0.0, 0.0, 0.0);
+		VectorMA(origin, -vrR_pos[0], viewaxisWeapon[0], origin);
+		VectorMA(origin, -vrR_pos[1], viewaxisWeapon[1], origin);
+		VectorMA(origin, -vrR_pos[2], viewaxisWeapon[2], origin);
+		VectorCopy(origin, vrR_pos);
+
+		// Rotate the gun around us according to our weapon view yaw
+		viewAnglesWeapon[YAW] = cg.refdefViewAnglesWeapon[YAW] - cg.refdef.delta_yaw;
+		AnglesToAxis(viewAnglesWeapon, viewaxisWeapon);
+
+		VectorSet(origin, 0.0, 0.0, 0.0);
+		VectorMA(origin, vrR_pos[0], viewaxisWeapon[0], origin);
+		VectorMA(origin, vrR_pos[1], viewaxisWeapon[1], origin);
+		VectorMA(origin, vrR_pos[2], viewaxisWeapon[2], origin);
 
 		angles[PITCH] = vrRPitch;
 		angles[YAW] += vrRYaw;
 		angles[ROLL] = vrRRoll;
+
+		// Add in our vieworg position
+		VectorAdd(origin, cg.refdef.vieworg, origin);
 	}
 	else
 	{
@@ -1097,13 +1108,12 @@ void CG_AddViewWeapon( playerState_t *ps )
 	// set up gun position
 	CG_CalculateWeaponPosition( hand.origin, angles );
 
-	VectorMA( hand.origin, cg_gun_x.value, cg.refdef.viewaxis[0], hand.origin );
-	VectorMA( hand.origin, (cg_gun_y.value+leanOffset), cg.refdef.viewaxis[1], hand.origin );
-	VectorMA( hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin );
-
-	// [shinyquagsire23] place weapon relative to player view
-	if (GameHmd::Get()->HasHands())
-		VectorCopy(hand.origin, cent->gent->client->ps.viewangles);
+	if (!GameHmd::Get()->HasHands())
+	{
+		VectorMA(hand.origin, cg_gun_x.value, cg.refdef.viewaxis[0], hand.origin);
+		VectorMA(hand.origin, (cg_gun_y.value + leanOffset), cg.refdef.viewaxis[1], hand.origin);
+		VectorMA(hand.origin, (cg_gun_z.value + fovOffset), cg.refdef.viewaxis[2], hand.origin);
+	}
 
 	AnglesToAxis( angles, hand.axis );
 
