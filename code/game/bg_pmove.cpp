@@ -19,6 +19,8 @@
 #include <float.h>
 #include "../game/npc_headers.h"
 
+using namespace std;
+
 extern qboolean G_DoDismemberment( gentity_t *self, vec3_t point, int mod, int damage, int hitLoc, qboolean force = qfalse );
 extern qboolean G_EntIsUnlockedDoor( int entityNum );
 extern qboolean G_EntIsDoor( int entityNum );
