@@ -152,7 +152,7 @@ char* strupr(char* s);
 char* strlwr(char* s);
 
 #include <math.h>
-#define _isnan isnan
+#define _isnan std::isnan
 
 #endif
 
