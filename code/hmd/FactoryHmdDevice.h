@@ -19,6 +19,7 @@ public:
         LIB_UNDEFINED,
         LIB_OVR,
         LIB_OPENHMD,
+        LIB_OPENVR,
         LIB_MOUSE_DUMMY
     };
 
