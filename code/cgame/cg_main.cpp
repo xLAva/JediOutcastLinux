@@ -330,6 +330,7 @@ vmCvar_t	cg_smoothPlayerPlatAccel;
 
 vmCvar_t    cg_activeHmd;
 vmCvar_t    cg_useHmd;
+vmCvar_t    cg_debugHmdHands;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -393,6 +394,7 @@ cvarTable_t		cvarTable[] = {
 
     { &cg_activeHmd, "cg_activeHmd", "0", 0 },
     { &cg_useHmd, "cg_useHmd", "0", 0 },
+	{ &cg_debugHmdHands, "cg_debugHmdHands", "0", 0},
 	
 	{ &cg_thirdPerson, "cg_thirdPerson", "0", CVAR_USERINFO },
 	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "80", 0 },
