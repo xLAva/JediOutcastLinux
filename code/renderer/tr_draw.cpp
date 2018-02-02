@@ -80,9 +80,10 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 				start = ri.Milliseconds();
 			}
 	#endif
-
+			// Tempfix: For reasons unknown, OpenVR w/ NVIDIA drivers crashes here. Only breaks the opening cinematic though.
+	#ifndef USE_OPENVR
 			qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );				
-
+	#endif
 	#ifdef TIMEBIND
 			if ( r_ignore->integer ) 
 			{
