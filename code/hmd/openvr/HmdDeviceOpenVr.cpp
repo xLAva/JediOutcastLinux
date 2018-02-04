@@ -231,6 +231,9 @@ bool HmdDeviceOpenVr::GetHandOrientationRad(bool rightHand, float& rPitch, float
     if (GetHandMatrix4(rightHand, handPose))
     {
         glm::quat hmdQuat = glm::quat_cast(handPose);
+        glm::quat adjustQuat = glm::quat(glm::vec3(DEG2RAD(-45.0f), 0.0f, 0.0f));
+
+        hmdQuat *= adjustQuat;
 
         float quat[4];
         quat[0] = hmdQuat.x;
@@ -240,7 +243,6 @@ bool HmdDeviceOpenVr::GetHandOrientationRad(bool rightHand, float& rPitch, float
 
         ConvertQuatToEuler(&quat[0], rYaw, rPitch, rRoll);
 
-        rPitch -= M_PI / 4; //TODO: This gets wonky
         return true;
     }
 
