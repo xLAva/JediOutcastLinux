@@ -34,6 +34,7 @@ public:
     virtual bool GetOrientationRad(float& rPitch, float& rYaw, float& rRoll);
     virtual bool GetPosition(float& rX, float& rY, float& rZ);
     virtual bool GetHandOrientationRad(bool rightHand, float& rPitch, float& rYaw, float& rRoll);
+    virtual bool GetHandOrientationGripRad(bool rightHand, float& rPitch, float& rYaw, float& rRoll);
     virtual bool GetHandPosition(bool rightHand, float& rX, float& rY, float& rZ);
     virtual bool HasHand(bool rightHand);
     virtual void Recenter();

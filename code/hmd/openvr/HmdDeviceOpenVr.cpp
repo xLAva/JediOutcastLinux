@@ -250,6 +250,33 @@ bool HmdDeviceOpenVr::GetHandOrientationRad(bool rightHand, float& rPitch, float
 
 }
 
+bool HmdDeviceOpenVr::GetHandOrientationGripRad(bool rightHand, float& rPitch, float& rYaw, float& rRoll)
+{
+    if (!mIsInitialized || mpHmd == nullptr || !HasHand(rightHand))
+    {
+        return false;
+    }
+
+    glm::mat4 handPose;
+    if (GetHandMatrix4(rightHand, handPose))
+    {
+        glm::quat hmdQuat = glm::quat_cast(handPose);
+        glm::quat adjustQuat = glm::quat(glm::vec3(DEG2RAD(-90.0f), 0.0f, 0.0f));
+
+        hmdQuat *= adjustQuat;
+
+        float quat[4];
+        quat[0] = hmdQuat.x;
+        quat[1] = hmdQuat.y;
+        quat[2] = hmdQuat.z;
+        quat[3] = hmdQuat.w;
+
+        ConvertQuatToEuler(&quat[0], rYaw, rPitch, rRoll);
+        return true;
+    }
+
+    return false;
+}
 
 bool HmdDeviceOpenVr::GetHandPosition(bool rightHand, float &rX, float &rY, float &rZ)
 {

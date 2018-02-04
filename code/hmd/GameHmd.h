@@ -28,8 +28,10 @@ public:
 
     bool HasHands();
     bool GetLeftHandOrientation(float& pitch, float& yaw, float& roll);
+    bool GetLeftHandOrientationGrip(float& pitch, float& yaw, float& roll);
     bool GetLeftHandPosition(float &outX, float &outY, float &outZ);
     bool GetRightHandOrientation(float& pitch, float& yaw, float& roll);
+    bool GetRightHandOrientationGrip(float& pitch, float& yaw, float& roll);
     bool GetRightHandPosition(float &outX, float &outY, float &outZ);
 
 private:
@@ -55,6 +57,10 @@ private:
     float lYaw;
     float lRoll;
 
+    float lPitchGrip;
+    float lYawGrip;
+    float lRollGrip;
+
     float lX;
     float lY;
     float lZ;
@@ -62,6 +68,10 @@ private:
     float rPitch;
     float rYaw;
     float rRoll;
+
+    float rPitchGrip;
+    float rYawGrip;
+    float rRollGrip;
 
     float rX;
     float rY;

@@ -153,9 +153,9 @@ void ClientHmd::UpdateGame()
         VM_Call(CG_HMD_UPDATE_ROT, &angles[0]);
     }
 
-    float angles_l[3];
+    float angles_l[6];
     float position_l[3];
-    float angles_r[3];
+    float angles_r[6];
     float position_r[3];
 
     // check only the right hand for now (we don't use the left one yet)
@@ -166,6 +166,8 @@ void ClientHmd::UpdateGame()
         GetHandPosition(true, position_r[0], position_r[1], position_r[2]);
         GetHandOrientation(false, angles_l[0], angles_l[1], angles_l[2]);
         GetHandOrientation(true, angles_r[0], angles_r[1], angles_r[2]);
+        GetHandOrientationGrip(false, angles_l[3], angles_l[4], angles_l[5]);
+        GetHandOrientationGrip(true, angles_r[3], angles_r[4], angles_r[5]);
         VM_Call(CG_HMD_UPDATE_HANDS, &angles_l[0], &position_l[0], &angles_r[0], &position_r[0]);
     }
 }
@@ -224,6 +226,26 @@ bool ClientHmd::GetHandOrientation(bool rightHand, float& rPitch, float& rYaw, f
     }
 
     bool worked = mpDevice->GetHandOrientationRad(rightHand, rPitch, rYaw, rRoll);
+    if (!worked)
+    {
+        return false;
+    }
+
+    rPitch = RAD2DEG(-rPitch);
+    rYaw = RAD2DEG(rYaw);
+    rRoll = RAD2DEG(-rRoll);
+
+    return true;
+}
+
+bool ClientHmd::GetHandOrientationGrip(bool rightHand, float& rPitch, float& rYaw, float& rRoll)
+{
+    if (mpDevice == NULL || !hmd_useHands->integer)
+    {
+        return false;
+    }
+
+    bool worked = mpDevice->GetHandOrientationGripRad(rightHand, rPitch, rYaw, rRoll);
     if (!worked)
     {
         return false;
