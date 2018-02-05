@@ -5846,6 +5846,13 @@ void ForceThrow( gentity_t *self, qboolean pull )
 #endif // _IMMERSION
 
 	VectorCopy( self->client->ps.viewangles, fwdangles );
+
+	// [shinyquagsire23] Get angles from the left hand when available
+	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+	{
+		CG_CalculateWeaponPosition(self->client->renderInfo.handLPoint, fwdangles, false);
+	}
+
 	//fwdangles[1] = self->client->ps.viewangles[1];
 	AngleVectors( fwdangles, forward, right, NULL );
 	VectorCopy( self->currentOrigin, center );
@@ -5878,6 +5885,14 @@ void ForceThrow( gentity_t *self, qboolean pull )
 			return;
 		}
 		*/
+
+		// [shinyquagsire23] Trace from the left hand when available
+		if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+		{
+			VectorMA(self->client->renderInfo.handLPoint, radius, forward, end);
+			gi.trace(&tr, self->client->renderInfo.handLPoint, vec3_origin, vec3_origin, end, self->s.number, MASK_OPAQUE | CONTENTS_SOLID | CONTENTS_BODY | CONTENTS_ITEM | CONTENTS_CORPSE, (EG2_Collision)0, 0);//was MASK_SHOT, changed to match crosshair trace
+		}
+
 		forwardEnt = &g_entities[tr.entityNum];
 	}
 
