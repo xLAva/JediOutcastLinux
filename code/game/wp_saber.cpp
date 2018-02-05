@@ -7084,6 +7084,14 @@ void ForceGrip( gentity_t *self )
 
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorNormalize( forward );
+
+	// [shinyquagsire23] Trace from the left hand when available
+	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+	{
+		vec3_t vrL_rot;
+		CG_CalculateWeaponPosition(self->client->renderInfo.handLPoint, vrL_rot, false);
+		AngleVectors(vrL_rot, forward, NULL, NULL);
+	}
 	VectorMA( self->client->renderInfo.handLPoint, FORCE_GRIP_DIST, forward, end );
 	
 	if ( self->enemy && (self->s.number || InFront( self->enemy->currentOrigin, self->client->renderInfo.eyePoint, self->client->ps.viewangles, 0.2f ) ) ) 
@@ -8273,7 +8281,12 @@ static void WP_ForcePowerRun( gentity_t *self, forcePowers_t forcePower, usercmd
 				angles[0] -= 10;
 				AngleVectors( angles, dir, NULL, NULL );
 
-
+				// [shinyquagsire23] Control grip from left hand when available
+				if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+				{
+					CG_CalculateWeaponPosition(self->client->renderInfo.handLPoint, angles, false);
+					AngleVectors(angles, dir, NULL, NULL);
+				}
 
 				if ( gripEnt->client )
 				{//move
