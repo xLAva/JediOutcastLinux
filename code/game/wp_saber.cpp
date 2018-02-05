@@ -99,6 +99,8 @@ void ForceThrow( gentity_t *self, qboolean pull );
 qboolean WP_ForcePowerAvailable( gentity_t *self, forcePowers_t forcePower, int overrideAmt );
 void WP_ForcePowerDrain( gentity_t *self, forcePowers_t forcePower, int overrideAmt );
 
+extern void CG_CalculateWeaponPosition(vec3_t origin, vec3_t angles, bool rightHand);
+
 extern cvar_t	*g_saberAutoBlocking;
 extern cvar_t	*g_saberRealisticCombat;
 extern int g_crosshairEntNum;
@@ -7412,6 +7414,15 @@ void ForceShootLightning( gentity_t *self )
 
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorNormalize( forward );
+
+	// [shinyquagsire23] Shoot lightning at position and direction of left hand
+	if (GameHmd::Get()->HasHands())
+	{
+		vec3_t vrL_rot;
+		CG_CalculateWeaponPosition(self->client->renderInfo.handLPoint, vrL_rot, false);
+		AngleVectors(vrL_rot, forward, NULL, NULL);
+		VectorNormalize(forward);
+	}
 
 	//FIXME: if lightning hits water, do water-only-flagged radius damage from that point
 	if ( self->client->ps.forcePowerLevel[FP_LIGHTNING] > FORCE_LEVEL_2 )
