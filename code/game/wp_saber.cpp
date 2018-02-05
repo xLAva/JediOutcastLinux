@@ -5211,7 +5211,7 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 	saberent = &g_entities[self->client->ps.saberEntityNum];
 
 	// [shinyquagsire23] Bind a saber to our right hand position in first-person mode
-	if (self->s.number == 0 && GameHmd::Get()->HasHands())
+	if (self->s.number == 0 && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
 	{
 		if (!cg.renderingThirdPerson && !self->client->ps.saberInFlight && self->client->ps.weapon == WP_SABER)
 		{
@@ -7424,7 +7424,7 @@ void ForceShootLightning( gentity_t *self )
 	VectorNormalize( forward );
 
 	// [shinyquagsire23] Shoot lightning at position and direction of left hand
-	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands())
+	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
 	{
 		vec3_t vrL_rot;
 		CG_CalculateWeaponPosition(self->client->renderInfo.handLPoint, vrL_rot, false);
