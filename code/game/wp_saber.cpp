@@ -7416,7 +7416,7 @@ void ForceShootLightning( gentity_t *self )
 	VectorNormalize( forward );
 
 	// [shinyquagsire23] Shoot lightning at position and direction of left hand
-	if (GameHmd::Get()->HasHands())
+	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands())
 	{
 		vec3_t vrL_rot;
 		CG_CalculateWeaponPosition(self->client->renderInfo.handLPoint, vrL_rot, false);
@@ -8272,6 +8272,9 @@ static void WP_ForcePowerRun( gentity_t *self, forcePowers_t forcePower, usercmd
 				VectorCopy( self->client->ps.viewangles, angles );
 				angles[0] -= 10;
 				AngleVectors( angles, dir, NULL, NULL );
+
+
+
 				if ( gripEnt->client )
 				{//move
 					VectorCopy( gripEnt->client->renderInfo.headPoint, gripEntOrg );
