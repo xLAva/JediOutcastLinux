@@ -3,5 +3,4 @@ https://github.com/ValveSoftware/openvr
 
 into the folder 3rdparty/openvr
 
-WINDOWS:
-No building required. A Windows binary is included.
+No building required. Binaries for all platforms are included.

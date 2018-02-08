@@ -187,9 +187,9 @@ if(USE_OPENVR_SDK)
         set(EXTRA_LIBS ${EXTRA_LIBS} openvr_api)
     elseif(PLATFORM_LINUX)
         if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
-            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/openvr/lib/linux32/openvr_api.so") # This is all that's in the repo?
+            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/openvr/lib/linux32/libopenvr_api.so") # This is all that's in the repo?
         else()
-            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/openvr/lib/linux32/openvr_api.so")
+            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/openvr/lib/linux32/libopenvr_api.so")
         endif()
     elseif(PLATFORM_MACOS)
         if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
