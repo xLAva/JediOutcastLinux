@@ -1,0 +1,7 @@
+Checkout openvr from this git repository
+https://github.com/ValveSoftware/openvr
+
+into the folder 3rdparty/openvr
+
+WINDOWS:
+No building required. A Windows binary is included.

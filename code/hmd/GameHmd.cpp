@@ -19,12 +19,18 @@ GameHmd::GameHmd()
     ,lPitch(0)
     ,lYaw(0)
     ,lRoll(0)
+    ,lPitchGrip(0)
+    ,lYawGrip(0)
+    ,lRollGrip(0)
     ,lX(0)
     ,lY(0)
     ,lZ(0)
     ,rPitch(0)
     ,rYaw(0)
     ,rRoll(0)
+    ,rPitchGrip(0)
+    ,rYawGrip(0)
+    ,rRollGrip(0)
     ,rX(0)
     ,rY(0)
     ,rZ(0)
@@ -80,13 +86,16 @@ void GameHmd::UpdateHmd(float angles[4], float position[3])
     mZ = position[2];
 }
 
-void GameHmd::UpdateHands(float angles_l[3], float position_l[3], float angles_r[3], float position_r[3])
+void GameHmd::UpdateHands(float angles_l[6], float position_l[3], float angles_r[6], float position_r[3])
 {
     mUseHands = true;
 
     lPitch = angles_l[0];
     lYaw = angles_l[1];
     lRoll = angles_l[2];
+    lPitchGrip = angles_l[3];
+    lYawGrip = angles_l[4];
+    lRollGrip = angles_l[5];
 
     lX = position_l[0];
     lY = position_l[1];
@@ -95,6 +104,9 @@ void GameHmd::UpdateHands(float angles_l[3], float position_l[3], float angles_r
     rPitch = angles_r[0];
     rYaw = angles_r[1];
     rRoll = angles_r[2];
+    rPitchGrip = angles_r[3];
+    rYawGrip = angles_r[4];
+    rRollGrip = angles_r[5];
 
     rX = position_r[0];
     rY = position_r[1];
@@ -151,6 +163,19 @@ bool GameHmd::GetLeftHandOrientation(float& pitch, float& yaw, float& roll)
     return true;
 }
 
+bool GameHmd::GetLeftHandOrientationGrip(float& pitch, float& yaw, float& roll)
+{
+    if (!mIsInitialized || !mUseHands)
+    {
+        return false;
+    }
+
+    pitch = lPitchGrip;
+    yaw = lYawGrip;
+    roll = lRollGrip;
+    return true;
+}
+
 bool GameHmd::GetLeftHandPosition(float &outX, float &outY, float &outZ)
 {
     if (!mIsInitialized || !mUseHands)
@@ -175,6 +200,19 @@ bool GameHmd::GetRightHandOrientation(float& pitch, float& yaw, float& roll)
     pitch = rPitch;
     yaw = rYaw;
     roll = rRoll;
+    return true;
+}
+
+bool GameHmd::GetRightHandOrientationGrip(float& pitch, float& yaw, float& roll)
+{
+    if (!mIsInitialized || !mUseHands)
+    {
+        return false;
+    }
+
+    pitch = rPitchGrip;
+    yaw = rYawGrip;
+    roll = rRollGrip;
     return true;
 }
 

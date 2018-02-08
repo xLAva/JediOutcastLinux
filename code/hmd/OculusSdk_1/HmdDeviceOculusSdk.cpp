@@ -19,6 +19,10 @@
 #include <cmath>
 #include <algorithm>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp> 
+
 #ifdef _WINDOWS
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -277,6 +281,37 @@ bool HmdDeviceOculusSdk::GetHandOrientationRad(bool rightHand, float& rPitch, fl
 
 }
 
+bool HmdDeviceOculusSdk::GetHandOrientationGripRad(bool rightHand, float& rPitch, float& rYaw, float& rRoll)
+{
+    if (!mIsInitialized || mpHmd == nullptr)
+    {
+        return false;
+    }
+
+    // Query for the current tracking state and see if hands are available
+    ovrTrackingState ts = d_ovr_GetTrackingState(mpHmd, d_ovr_GetTimeInSeconds(), false);
+    if ((ts.HandStatusFlags[rightHand ? ovrHand_Right : ovrHand_Left] & ovrStatus_OrientationTracked))
+    {
+        ovrQuatf orientation = ts.HandPoses[rightHand ? ovrHand_Right : ovrHand_Left].ThePose.Orientation;
+        glm::quat orientQuat = glm::make_quat(&orientation.x);
+        glm::quat adjustQuat = glm::quat(glm::vec3(glm::radians(-45.0f), 0.0f, 0.0f));
+
+        orientQuat *= adjustQuat;
+
+        float quat[4];
+        quat[0] = orientQuat.x;
+        quat[1] = orientQuat.y;
+        quat[2] = orientQuat.z;
+        quat[3] = orientQuat.w;
+
+        ConvertQuatToEuler(&quat[0], rYaw, rPitch, rRoll);
+
+        return true;
+    }
+
+    return false;
+
+}
 
 bool HmdDeviceOculusSdk::GetHandPosition(bool rightHand, float &rX, float &rY, float &rZ)
 {
@@ -305,7 +340,7 @@ bool HmdDeviceOculusSdk::HasHand(bool rightHand)
     // Query for the current tracking state and see if hands are available
     ovrTrackingState ts = d_ovr_GetTrackingState(mpHmd, d_ovr_GetTimeInSeconds(), false);
 
-    return (ts.HandStatusFlags[rightHand ? ovrHand_Right : ovrHand_Left] & (ovrStatus_PositionTracked | ovrStatus_OrientationTracked));
+    return (ts.HandStatusFlags[rightHand ? ovrHand_Right : ovrHand_Left] & (ovrStatus_PositionTracked | ovrStatus_OrientationTracked)) != 0;
 }
 
 void HmdDeviceOculusSdk::Recenter()

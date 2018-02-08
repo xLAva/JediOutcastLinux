@@ -6,6 +6,10 @@
 
 #include "tr_local.h"
 
+#ifdef USE_OPENVR
+#include "../hmd/ClientHmd.h"
+#include "../hmd/openvr/HmdRendererOpenVr.h"
+#endif
 
 
 /*
@@ -80,8 +84,19 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 				start = ri.Milliseconds();
 			}
 	#endif
-
-			qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );				
+			
+	
+	#ifdef USE_OPENVR
+		// Tempfix: For reasons unknown, OpenVR w/ NVIDIA drivers crashes here. Only breaks the opening cinematic though.
+		OpenVr::HmdRendererOpenVr* pHmdRenderer = dynamic_cast<OpenVr::HmdRendererOpenVr*>(ClientHmd::Get()->GetRenderer());
+		if (pHmdRenderer == nullptr)
+		{
+			// we are not using openvr now - so draw the cinematic
+			qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );
+		}
+	#else
+		qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );
+	#endif
 
 	#ifdef TIMEBIND
 			if ( r_ignore->integer ) 

@@ -24,6 +24,10 @@ if(NOT DEFINED USE_OCULUS_SDK_1)
     set(USE_OCULUS_SDK_1 1)
 endif()
 
+if(NOT DEFINED USE_OPENVR_SDK)
+    set(USE_OPENVR_SDK 1)
+endif()
+
 if(NOT DEFINED FORCE_STATIC_OCULUS_SDK)
     set(FORCE_STATIC_OCULUS_SDK 0)
 endif()
@@ -162,6 +166,39 @@ set(SSF_HMD_QUAKE3
     code/hmd/Quake3/ViewParamsHmdUtility.cpp
 )
 
+if(USE_OPENVR_SDK)
+    set(SSF_HMD_OPENVR ${SSF_HMD_OPENVR}
+        code/hmd/openvr/HmdDeviceOpenVr.h
+        code/hmd/openvr/HmdDeviceOpenVr.cpp
+        code/hmd/openvr/HmdRendererOpenVr.h
+        code/hmd/openvr/HmdRendererOpenVr.cpp
+        code/hmd/openvr/HmdInputOpenVr.h
+        code/hmd/openvr/HmdInputOpenVr.cpp
+    )
+
+    set(CUSTOM_COMPILE_FLAGS_ALL "${CUSTOM_COMPILE_FLAGS_ALL} -DUSE_VR -DUSE_OPENVR")
+    include_directories("${EXTERNAL_LIB_PATH}/openvr/headers")
+
+    source_group(hmd\\openvr FILES ${SSF_HMD_OPENVR})
+
+    if(PLATFORM_WIN32)
+        add_library(openvr_api STATIC IMPORTED)
+        set_property(TARGET openvr_api PROPERTY IMPORTED_LOCATION "${EXTERNAL_LIB_PATH}/openvr/lib/win32/openvr_api.lib")
+        set(EXTRA_LIBS ${EXTRA_LIBS} openvr_api)
+    elseif(PLATFORM_LINUX)
+        if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/openvr/lib/linux32/openvr_api.so") # This is all that's in the repo?
+        else()
+            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/openvr/lib/linux32/openvr_api.so")
+        endif()
+    elseif(PLATFORM_MACOS)
+        if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/openvr/lib/osx32/openvr_api.dylib") # This is all that's in the repo?
+        else()
+            set(EXTRA_LIBS ${EXTRA_LIBS} "${EXTERNAL_LIB_PATH}/openvr/lib/osx32/openvr_api.dylib")
+        endif()
+    endif()
+endif()
 
 if(USE_OCULUS_SDK_1)
     set(SSF_HMD_OCULUS_1 ${SSF_HMD_OCULUS_1}
@@ -406,6 +443,7 @@ set(STARWARS_SOURCE_FILES
 	${SSF_HMD_OCULUS_0.5}
 	${SSF_HMD_OCULUS_0.8}
 	${SSF_HMD_OCULUS_1}
+	${SSF_HMD_OPENVR}
 )
 
 

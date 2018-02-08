@@ -283,6 +283,11 @@ bool HmdDeviceOpenHmd::GetHandOrientationRad(bool rightHand, float& rPitch, floa
     return false;
 }
 
+bool HmdDeviceOpenHmd::GetHandOrientationGripRad(bool rightHand, float& rPitch, float& rYaw, float& rRoll)
+{
+    return false;
+}
+
 bool HmdDeviceOpenHmd::GetHandPosition(bool rightHand, float &rX, float &rY, float &rZ)
 {
     return false;

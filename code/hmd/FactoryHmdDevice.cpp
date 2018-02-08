@@ -21,7 +21,11 @@
 #include "OculusSdk_0.5/HmdRendererOculusSdk.h"
 #endif
 
-
+#ifdef USE_OPENVR
+#include "openvr/HmdDeviceOpenVr.h"
+#include "openvr/HmdRendererOpenVr.h"
+#include "openvr/HmdInputOpenVr.h"
+#endif
 
 #include "HmdRenderer/HmdRendererOculus.h"
 
@@ -33,6 +37,13 @@ using namespace std;
 IHmdDevice* FactoryHmdDevice::CreateHmdDevice(HmdLibrary library, bool allowDummyDevice)
 {
     vector<IHmdDevice*> devices;
+
+#ifdef USE_OPENVR
+    if (library == LIB_OPENVR || library == LIB_UNDEFINED)
+    {
+        devices.push_back(new OpenVr::HmdDeviceOpenVr());
+    }
+#endif
 
 #ifdef USE_OVR_1
     if (library == LIB_OVR || library == LIB_UNDEFINED)
@@ -61,7 +72,7 @@ IHmdDevice* FactoryHmdDevice::CreateHmdDevice(HmdLibrary library, bool allowDumm
         devices.push_back(new HmdDeviceOpenHmd());
     }
 #endif
-    
+
     if (library == LIB_MOUSE_DUMMY)
     {
         // only use mouse dummy if it is forced
@@ -114,6 +125,15 @@ IHmdRenderer* FactoryHmdDevice::CreateRendererForDevice(IHmdDevice* pDevice)
     {
         return NULL;
     }
+
+#ifdef USE_OPENVR
+    OpenVr::HmdDeviceOpenVr* pOpenVr = dynamic_cast<OpenVr::HmdDeviceOpenVr*>(pDevice);
+    if (pOpenVr != NULL)
+    {
+        OpenVr::HmdRendererOpenVr* pRenderer = new OpenVr::HmdRendererOpenVr(pOpenVr);
+        return pRenderer;
+    }
+#endif
 
 #ifdef USE_OVR_1
     OvrSdk_1::HmdDeviceOculusSdk* pOculusSdk_1 = dynamic_cast<OvrSdk_1::HmdDeviceOculusSdk*>(pDevice);
@@ -177,6 +197,15 @@ IHmdInput*FactoryHmdDevice::CreateInputForDevice(IHmdDevice* pDevice)
     {
         return nullptr;
     }
+
+#ifdef USE_OPENVR
+    OpenVr::HmdDeviceOpenVr* pOpenVr = dynamic_cast<OpenVr::HmdDeviceOpenVr*>(pDevice);
+    if (pOpenVr != nullptr)
+    {
+        OpenVr::HmdInputOpenVr* pInput = new OpenVr::HmdInputOpenVr(pOpenVr);
+        return pInput;
+    }
+#endif
 
 #ifdef USE_OVR_1
     OvrSdk_1::HmdDeviceOculusSdk* pOculusSdk_1 = dynamic_cast<OvrSdk_1::HmdDeviceOculusSdk*>(pDevice);

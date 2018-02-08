@@ -4,21 +4,24 @@
  *  Copyright 2015 by Jochen Leopold <jochen.leopold@model-view.com>
  */
 
-#ifndef HMDDEVICEOCULUSSDK_0_8_H
-#define HMDDEVICEOCULUSSDK_0_8_H
+#ifndef HMDDEVICEOPENVR
+#define HMDDEVICEOPENVR
 
 #include "../HmdDevice/IHmdDevice.h"
 
-#include <OVR_CAPI_0_8_0.h>
+#include <glm/glm.hpp>
+#include <openvr.h>
 
-namespace OvrSdk_0_8
+using namespace vr;
+
+namespace OpenVr
 {
-class HmdDeviceOculusSdk : public IHmdDevice
+class HmdDeviceOpenVr : public IHmdDevice
 {
 public:
 
-    HmdDeviceOculusSdk();
-    virtual ~HmdDeviceOculusSdk();
+    HmdDeviceOpenVr();
+    virtual ~HmdDeviceOpenVr();
 
     virtual bool Init(bool allowDummyDevice = false);
     virtual void Shutdown();
@@ -26,7 +29,7 @@ public:
     virtual std::string GetInfo();
 
     virtual bool HasDisplay();
-    virtual bool HandlesControllerInput() { return false; }
+    virtual bool HandlesControllerInput() { return true; }
     virtual std::string GetDisplayDeviceName();
     virtual bool GetDisplayPos(int& rX, int& rY);
 
@@ -39,18 +42,20 @@ public:
     virtual bool HasHand(bool rightHand);
     virtual void Recenter();
 
+    void UpdatePoses();
+    bool GetHMDMatrix4(glm::mat4& mat);
+    bool GetHandMatrix4(bool rightHand, glm::mat4& mat);
 
-    ovrSession GetHmd() { return mpHmd; }
-    ovrHmdDesc GetHmdDesc() { return mDesc; }
-    ovrGraphicsLuid GetGraphicsLuid() { return mLuid; }
-    
+    void GetControllerState(bool rightHand, VRControllerState_t& state);
+
+    IVRSystem* GetHmd() { return mpHmd; }
     bool IsDebugHmd() { return mUsingDebugHmd; }
 
 
 private:
     // disable copy constructor
-    HmdDeviceOculusSdk(const HmdDeviceOculusSdk&);
-    HmdDeviceOculusSdk& operator=(const HmdDeviceOculusSdk&);
+    HmdDeviceOpenVr(const HmdDeviceOpenVr&);
+    HmdDeviceOpenVr& operator=(const HmdDeviceOpenVr&);
 
     void ConvertQuatToEuler(const float* quat, float& rYaw, float& rPitch, float& rRoll);
     int GetCpuCount();
@@ -59,11 +64,16 @@ private:
     bool mUsingDebugHmd;
     bool mPositionTrackingEnabled;
     bool mIsRotated;
-    ovrSession mpHmd;
-    ovrHmdDesc mDesc;
-    ovrGraphicsLuid mLuid;
+
+    IVRSystem* mpHmd;
+    int mTrackerIdHandLeft;
+    int mTrackerIdHandRight;
+    size_t mTrackableDeviceCount;
+    TrackedDevicePose_t mrTrackedDevicePose[k_unMaxTrackedDeviceCount];
 
     std::string mInfo;
+
+    float mHeightAdjust;
 };
 }
 #endif

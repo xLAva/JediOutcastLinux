@@ -297,6 +297,11 @@ bool HmdDeviceOculusSdk::GetHandOrientationRad(bool rightHand, float& rPitch, fl
     return false;
 }
 
+bool HmdDeviceOculusSdk::GetHandOrientationGripRad(bool rightHand, float& rPitch, float& rYaw, float& rRoll)
+{
+    return false;
+}
+
 bool HmdDeviceOculusSdk::GetHandPosition(bool rightHand, float &rX, float &rY, float &rZ)
 {
     return false;
