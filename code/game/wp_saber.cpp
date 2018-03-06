@@ -99,6 +99,8 @@ void ForceThrow( gentity_t *self, qboolean pull );
 qboolean WP_ForcePowerAvailable( gentity_t *self, forcePowers_t forcePower, int overrideAmt );
 void WP_ForcePowerDrain( gentity_t *self, forcePowers_t forcePower, int overrideAmt );
 
+extern void CG_CalculateWeaponPosition(vec3_t origin, vec3_t angles, bool rightHand);
+
 extern cvar_t	*g_saberAutoBlocking;
 extern cvar_t	*g_saberRealisticCombat;
 extern int g_crosshairEntNum;
@@ -3845,6 +3847,13 @@ qboolean WP_SaberValidateEnemy( gentity_t *self, gentity_t *enemy )
 		return qfalse;
 	}
 
+	// [shinyquagsire23] Get position from the right hand when available
+	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+	{
+		vec3_t vrR_rot;
+		CG_CalculateWeaponPosition(self->client->renderInfo.handRPoint, vrR_rot, true);
+	}
+
 	if ( DistanceSquared( self->client->renderInfo.handRPoint, enemy->currentOrigin ) > saberThrowDistSquared[self->client->ps.forcePowerLevel[FP_SABERTHROW]] )
 	{//too far
 		return qfalse;
@@ -3892,6 +3901,13 @@ gentity_t *WP_SaberFindEnemy( gentity_t *self, gentity_t *saber )
 	//FIXME: no need to do this in 1st person?
 	fwdangles[1] = self->client->ps.viewangles[1];
 	AngleVectors( fwdangles, forward, NULL, NULL );
+
+	// [shinyquagsire23] Get angles from the right hand when available
+	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+	{
+		CG_CalculateWeaponPosition(self->client->renderInfo.handRPoint, fwdangles, true);
+		AngleVectors(fwdangles, forward, NULL, NULL);
+	}
 
 	VectorCopy( saber->currentOrigin, center );
 
@@ -4123,6 +4139,14 @@ qboolean WP_SaberLaunch( gentity_t *self, gentity_t *saber, qboolean thrown )
 	{//can't saber throw when zoomed in or in cinematic
 		return qfalse;
 	}
+
+	// [shinyquagsire23] Get position from the right hand when available
+	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+	{
+		vec3_t vrR_rot;
+		CG_CalculateWeaponPosition(self->client->renderInfo.handRPoint, vrR_rot, true);
+	}
+
 	//make sure it won't start in solid
 	gi.trace( &trace, self->client->renderInfo.handRPoint, saberMins, saberMaxs, self->client->renderInfo.handRPoint, saber->s.number, MASK_SOLID, (EG2_Collision)0, 0 );
 	if ( trace.startsolid || trace.allsolid )
@@ -4165,6 +4189,15 @@ qboolean WP_SaberLaunch( gentity_t *self, gentity_t *saber, qboolean thrown )
 	{//throwing it
 		saber->s.apos.trBase[1] = self->client->ps.viewangles[1];
 		saber->s.apos.trBase[0] = SABER_PITCH_HACK;
+
+		// [shinyquagsire23] Get rotation from the right hand when available
+		if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+		{
+			vec3_t vrR_rot;
+			CG_CalculateWeaponPosition(self->client->renderInfo.handRPoint, vrR_rot, true);
+
+			saber->s.apos.trBase[YAW] = vrR_rot[YAW];
+		}
 	}
 	else
 	{//dropping it
@@ -4411,6 +4444,12 @@ void WP_SaberThrow( gentity_t *self, usercmd_t *ucmd )
 
 	saberent = &g_entities[self->client->ps.saberEntityNum];
 
+	// [shinyquagsire23] Get position from the right hand when available
+	if (cg.snap && self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+	{
+		vec3_t vrR_rot;
+		CG_CalculateWeaponPosition(self->client->renderInfo.handRPoint, vrR_rot, true);
+	}
 	VectorSubtract( self->client->renderInfo.handRPoint, saberent->currentOrigin, saberDiff );
 
 	//is our saber in flight?
@@ -5209,7 +5248,7 @@ void WP_SaberUpdate( gentity_t *self, usercmd_t *ucmd )
 	saberent = &g_entities[self->client->ps.saberEntityNum];
 
 	// [shinyquagsire23] Bind a saber to our right hand position in first-person mode
-	if (self->s.number == 0 && GameHmd::Get()->HasHands())
+	if (self->s.number == 0 && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
 	{
 		if (!cg.renderingThirdPerson && !self->client->ps.saberInFlight && self->client->ps.weapon == WP_SABER)
 		{
@@ -5844,6 +5883,13 @@ void ForceThrow( gentity_t *self, qboolean pull )
 #endif // _IMMERSION
 
 	VectorCopy( self->client->ps.viewangles, fwdangles );
+
+	// [shinyquagsire23] Get angles from the left hand when available
+	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+	{
+		CG_CalculateWeaponPosition(self->client->renderInfo.handLPoint, fwdangles, false);
+	}
+
 	//fwdangles[1] = self->client->ps.viewangles[1];
 	AngleVectors( fwdangles, forward, right, NULL );
 	VectorCopy( self->currentOrigin, center );
@@ -5876,6 +5922,14 @@ void ForceThrow( gentity_t *self, qboolean pull )
 			return;
 		}
 		*/
+
+		// [shinyquagsire23] Trace from the left hand when available
+		if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+		{
+			VectorMA(self->client->renderInfo.handLPoint, radius, forward, end);
+			gi.trace(&tr, self->client->renderInfo.handLPoint, vec3_origin, vec3_origin, end, self->s.number, MASK_OPAQUE | CONTENTS_SOLID | CONTENTS_BODY | CONTENTS_ITEM | CONTENTS_CORPSE, (EG2_Collision)0, 0);//was MASK_SHOT, changed to match crosshair trace
+		}
+
 		forwardEnt = &g_entities[tr.entityNum];
 	}
 
@@ -6873,6 +6927,21 @@ void ForceTelepathy( gentity_t *self )
 	
 	//Cause a distraction if enemy is not fighting
 	gi.trace( &tr, self->client->renderInfo.eyePoint, vec3_origin, vec3_origin, end, self->s.number, MASK_OPAQUE|CONTENTS_BODY, (EG2_Collision)0, 0 );
+
+	// [shinyquagsire23] Trace from the left hand when available
+	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+	{
+		vec3_t vrL_rot;
+		CG_CalculateWeaponPosition(self->client->renderInfo.handLPoint, vrL_rot, false);
+
+		AngleVectors(vrL_rot, forward, NULL, NULL);
+		VectorNormalize(forward);
+		VectorMA(self->client->renderInfo.handLPoint, 2048, forward, end);
+
+		//Cause a distraction if enemy is not fighting
+		gi.trace(&tr, self->client->renderInfo.handLPoint, vec3_origin, vec3_origin, end, self->s.number, MASK_OPAQUE | CONTENTS_BODY, (EG2_Collision)0, 0);
+	}
+
 	if ( tr.entityNum == ENTITYNUM_NONE || tr.fraction == 1.0 || tr.allsolid || tr.startsolid )
 	{
 		return;
@@ -7082,6 +7151,14 @@ void ForceGrip( gentity_t *self )
 
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorNormalize( forward );
+
+	// [shinyquagsire23] Trace from the left hand when available
+	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+	{
+		vec3_t vrL_rot;
+		CG_CalculateWeaponPosition(self->client->renderInfo.handLPoint, vrL_rot, false);
+		AngleVectors(vrL_rot, forward, NULL, NULL);
+	}
 	VectorMA( self->client->renderInfo.handLPoint, FORCE_GRIP_DIST, forward, end );
 	
 	if ( self->enemy && (self->s.number || InFront( self->enemy->currentOrigin, self->client->renderInfo.eyePoint, self->client->ps.viewangles, 0.2f ) ) ) 
@@ -7412,6 +7489,15 @@ void ForceShootLightning( gentity_t *self )
 
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorNormalize( forward );
+
+	// [shinyquagsire23] Shoot lightning at position and direction of left hand
+	if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+	{
+		vec3_t vrL_rot;
+		CG_CalculateWeaponPosition(self->client->renderInfo.handLPoint, vrL_rot, false);
+		AngleVectors(vrL_rot, forward, NULL, NULL);
+		VectorNormalize(forward);
+	}
 
 	//FIXME: if lightning hits water, do water-only-flagged radius damage from that point
 	if ( self->client->ps.forcePowerLevel[FP_LIGHTNING] > FORCE_LEVEL_2 )
@@ -8261,6 +8347,14 @@ static void WP_ForcePowerRun( gentity_t *self, forcePowers_t forcePower, usercmd
 				VectorCopy( self->client->ps.viewangles, angles );
 				angles[0] -= 10;
 				AngleVectors( angles, dir, NULL, NULL );
+
+				// [shinyquagsire23] Control grip from left hand when available
+				if (self->s.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+				{
+					CG_CalculateWeaponPosition(self->client->renderInfo.handLPoint, angles, false);
+					AngleVectors(angles, dir, NULL, NULL);
+				}
+
 				if ( gripEnt->client )
 				{//move
 					VectorCopy( gripEnt->client->renderInfo.headPoint, gripEntOrg );
