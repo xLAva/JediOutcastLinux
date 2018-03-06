@@ -1016,6 +1016,12 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 		VectorCopy( cent->gent->client->renderInfo.handLPoint, temp );
 		VectorMA( temp, -5, cg.refdef.viewaxis[0], temp );
+
+		// [shinyquagsire23] Render lightning for first-person saber at left hand location/rotation
+		if (GameHmd::Get()->HasHands())
+		{
+			CG_CalculateWeaponPosition(temp, tAng, false);
+		}
 		if ( cent->gent->client->ps.forcePowerLevel[FP_LIGHTNING] > FORCE_LEVEL_2 )
 		{//arc
 			vec3_t	fxAxis[3];

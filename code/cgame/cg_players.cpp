@@ -4880,6 +4880,8 @@ CG_Player
 
 ===============
 */
+
+extern void CG_CalculateWeaponPosition(vec3_t origin, vec3_t angles, bool rightHand);
 extern qboolean G_ControlledByPlayer( gentity_t *self );
 void CG_Player( centity_t *cent ) {
 	clientInfo_t	*ci;
@@ -5634,6 +5636,14 @@ extern vmCvar_t	cg_thirdPersonAlpha;
 					VectorSet( tAng, tempAngles[0]+cent->pe.torso.pitchAngle, tempAngles[1]+cent->pe.torso.yawAngle, 0 );
 				}
 				*/
+
+				// [shinyquagsire23] Render lightning for first-person saber at left hand location/rotation
+				if (cent->currentState.number == cg.snap->ps.clientNum && GameHmd::Get()->HasHands() && !cg.renderingThirdPerson)
+				{
+					vec3_t vrL_rot;
+					CG_CalculateWeaponPosition(cent->gent->client->renderInfo.handLPoint, tAng, false);
+				}
+
 				if ( cent->gent->client->ps.forcePowerLevel[FP_LIGHTNING] > FORCE_LEVEL_2 )
 				{//arc
 					vec3_t	fxAxis[3];
