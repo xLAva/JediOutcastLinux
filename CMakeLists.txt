@@ -40,6 +40,10 @@ if(NOT DEFINED BINARY_OUTPUT_PATH)
     set(BINARY_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/binary")
 endif()
 
+if(NOT ENABLE_POST_BUILD_STEP)
+     set(ENABLE_POST_BUILD_STEP 1)   
+endif()
+
 # doesn't work without SDL2 at the moment
 set(USE_SDL2 1)
 
@@ -542,18 +546,23 @@ target_link_libraries (jk2sp  ${EXTRA_LIBS})
 set_target_properties (jk2sp PROPERTIES COMPILE_DEFINITIONS "_JK2EXE;_M_IX86")
 
 if(PLATFORM_WIN32)
-	add_custom_command(TARGET jk2gamex86 POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2gamex86>/jk2gamex86.dll" "${BINARY_OUTPUT_PATH}/win32/"
-		COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2gamex86>/jk2gamex86.pdb" "${BINARY_OUTPUT_PATH}/win32/"
-	)
+	if (ENABLE_POST_BUILD_STEP)
+		add_custom_command(TARGET jk2gamex86 POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2gamex86>/jk2gamex86.dll" "${BINARY_OUTPUT_PATH}/win32/"
+			COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2gamex86>/jk2gamex86.pdb" "${BINARY_OUTPUT_PATH}/win32/"
+		)
+	endif()
 
 	set_property(TARGET jk2sp APPEND PROPERTY LINK_FLAGS /stack:0x800000)
-	add_custom_command(TARGET jk2sp POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2sp>/jk2sp.exe" "${BINARY_OUTPUT_PATH}/win32/"
-		COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2sp>/jk2sp.pdb" "${BINARY_OUTPUT_PATH}/win32/"
-	)
-
-	set_target_properties(jk2sp PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${BINARY_OUTPUT_PATH}/win32/")
+	
+	if (ENABLE_POST_BUILD_STEP)	
+		add_custom_command(TARGET jk2sp POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2sp>/jk2sp.exe" "${BINARY_OUTPUT_PATH}/win32/"
+			COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:jk2sp>/jk2sp.pdb" "${BINARY_OUTPUT_PATH}/win32/"
+		)
+	
+		set_target_properties(jk2sp PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${BINARY_OUTPUT_PATH}/win32/")
+	endif()
 
 endif()
 
