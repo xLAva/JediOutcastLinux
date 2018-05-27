@@ -494,6 +494,8 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${CMAKE_CXX_FLAGS_RELEASE}")
 
 else()
+	include_directories("${EXTERNAL_LIB_PATH}/glm")    
+    
     set(DISABLE_WARNINGS_C "-Wno-write-strings -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare")
     set(DISABLE_WARNINGS_CXX "-Wno-write-strings -Wno-pointer-arith -Wno-multichar -Wno-int-to-pointer-cast -Wno-enum-compare -Wno-conversion-null")
 
