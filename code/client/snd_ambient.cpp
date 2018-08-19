@@ -37,7 +37,7 @@ static int		parsePos		= 0;
 static char	tempBuffer[1024];
 
 //NOTENOTE: Be sure to change the mirrored code in g_spawn.cpp, and cg_main.cpp
-typedef	map< sstring_t, unsigned char, less<sstring_t>, allocator< unsigned char >  >	namePrecache_m;
+typedef	map< sstring_t, unsigned char, less<sstring_t> >	namePrecache_m;
 static namePrecache_m	pMap;
 
 // Used for enum / string matching
