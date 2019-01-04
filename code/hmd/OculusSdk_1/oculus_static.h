@@ -16,6 +16,9 @@
 #define d_ovr_GetFovTextureSize ovr_GetFovTextureSize
 #define d_ovr_GetRenderDesc ovr_GetRenderDesc
 #define d_ovr_SubmitFrame ovr_SubmitFrame
+#define d_ovr_WaitToBeginFrame ovr_WaitToBeginFrame
+#define d_ovr_BeginFrame ovr_BeginFrame
+#define d_ovr_EndFrame ovr_EndFrame
 #define d_ovr_GetPredictedDisplayTime ovr_GetPredictedDisplayTime
 #define d_ovr_GetTimeInSeconds ovr_GetTimeInSeconds
 #define d_ovr_GetBool ovr_GetBool
@@ -33,6 +36,7 @@
 #define d_ovrTimewarpProjectionDesc_FromProjection ovrTimewarpProjectionDesc_FromProjection
 #define d_ovrMatrix4f_OrthoSubProjection ovrMatrix4f_OrthoSubProjection
 #define d_ovr_CalcEyePoses ovr_CalcEyePoses
+#define d_ovr_CalcEyePoses2 ovr_CalcEyePoses2
 #define d_ovr_GetEyePoses ovr_GetEyePoses
 
 #define d_ovr_GetTextureSwapChainCurrentIndex ovr_GetTextureSwapChainCurrentIndex
