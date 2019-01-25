@@ -1531,22 +1531,21 @@ static void HandleEvents(void)
 
 			break;
 		}
-// mouse wheel is handled as mouse buttons            
-//        case SDL_MOUSEWHEEL:        
-//            if (event.wheel.y != 0)
-//            {
-//                int wheel = event.wheel.y < 0 ? A_MWHEELDOWN : A_MWHEELUP;
-//                //VID_Printf (PRINT_ALL, "wheel.y=%d\n", event.wheel.y);
-                
-//                int wheelCount = abs(event.wheel.y);
-//                for (int i=0; i<wheelCount; i++)
-//                {
-//                    QueKeyEvent( 0, SE_KEY, wheel, qtrue, 0, NULL );
-//                    QueKeyEvent( 0, SE_KEY, wheel, qfalse, 0, NULL );
-//                }
-               
-//            }
-//            break;
+		// mouse wheel is handled as mouse buttons
+        case SDL_MOUSEWHEEL:
+            if (event.wheel.y != 0)
+            {
+                int wheel = event.wheel.y < 0 ? A_MWHEELDOWN : A_MWHEELUP;
+                //VID_Printf (PRINT_ALL, "wheel.y=%d\n", event.wheel.y);
+
+                int wheelCount = abs(event.wheel.y);
+                for (int i=0; i<wheelCount; i++)
+                {
+                    QueKeyEvent( 0, SE_KEY, wheel, qtrue, 0, NULL );
+                    QueKeyEvent( 0, SE_KEY, wheel, qfalse, 0, NULL );
+                }
+            }
+            break;
 
 		case SDL_JOYBUTTONDOWN:
 			if (pSdlJoystick)
