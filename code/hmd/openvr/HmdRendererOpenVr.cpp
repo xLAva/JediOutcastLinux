@@ -222,27 +222,18 @@ void HmdRendererOpenVr::EndFrame()
         qglDisable(GL_STENCIL_TEST);
         qglBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        // We pass in depth buffers too, but at the moment chaperone doesn't handle occlusion even with the data
-        // so things look a bit off when it shows up...
-        VRTextureWithDepth_t leftEyeDepth, rightEyeDepth;
-        leftEyeDepth.depth.handle = (void*)(uintptr_t)mFboInfos[0].DepthBuffer;
-        leftEyeDepth.depth.mProjection = projMatrixLeft;
-        leftEyeDepth.depth.vRange = { lastZNear, lastZFar };
-        leftEyeDepth.handle = (void*)(uintptr_t)mFboInfos[0].ColorBuffer;
-        leftEyeDepth.eType = TextureType_OpenGL;
-        leftEyeDepth.eColorSpace = ColorSpace_Gamma;
+        Texture_t leftTex, rightTex;
+        leftTex.handle = (void*)(uintptr_t)mFboInfos[0].ColorBuffer;
+        leftTex.eType = TextureType_OpenGL;
+        leftTex.eColorSpace = ColorSpace_Gamma;
 
-        rightEyeDepth.depth.handle = (void*)(uintptr_t)mFboInfos[1].DepthBuffer;
-        rightEyeDepth.depth.mProjection = projMatrixRight;
-        rightEyeDepth.depth.vRange = { lastZNear, lastZFar };
-        rightEyeDepth.handle = (void*)(uintptr_t)mFboInfos[1].ColorBuffer;
-        rightEyeDepth.eType = TextureType_OpenGL;
-        rightEyeDepth.eColorSpace = ColorSpace_Gamma;
+        rightTex.handle = (void*)(uintptr_t)mFboInfos[1].ColorBuffer;
+        rightTex.eType = TextureType_OpenGL;
+        rightTex.eColorSpace = ColorSpace_Gamma;
 
-
-        VRCompositor()->Submit(Eye_Left, &leftEyeDepth, 0, Submit_TextureWithDepth);
-        VRCompositor()->Submit(Eye_Right, &rightEyeDepth, 0, Submit_TextureWithDepth);
-
+        VRCompositor()->Submit(Eye_Left, &leftTex);
+        VRCompositor()->Submit(Eye_Right, &rightTex);
+        VRCompositor()->PostPresentHandoff();
 
         qglBindBuffer(GL_ARRAY_BUFFER, 0);
         qglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
