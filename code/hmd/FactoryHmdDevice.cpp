@@ -37,6 +37,13 @@ using namespace std;
 IHmdDevice* FactoryHmdDevice::CreateHmdDevice(HmdLibrary library, bool allowDummyDevice)
 {
     vector<IHmdDevice*> devices;
+   
+#ifdef USE_OVR_1
+    if (library == LIB_OVR || library == LIB_UNDEFINED)
+    {
+        devices.push_back(new OvrSdk_1::HmdDeviceOculusSdk());
+    }
+#endif
 
 #ifdef USE_OPENVR
     if (library == LIB_OPENVR || library == LIB_UNDEFINED)
@@ -45,13 +52,6 @@ IHmdDevice* FactoryHmdDevice::CreateHmdDevice(HmdLibrary library, bool allowDumm
     }
 #endif    
     
-#ifdef USE_OVR_1
-    if (library == LIB_OVR || library == LIB_UNDEFINED)
-    {
-        devices.push_back(new OvrSdk_1::HmdDeviceOculusSdk());
-    }
-#endif
-
 #ifdef USE_OVR_0_8
     if (library == LIB_OVR || library == LIB_UNDEFINED)
     {
