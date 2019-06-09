@@ -18,7 +18,7 @@
 #endif // _IMMERSION
 #include "../qcommon/sstring.h"
 //NOTENOTE: Be sure to change the mirrored code in g_shared.h
-typedef	std::map< sstring_t, unsigned char, std::less<sstring_t>, std::allocator< unsigned char >  >	namePrecache_m;
+typedef	std::map< sstring_t, unsigned char, std::less<sstring_t>  >	namePrecache_m;
 extern namePrecache_m	as_preCacheMap;
 extern void CG_RegisterNPCCustomSounds( clientInfo_t *ci );
 extern qboolean G_AddSexToMunroString ( char *string, qboolean qDoBoth );
