@@ -27,10 +27,10 @@ HmdDeviceOpenVr::HmdDeviceOpenVr()
     ,mUsingDebugHmd(false)
     ,mPositionTrackingEnabled(false)
     ,mIsRotated(false)
-    ,mpHmd(NULL)
-    , mTrackableDeviceCount(0)
+    ,mpHmd(nullptr)
     ,mTrackerIdHandLeft(k_unTrackedDeviceIndexInvalid)
     ,mTrackerIdHandRight(k_unTrackedDeviceIndexInvalid)
+    ,mTrackableDeviceCount(0)
     ,mHeightAdjust(1.5f)
 {
 
@@ -71,7 +71,7 @@ bool HmdDeviceOpenVr::Init(bool allowDummyDevice)
 
     if (eError != VRInitError_None)
     {
-        mpHmd = NULL;
+        mpHmd = nullptr;
 
         printf("openvr: could not init runtime, %s\n", VR_GetVRInitErrorAsEnglishDescription(eError));
         return false;
@@ -117,7 +117,7 @@ void HmdDeviceOpenVr::Shutdown()
     mInfo = "";
 
     VR_Shutdown();
-    mpHmd = NULL;
+    mpHmd = nullptr;
 
     mIsInitialized = false;
 }
@@ -154,7 +154,12 @@ bool HmdDeviceOpenVr::GetDeviceResolution(int& rWidth, int& rHeight, bool& rIsRo
         return false;
     }
 
-    VRExtendedDisplay()->GetWindowBounds(nullptr, nullptr, (uint32_t*)&rWidth, (uint32_t*)&rHeight);
+    uint32_t width = 0;
+    uint32_t height = 0;
+    VRExtendedDisplay()->GetWindowBounds(nullptr, nullptr, &width, &height);
+    
+    rWidth = static_cast<int>(width);
+    rHeight = static_cast<int>(height);
     rIsRotated = false;
     rIsExtendedMode = false;
 
@@ -285,7 +290,7 @@ bool HmdDeviceOpenVr::GetHandPosition(bool rightHand, float &rX, float &rY, floa
         return false;
     }
 
-    int id = rightHand ? mTrackerIdHandRight : mTrackerIdHandLeft;
+    uint32_t id = rightHand ? mTrackerIdHandRight : mTrackerIdHandLeft;
     if (mrTrackedDevicePose[id].bPoseIsValid)
     {
         HmdMatrix34_t mat = mrTrackedDevicePose[id].mDeviceToAbsoluteTracking;
@@ -314,7 +319,7 @@ bool HmdDeviceOpenVr::HasHand(bool rightHand)
 
 bool HmdDeviceOpenVr::GetHandMatrix4(bool rightHand, glm::mat4& mat)
 {
-    int id = rightHand ? mTrackerIdHandRight : mTrackerIdHandLeft;
+    uint32_t id = rightHand ? mTrackerIdHandRight : mTrackerIdHandLeft;
     if (!HasHand(rightHand) || !mrTrackedDevicePose[id].bPoseIsValid)
         return false;
 
@@ -393,10 +398,10 @@ void HmdDeviceOpenVr::ConvertQuatToEuler(const float* quat, float& rYaw, float& 
 
 void HmdDeviceOpenVr::UpdatePoses()
 {
-    VRCompositor()->WaitGetPoses(mrTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+    VRCompositor()->WaitGetPoses(mrTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, nullptr, 0);
 
     mTrackableDeviceCount = 0;
-    for (int nDevice = 0; nDevice < vr::k_unMaxTrackedDeviceCount; ++nDevice)
+    for (uint32_t nDevice = 0; nDevice < vr::k_unMaxTrackedDeviceCount; ++nDevice)
     {
         if (mrTrackedDevicePose[nDevice].bPoseIsValid)
         {

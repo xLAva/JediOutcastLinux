@@ -42,7 +42,7 @@ HmdRendererOculusSdk::HmdRendererOculusSdk(HmdDeviceOculusSdk* pHmdDeviceOculusS
     ,mAllowZooming(false)
     ,mUseMirrorTexture(true)
     ,mpDevice(pHmdDeviceOculusSdk)
-    ,mpHmd(NULL)
+    ,mpHmd(nullptr)
     ,mMenuStencilDepthBuffer(0)
     ,mReadFBO(0)
     ,mCurrentHmdMode(GAMEWORLD)
@@ -57,7 +57,7 @@ HmdRendererOculusSdk::~HmdRendererOculusSdk()
 
 bool HmdRendererOculusSdk::Init(int windowWidth, int windowHeight, PlatformInfo platformInfo)
 {
-    if (mpDevice == NULL || mpDevice->GetHmd() == NULL)
+    if (mpDevice == nullptr || mpDevice->GetHmd() == nullptr)
     {
         return false;
     }
@@ -143,7 +143,7 @@ bool HmdRendererOculusSdk::Init(int windowWidth, int windowHeight, PlatformInfo 
         qglGenTextures(1, &(mEyeStencilBuffer[i]));
         qglBindTexture(GL_TEXTURE_2D, mEyeStencilBuffer[i]);
         //qglTexImage2D(GL_TEXTURE_2D, 0, GL_STENCIL_INDEX8, mRenderWidth, mRenderHeight, 0, GL_STENCIL, GL_UNSIGNED_BYTE, 0);
-        qglTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, mRenderWidth, mRenderHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+        qglTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, mRenderWidth, mRenderHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
     }
     
     bool success = RenderTool::CreateFrameBufferWithoutTextures(mFboMenuInfo, mRenderWidth, mRenderHeight);
@@ -162,7 +162,7 @@ bool HmdRendererOculusSdk::Init(int windowWidth, int windowHeight, PlatformInfo 
 
     qglGenTextures(1, &mMenuStencilDepthBuffer);
     qglBindTexture(GL_TEXTURE_2D, mMenuStencilDepthBuffer);
-    qglTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, mRenderWidth, mRenderHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+    qglTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, mRenderWidth, mRenderHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
 
     ovrMirrorTextureDesc mirrorDesc = {};
     mirrorDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;

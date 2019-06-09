@@ -37,7 +37,7 @@ HmdDeviceOculusSdk::HmdDeviceOculusSdk()
     ,mUsingDebugHmd(false)
     ,mPositionTrackingEnabled(false)
     ,mIsRotated(false)
-    ,mpHmd(NULL)
+    ,mpHmd(nullptr)
 {
 
 }
@@ -62,7 +62,7 @@ bool HmdDeviceOculusSdk::Init(bool allowDummyDevice)
     }
 
 #if !defined(FORCE_STATIC_OCULUS_SDK)
-    ovr_dynamic_load_result loadResult = oculus_dynamic_load(NULL);
+    ovr_dynamic_load_result loadResult = oculus_dynamic_load(nullptr);
     if (loadResult != OVR_DYNAMIC_RESULT_SUCCESS)
     {
         printf("ovr: could not load library\n");
@@ -151,7 +151,7 @@ void HmdDeviceOculusSdk::Shutdown()
     mInfo = "";
 
     d_ovr_Destroy(mpHmd);
-    mpHmd = NULL;
+    mpHmd = nullptr;
 
     d_ovr_Shutdown();
 

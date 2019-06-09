@@ -18,7 +18,7 @@
 #include <glm/gtx/transform.hpp>
 
 
-ClientHmd* ClientHmd::sClientHmd = NULL;
+ClientHmd* ClientHmd::sClientHmd = nullptr;
 
 ClientHmd::ClientHmd()
     :mpDevice(nullptr)
@@ -47,7 +47,7 @@ ClientHmd::~ClientHmd()
 
 ClientHmd* ClientHmd::Get()
 {
-    if (sClientHmd == NULL)
+    if (sClientHmd == nullptr)
     {
         sClientHmd = new ClientHmd();
     }
@@ -57,18 +57,18 @@ ClientHmd* ClientHmd::Get()
 
 void ClientHmd::Destroy()
 {
-    if (sClientHmd == NULL)
+    if (sClientHmd == nullptr)
     {
         return;
     }
 
     delete sClientHmd;
-    sClientHmd = NULL;
+    sClientHmd = nullptr;
 }
 
 void ClientHmd::UpdateInputView(float yawDiff, float pitchDiff, float& rPitch, float& rYaw, float& rRoll)
 {
-    if (mpDevice == NULL)
+    if (mpDevice == nullptr)
     {
         return;
     }
@@ -119,7 +119,7 @@ void ClientHmd::UpdateInputView(float yawDiff, float pitchDiff, float& rPitch, f
 
 void ClientHmd::UpdateGame()
 {
-    if (mpDevice == NULL)
+    if (mpDevice == nullptr)
     {
         return;
     }
@@ -175,7 +175,7 @@ void ClientHmd::UpdateGame()
 
 bool ClientHmd::GetOrientation(float& rPitch, float& rYaw, float& rRoll)
 {
-    if (mpDevice == NULL)
+    if (mpDevice == nullptr)
     {
         return false;
     }
@@ -195,7 +195,7 @@ bool ClientHmd::GetOrientation(float& rPitch, float& rYaw, float& rRoll)
 
 bool ClientHmd::GetPosition(float& rX, float& rY, float& rZ)
 {
-    if (mpDevice == NULL)
+    if (mpDevice == nullptr)
     {
         return false;
     }
@@ -221,7 +221,7 @@ bool ClientHmd::GetPosition(float& rX, float& rY, float& rZ)
 
 bool ClientHmd::GetHandOrientation(bool rightHand, float& rPitch, float& rYaw, float& rRoll)
 {
-    if (mpDevice == NULL || !hmd_useHands->integer)
+    if (mpDevice == nullptr || !hmd_useHands->integer)
     {
         return false;
     }
@@ -241,7 +241,7 @@ bool ClientHmd::GetHandOrientation(bool rightHand, float& rPitch, float& rYaw, f
 
 bool ClientHmd::GetHandOrientationGrip(bool rightHand, float& rPitch, float& rYaw, float& rRoll)
 {
-    if (mpDevice == NULL || !hmd_useHands->integer)
+    if (mpDevice == nullptr || !hmd_useHands->integer)
     {
         return false;
     }
@@ -261,7 +261,7 @@ bool ClientHmd::GetHandOrientationGrip(bool rightHand, float& rPitch, float& rYa
 
 bool ClientHmd::GetHandPosition(bool rightHand, float& rX, float& rY, float& rZ)
 {
-    if (mpDevice == NULL || !hmd_useHands->integer)
+    if (mpDevice == nullptr || !hmd_useHands->integer)
     {
         return false;
     }
@@ -287,7 +287,7 @@ bool ClientHmd::GetHandPosition(bool rightHand, float& rX, float& rY, float& rZ)
 
 bool ClientHmd::HasHand(bool rightHand)
 {
-    if (mpDevice == NULL || !hmd_useHands->integer)
+    if (mpDevice == nullptr || !hmd_useHands->integer)
     {
         return false;
     }

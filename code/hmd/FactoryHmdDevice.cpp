@@ -43,8 +43,8 @@ IHmdDevice* FactoryHmdDevice::CreateHmdDevice(HmdLibrary library, bool allowDumm
     {
         devices.push_back(new OpenVr::HmdDeviceOpenVr());
     }
-#endif
-
+#endif    
+    
 #ifdef USE_OVR_1
     if (library == LIB_OVR || library == LIB_UNDEFINED)
     {
@@ -79,11 +79,11 @@ IHmdDevice* FactoryHmdDevice::CreateHmdDevice(HmdLibrary library, bool allowDumm
         devices.push_back(new HmdDeviceMouse());
     }
 
-    IHmdDevice* pSelectedDevice = NULL;
+    IHmdDevice* pSelectedDevice = nullptr;
 
     for (unsigned int i=0; i<devices.size(); i++)
     {
-        if (pSelectedDevice == NULL)
+        if (pSelectedDevice == nullptr)
         {
             bool worked = devices[i]->Init(allowDummyDevice);
             if (worked)
@@ -99,7 +99,7 @@ IHmdDevice* FactoryHmdDevice::CreateHmdDevice(HmdLibrary library, bool allowDumm
         if (pSelectedDevice != devices[i])
         {
             delete devices[i];
-            devices[i] = NULL;
+            devices[i] = nullptr;
         }
     }
 
@@ -110,9 +110,9 @@ IHmdDevice* FactoryHmdDevice::CreateHmdDevice(HmdLibrary library, bool allowDumm
 
 IHmdRenderer* FactoryHmdDevice::CreateRendererForDevice(IHmdDevice* pDevice)
 {
-    if (pDevice == NULL)
+    if (pDevice == nullptr)
     {
-        return NULL;
+        return nullptr;
     }
 
     int width = 0;
@@ -123,12 +123,12 @@ IHmdRenderer* FactoryHmdDevice::CreateRendererForDevice(IHmdDevice* pDevice)
     bool needsRenderer = pDevice->GetDeviceResolution(width, height, isRotated, isExtendedMode);
     if (!needsRenderer)
     {
-        return NULL;
+        return nullptr;
     }
 
 #ifdef USE_OPENVR
     OpenVr::HmdDeviceOpenVr* pOpenVr = dynamic_cast<OpenVr::HmdDeviceOpenVr*>(pDevice);
-    if (pOpenVr != NULL)
+    if (pOpenVr != nullptr)
     {
         OpenVr::HmdRendererOpenVr* pRenderer = new OpenVr::HmdRendererOpenVr(pOpenVr);
         return pRenderer;
@@ -137,7 +137,7 @@ IHmdRenderer* FactoryHmdDevice::CreateRendererForDevice(IHmdDevice* pDevice)
 
 #ifdef USE_OVR_1
     OvrSdk_1::HmdDeviceOculusSdk* pOculusSdk_1 = dynamic_cast<OvrSdk_1::HmdDeviceOculusSdk*>(pDevice);
-    if (pOculusSdk_1 != NULL)
+    if (pOculusSdk_1 != nullptr)
     {
         //HmdRendererOculus* pRenderer = new HmdRendererOculus();
         OvrSdk_1::HmdRendererOculusSdk* pRenderer = new OvrSdk_1::HmdRendererOculusSdk(pOculusSdk_1);
@@ -147,7 +147,7 @@ IHmdRenderer* FactoryHmdDevice::CreateRendererForDevice(IHmdDevice* pDevice)
 
 #ifdef USE_OVR_0_8
     OvrSdk_0_8::HmdDeviceOculusSdk* pOculusSdk_0_8 = dynamic_cast<OvrSdk_0_8::HmdDeviceOculusSdk*>(pDevice);
-    if (pOculusSdk_0_8 != NULL)
+    if (pOculusSdk_0_8 != nullptr)
     {
         //HmdRendererOculus* pRenderer = new HmdRendererOculus();
         OvrSdk_0_8::HmdRendererOculusSdk* pRenderer = new OvrSdk_0_8::HmdRendererOculusSdk(pOculusSdk_0_8);
@@ -157,7 +157,7 @@ IHmdRenderer* FactoryHmdDevice::CreateRendererForDevice(IHmdDevice* pDevice)
 
 #ifdef USE_OVR_0_5
     OvrSdk_0_5::HmdDeviceOculusSdk* pOculusSdk_0_5 = dynamic_cast<OvrSdk_0_5::HmdDeviceOculusSdk*>(pDevice);
-    if (pOculusSdk_0_5 != NULL)
+    if (pOculusSdk_0_5 != nullptr)
     {
         //HmdRendererOculus* pRenderer = new HmdRendererOculus();
         OvrSdk_0_5::HmdRendererOculusSdk* pRenderer = new OvrSdk_0_5::HmdRendererOculusSdk(pOculusSdk_0_5);
@@ -167,7 +167,7 @@ IHmdRenderer* FactoryHmdDevice::CreateRendererForDevice(IHmdDevice* pDevice)
 
 #ifdef USE_OPENHMD
     HmdDeviceOpenHmd* pOpenHmd = dynamic_cast<HmdDeviceOpenHmd*>(pDevice);
-    if (pOpenHmd != NULL)
+    if (pOpenHmd != nullptr)
     {
         //HmdRendererOculus* pRenderer = new HmdRendererOculus();
         HmdRendererOculusOpenHmd* pRenderer = new HmdRendererOculusOpenHmd(pOpenHmd);
@@ -176,13 +176,13 @@ IHmdRenderer* FactoryHmdDevice::CreateRendererForDevice(IHmdDevice* pDevice)
 #endif
     
     HmdDeviceMouse* pHmdMouse = dynamic_cast<HmdDeviceMouse*>(pDevice);
-    if (pHmdMouse != NULL)
+    if (pHmdMouse != nullptr)
     {
         HmdRendererOculus* pRenderer = new HmdRendererOculus();
         return pRenderer;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 IHmdInput*FactoryHmdDevice::CreateInputForDevice(IHmdDevice* pDevice)

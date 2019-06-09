@@ -67,7 +67,9 @@ bool HmdInputOpenVr::IsButtonPressed(size_t buttonId)
 
     bool right = (buttonId > mButtonIds.size());
     if (right)
+    {
         buttonId -= mButtonIds.size();
+    }
 
     return (mControllerStates[right ? 1 : 0].ulButtonPressed & ButtonMaskFromId(mButtonIds[buttonId]));
 }
@@ -84,11 +86,17 @@ float HmdInputOpenVr::GetAxisValue(size_t axisId)
     bool trigger = (axisId >= 4);
 
     if (trigger)
+    {
         return mControllerStates[right ? 1 : 0].rAxis[k_EButton_SteamVR_Trigger - k_EButton_Axis0].x;
+    }
 
     if (axisId == 0 || axisId == 2)
+    {
         return mControllerStates[right ? 1 : 0].rAxis[k_EButton_SteamVR_Touchpad - k_EButton_Axis0].x;
+    }
     else
+    {
         return -mControllerStates[right ? 1 : 0].rAxis[k_EButton_SteamVR_Touchpad - k_EButton_Axis0].y;
+    }
 }
 

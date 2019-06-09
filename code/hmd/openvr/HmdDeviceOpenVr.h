@@ -66,8 +66,8 @@ private:
     bool mIsRotated;
 
     IVRSystem* mpHmd;
-    int mTrackerIdHandLeft;
-    int mTrackerIdHandRight;
+    uint32_t mTrackerIdHandLeft;
+    uint32_t mTrackerIdHandRight;
     size_t mTrackableDeviceCount;
     TrackedDevicePose_t mrTrackedDevicePose[k_unMaxTrackedDeviceCount];
 

@@ -45,7 +45,7 @@ HmdRendererOpenVr::~HmdRendererOpenVr()
 
 bool HmdRendererOpenVr::Init(int windowWidth, int windowHeight, PlatformInfo platformInfo)
 {
-    if (mpDevice == NULL || mpDevice->GetHmd() == NULL)
+    if (mpDevice == nullptr || mpDevice->GetHmd() == nullptr)
     {
         return false;
     }
