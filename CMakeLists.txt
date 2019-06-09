@@ -51,7 +51,7 @@ endif()
 # doesn't work without SDL2 at the moment
 set(USE_SDL2 1)
 
-message("Used Settings: Ovr0.5=${USE_OCULUS_SDK_0.5} Ovr0.8=${USE_OCULUS_SDK_0.8} Ovr1=${USE_OCULUS_SDK_1} OvrStatic=${FORCE_STATIC_OCULUS_SDK} OpenHMD=${USE_OPENHMD}")
+message("Used Settings: Ovr0.5=${USE_OCULUS_SDK_0.5} Ovr0.8=${USE_OCULUS_SDK_0.8} Ovr1=${USE_OCULUS_SDK_1} OvrStatic=${FORCE_STATIC_OCULUS_SDK} OpenVR=${USE_OPENVR_SDK} OpenHMD=${USE_OPENHMD}")
 
 set(PLATFORM_WIN32 0)
 set(PLATFORM_MACOS 0)
