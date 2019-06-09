@@ -16,6 +16,7 @@
 #endif
 
 #include <OVR_CAPI.h>
+#include <OVR_CAPI_Audio.h>
 #include <OVR_CAPI_GL.h>
 
 namespace OvrSdk_1

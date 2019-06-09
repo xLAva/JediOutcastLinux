@@ -127,6 +127,11 @@ std::string HmdDeviceOpenVr::GetInfo()
     return mInfo;
 }
 
+string HmdDeviceOpenVr::GetAudioDeviceName()
+{
+    return "";
+}
+
 bool HmdDeviceOpenVr::HasDisplay()
 {
     if (!mIsInitialized)

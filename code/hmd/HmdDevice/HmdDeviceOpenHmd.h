@@ -28,6 +28,7 @@ public:
     virtual void Shutdown();
 
     virtual std::string GetInfo();
+    virtual std::string GetAudioDeviceName();
     DeviceType GetDeviceType() { return mDeviceType; }
 
     virtual bool HasDisplay();

@@ -24,8 +24,10 @@
 #include <glm/gtc/type_ptr.hpp> 
 
 #ifdef _WINDOWS
+#include <codecvt>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <dsound.h>
 #include <windows.h>
 #endif
 
@@ -161,6 +163,74 @@ void HmdDeviceOculusSdk::Shutdown()
 std::string HmdDeviceOculusSdk::GetInfo()
 {
     return mInfo;
+}
+
+#ifdef _WINDOWS
+
+struct DeviceInfo
+{
+    GUID targetGuid;
+    std::string resultDeviceName;
+};
+
+BOOL CALLBACK FindAudioDeviceName(GUID *guid, const WCHAR *desc, const WCHAR* drvname, void *data)
+{
+    if (guid == NULL)
+    {
+        return TRUE;
+    }
+
+    auto& deviceInfo = *(static_cast<DeviceInfo*>(data));
+    if (*guid != deviceInfo.targetGuid)
+    {
+        return TRUE;
+    }
+
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
+    deviceInfo.resultDeviceName =  myconv.to_bytes(desc);
+
+    return TRUE;
+}
+
+#endif
+
+std::string HmdDeviceOculusSdk::GetAudioDeviceName()
+{
+#ifdef _WINDOWS
+
+    wchar_t deviceOutStrBuffer[OVR_AUDIO_MAX_DEVICE_STR_SIZE];
+    ovrResult result = d_ovr_GetAudioDeviceOutGuidStr(deviceOutStrBuffer);
+    if (OVR_FAILURE(result))
+    {
+        return "";
+    }
+
+    std::wstring guidString(deviceOutStrBuffer);
+    unsigned int pFound = guidString.find_last_of('{');
+    if (pFound != std::wstring::npos)
+    {
+        guidString = guidString.substr(pFound);
+    }
+
+    DeviceInfo deviceInfo;
+    CLSIDFromString(guidString.c_str(), &deviceInfo.targetGuid);
+
+    HRESULT hrcom = CoInitialize(nullptr); // Initialize COM to prevent name truncation
+    HRESULT hr = DirectSoundEnumerateW(FindAudioDeviceName, &deviceInfo);
+    CoUninitialize();
+
+    if (FAILED(hr))
+    {
+        return "";
+    }
+
+    return deviceInfo.resultDeviceName;
+
+#else
+
+    return "";
+
+#endif
 }
 
 bool HmdDeviceOculusSdk::HasDisplay()

@@ -18,6 +18,7 @@ public:
     virtual void Shutdown() = 0;
 
     virtual std::string GetInfo() = 0;
+    virtual std::string GetAudioDeviceName() = 0;
 
     virtual bool HasDisplay() = 0;
     virtual bool HandlesControllerInput() = 0;

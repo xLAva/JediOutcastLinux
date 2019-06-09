@@ -13,6 +13,11 @@
 #include "cl_mp3.h"
 #include "snd_music.h"
 
+#ifdef USE_VR
+#include "../hmd/ClientHmd.h"
+#include "../hmd/HmdDevice/IHmdDevice.h"
+#endif
+
 static void S_Play_f(void);
 static void S_SoundList_f(void);
 static void S_Music_f(void);
@@ -422,10 +427,55 @@ void S_Init( void ) {
 
 	if (s_UseOpenAL)
 	{
+		const char* pDevices = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
+		
+		std::vector<std::string> devices;
+		int foundString = strlen(pDevices);
+		while (foundString > 0)
+		{
+			devices.push_back(std::string(pDevices));
+			pDevices += foundString+1; 
+			foundString = strlen(pDevices);
+		}
+
+		std::string audioDevice = "";
+
+#ifdef USE_VR
+		IHmdDevice* pDevice = ClientHmd::Get()->GetDevice();
+		if (pDevice != nullptr)
+		{
+			std::string vrAudioDevice = pDevice->GetAudioDeviceName();
+			if (vrAudioDevice.size() > 0)
+			{
+				audioDevice = vrAudioDevice;
+			}
+		}
+#endif
+
+		if (audioDevice.length() > 0)
+		{
+			// the device names might not math 100% - let's see if we can find it as substring
+			for (const auto& device : devices)
+			{
+				auto found = device.find(audioDevice);
+				if (found != std::string::npos)
+				{
+					ALCDevice = alcOpenDevice(device.c_str()); 
+					break;
+				}
+			}
+		}
+
 		#ifdef __linux__
-		ALCDevice = alcOpenDevice(NULL); //LAvaPort
+		if (ALCDevice == NULL)
+		{
+			ALCDevice = alcOpenDevice(NULL); //LAvaPort
+		}
 		#else
-		ALCDevice = alcOpenDevice("DirectSound3D"); 
+		if (ALCDevice == NULL)
+		{
+			ALCDevice = alcOpenDevice("DirectSound3D"); 
+		}
 		#endif
 		if (!ALCDevice)
 			return;

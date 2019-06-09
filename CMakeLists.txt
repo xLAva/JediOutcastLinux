@@ -575,6 +575,7 @@ if(PLATFORM_WIN32)
 	set (EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_CURRENT_SOURCE_DIR}/code/OpenAL32.lib)
 	set (EXTRA_LIBS ${EXTRA_LIBS} winmm.lib)
 	set (EXTRA_LIBS ${EXTRA_LIBS} wsock32.lib)
+	set (EXTRA_LIBS ${EXTRA_LIBS} dsound.lib)
 endif()
 
 if(PLATFORM_LINUX)

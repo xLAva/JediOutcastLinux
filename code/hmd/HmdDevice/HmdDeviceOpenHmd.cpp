@@ -135,6 +135,11 @@ string HmdDeviceOpenHmd::GetInfo()
     return mInfo;
 }
 
+string HmdDeviceOpenHmd::GetAudioDeviceName()
+{
+    return "";
+}
+
 bool HmdDeviceOpenHmd::HasDisplay()
 {
     if (!mIsInitialized)

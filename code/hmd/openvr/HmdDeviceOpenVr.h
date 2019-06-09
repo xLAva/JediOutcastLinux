@@ -27,6 +27,7 @@ public:
     virtual void Shutdown();
 
     virtual std::string GetInfo();
+    virtual std::string GetAudioDeviceName();
 
     virtual bool HasDisplay();
     virtual bool HandlesControllerInput() { return true; }

@@ -160,6 +160,11 @@ std::string HmdDeviceOculusSdk::GetInfo()
     return mInfo;
 }
 
+std::string HmdDeviceOculusSdk::GetAudioDeviceName()
+{
+    return "";
+}
+
 bool HmdDeviceOculusSdk::HasDisplay()
 {
     if (!mIsInitialized || mDesc.Resolution.w <= 0)

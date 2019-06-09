@@ -37,6 +37,12 @@ string HmdDeviceMouse::GetInfo()
     return "HmdDeviceMouse: (Simulated Device using mouse inputs)";
 }
 
+string HmdDeviceMouse::GetAudioDeviceName()
+{
+    return "";
+}
+
+
 bool HmdDeviceMouse::HasDisplay()
 {
     return false;

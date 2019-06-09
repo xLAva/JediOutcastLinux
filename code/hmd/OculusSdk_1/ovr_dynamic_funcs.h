@@ -50,3 +50,7 @@ OVRFUNC(true,  ovrResult,        ovr_GetTextureSwapChainCurrentIndex,(ovrSession
 OVRFUNC(true,  ovrResult,        ovr_GetTextureSwapChainDesc,    (ovrSession session, ovrTextureSwapChain chain, ovrTextureSwapChainDesc* out_Desc))
 OVRFUNC(true,  ovrResult,        ovr_CommitTextureSwapChain,     (ovrSession session, ovrTextureSwapChain chain))
 
+#ifdef _WIN32
+OVRFUNC(true,  ovrResult,        ovr_GetAudioDeviceOutGuidStr,   (wchar_t deviceOutStrBuffer[OVR_AUDIO_MAX_DEVICE_STR_SIZE]))
+#endif
+
