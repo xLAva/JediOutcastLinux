@@ -9,4 +9,4 @@
 [submodule "3rdparty/OculusSDK_1"]
 	path = 3rdparty/OculusSDK_1
 	url = https://github.com/xLAva/OculusSDK.git
-	branch = 1.3
+	branch = 1.37
