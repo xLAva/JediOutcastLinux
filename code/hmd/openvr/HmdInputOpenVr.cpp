@@ -17,6 +17,7 @@ using namespace OpenVr;
 
 HmdInputOpenVr::HmdInputOpenVr(HmdDeviceOpenVr* pHmdDeviceOpenVr)
     :mpDevice(pHmdDeviceOpenVr)
+	,mIsInitialized(false)
 {
     mButtonIds.push_back(k_EButton_System);
     mButtonIds.push_back(k_EButton_ApplicationMenu);
@@ -50,6 +51,8 @@ void HmdInputOpenVr::Update()
     mpDevice->GetControllerState(true, mControllerStates[1]);
 
     HmdInputBase::Update();
+
+	mIsInitialized = true;
 }
 
 size_t HmdInputOpenVr::GetButtonCount()
@@ -59,13 +62,18 @@ size_t HmdInputOpenVr::GetButtonCount()
 
 bool HmdInputOpenVr::IsButtonPressed(size_t buttonId)
 {
+	if (!mIsInitialized)
+	{
+		return false;
+	}
+
     size_t buttonCount = GetButtonCount();
     if (buttonId >= buttonCount)
     {
         return false;
     }
 
-    bool right = (buttonId > mButtonIds.size());
+    bool right = (buttonId >= mButtonIds.size());
     if (right)
     {
         buttonId -= mButtonIds.size();

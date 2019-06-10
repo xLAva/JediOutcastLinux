@@ -46,6 +46,7 @@ private:
     HmdDeviceOpenVr* mpDevice;
     VRControllerState_t mControllerStates[2];
     std::vector<EVRButtonId> mButtonIds;
+	bool mIsInitialized;
 
 };
 }
