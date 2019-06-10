@@ -61,14 +61,6 @@ bool HmdRendererOpenVr::Init(int windowWidth, int windowHeight, PlatformInfo pla
     mGuiScale = 0.475f;
     mGuiOffsetFactorX = 50.0f;
 
-    if (!VRCompositor())
-    {
-        printf("Compositor initialization failed.\n");
-        return false;
-    }
-
-    VRCompositor()->SetTrackingSpace(TrackingUniverseStanding);
-
     mpHmd->GetRecommendedRenderTargetSize(&mRenderWidth, &mRenderHeight);
     
     printf("HmdRendererOpenVr: target texture size (%dx%d)\n", mRenderWidth, mRenderHeight);

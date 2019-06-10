@@ -82,6 +82,14 @@ bool HmdDeviceOpenVr::Init(bool allowDummyDevice)
         printf("Create device ...\n");
     }
 
+	if (!VRCompositor())
+	{
+		printf("Compositor initialization failed.\n");
+		return false;
+	}
+
+	VRCompositor()->SetTrackingSpace(TrackingUniverseStanding);
+
     mPositionTrackingEnabled = true; // OpenVR doesn't seem to have a way to check this?
 
     mInfo = "HmdDeviceOpenVr:";
