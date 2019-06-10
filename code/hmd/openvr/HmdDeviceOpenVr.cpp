@@ -10,6 +10,7 @@
 #include <cmath>
 #include <algorithm>
 
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <openvr.h>
 
@@ -26,12 +27,13 @@ HmdDeviceOpenVr::HmdDeviceOpenVr()
     :mIsInitialized(false)
     ,mUsingDebugHmd(false)
     ,mPositionTrackingEnabled(false)
+	,mUseSeatedPosition(true)
     ,mIsRotated(false)
     ,mpHmd(nullptr)
     ,mTrackerIdHandLeft(k_unTrackedDeviceIndexInvalid)
     ,mTrackerIdHandRight(k_unTrackedDeviceIndexInvalid)
     ,mTrackableDeviceCount(0)
-    ,mHeightAdjust(1.5f)
+    ,mHeightAdjust(0.0f)
 {
 
 }
@@ -55,16 +57,6 @@ bool HmdDeviceOpenVr::Init(bool allowDummyDevice)
         printf("openvr init ...\n");
     }
 
-#if defined(OVR_OS_WIN32)
-    //OVR::Thread::SetCurrentPriority(OVR::Thread::HighestPriority);
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
-
-    //if(OVR::Thread::GetCPUCount() >= 4) // Don't do this unless there are at least 4 processors, otherwise the process could hog the machine.
-    if (GetCpuCount() >= 4)
-    {
-        SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-    }
-#endif
     
     EVRInitError eError = VRInitError_None;
     mpHmd = VR_Init(&eError, VRApplication_Scene);
@@ -77,20 +69,29 @@ bool HmdDeviceOpenVr::Init(bool allowDummyDevice)
         return false;
     }
     
-    if (debugPrint)
-    {
-        printf("Create device ...\n");
-    }
-
 	if (!VRCompositor())
 	{
 		printf("Compositor initialization failed.\n");
 		return false;
 	}
 
-	VRCompositor()->SetTrackingSpace(TrackingUniverseStanding);
+    if (debugPrint)
+    {
+        printf("Create device ...\n");
+    }
 
-    mPositionTrackingEnabled = true; // OpenVR doesn't seem to have a way to check this?
+	if (mUseSeatedPosition)
+	{
+		VRCompositor()->SetTrackingSpace(TrackingUniverseSeated);
+		mHeightAdjust = 0;
+	}
+	else
+	{
+		VRCompositor()->SetTrackingSpace(TrackingUniverseStanding);
+		mHeightAdjust = 1.5f;
+	}
+		
+	mPositionTrackingEnabled = true; // OpenVR doesn't seem to have a way to check this?
 
     mInfo = "HmdDeviceOpenVr:";
 
@@ -123,6 +124,7 @@ void HmdDeviceOpenVr::Shutdown()
     }
 
     mInfo = "";
+
 
     VR_Shutdown();
     mpHmd = nullptr;
@@ -215,9 +217,9 @@ bool HmdDeviceOpenVr::GetPosition(float &rX, float &rY, float &rZ)
 
     if (mrTrackedDevicePose[k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
     {
-        HmdMatrix34_t mat = mrTrackedDevicePose[k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking;
+        HmdMatrix34_t mat = GetPoseWithOffset(mrTrackedDevicePose[k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
         rX = mat.m[0][3];
-        rY = mat.m[1][3] - mHeightAdjust;
+        rY = mat.m[1][3];
         rZ = mat.m[2][3];
         return true;
     }
@@ -230,7 +232,7 @@ bool HmdDeviceOpenVr::GetHMDMatrix4(glm::mat4& mat)
     if (!mrTrackedDevicePose[k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
         return false;
 
-    HmdMatrix34_t matPose = mrTrackedDevicePose[k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking;
+    HmdMatrix34_t matPose = GetPoseWithOffset(mrTrackedDevicePose[k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
     mat = glm::mat4(matPose.m[0][0], matPose.m[1][0], matPose.m[2][0], 0.0,
                     matPose.m[0][1], matPose.m[1][1], matPose.m[2][1], 0.0,
                     matPose.m[0][2], matPose.m[1][2], matPose.m[2][2], 0.0,
@@ -306,9 +308,9 @@ bool HmdDeviceOpenVr::GetHandPosition(bool rightHand, float &rX, float &rY, floa
     uint32_t id = rightHand ? mTrackerIdHandRight : mTrackerIdHandLeft;
     if (mrTrackedDevicePose[id].bPoseIsValid)
     {
-        HmdMatrix34_t mat = mrTrackedDevicePose[id].mDeviceToAbsoluteTracking;
+        HmdMatrix34_t mat = GetPoseWithOffset(mrTrackedDevicePose[id].mDeviceToAbsoluteTracking);
         rX = mat.m[0][3];
-        rY = mat.m[1][3] - mHeightAdjust;
+        rY = mat.m[1][3];
         rZ = mat.m[2][3];
         return true;
     }
@@ -336,7 +338,7 @@ bool HmdDeviceOpenVr::GetHandMatrix4(bool rightHand, glm::mat4& mat)
     if (!HasHand(rightHand) || !mrTrackedDevicePose[id].bPoseIsValid)
         return false;
 
-    HmdMatrix34_t matPose = mrTrackedDevicePose[id].mDeviceToAbsoluteTracking;
+    HmdMatrix34_t matPose = GetPoseWithOffset(mrTrackedDevicePose[id].mDeviceToAbsoluteTracking);
     mat = glm::mat4(matPose.m[0][0], matPose.m[1][0], matPose.m[2][0], 0.0,
         matPose.m[0][1], matPose.m[1][1], matPose.m[2][1], 0.0,
         matPose.m[0][2], matPose.m[1][2], matPose.m[2][2], 0.0,
@@ -351,14 +353,24 @@ void HmdDeviceOpenVr::GetControllerState(bool rightHand, VRControllerState_t& st
 
 void HmdDeviceOpenVr::Recenter()
 {
-    if (mpHmd == nullptr) return;
+	if (mpHmd == nullptr)
+	{
+		return;
+	}
 
-    float x, y, z;
-    GetPosition(x, y, z);
-    //mHeightAdjust = -y;
-    Com_Printf("Height adjusted to %f\n", y);
+	if (mUseSeatedPosition)
+	{
+		mpHmd->ResetSeatedZeroPose();
+	}
+}
 
-    //mpHmd->ResetSeatedZeroPose();
+
+HmdMatrix34_t OpenVr::HmdDeviceOpenVr::GetPoseWithOffset(const HmdMatrix34_t & pose)
+{
+	HmdMatrix34_t poseWithOffset = pose;
+	poseWithOffset.m[1][3] -= mHeightAdjust;
+
+	return poseWithOffset;
 }
 
 void HmdDeviceOpenVr::ConvertQuatToEuler(const float* quat, float& rYaw, float& rPitch, float& rRoll)
@@ -432,24 +444,7 @@ void HmdDeviceOpenVr::UpdatePoses()
 
     mTrackerIdHandLeft = mpHmd->GetTrackedDeviceIndexForControllerRole(TrackedControllerRole_LeftHand);
     mTrackerIdHandRight = mpHmd->GetTrackedDeviceIndexForControllerRole(TrackedControllerRole_RightHand);
+
 }
-
-int HmdDeviceOpenVr::GetCpuCount()
-{
-#if defined(OVR_OS_WIN32)
-        SYSTEM_INFO sysInfo;
-
-        #if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501)
-            GetNativeSystemInfo(&sysInfo);
-        #else
-            GetSystemInfo(&sysInfo);
-        #endif
-
-        return (int) sysInfo.dwNumberOfProcessors;
-#else
-    return 1;
-#endif
-}
-
 
 

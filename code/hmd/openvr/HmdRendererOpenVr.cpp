@@ -100,10 +100,17 @@ bool HmdRendererOpenVr::Init(int windowWidth, int windowHeight, PlatformInfo pla
 	menuTransform.m[1][1] = 1;
 	menuTransform.m[2][2] = 1;
 
-	menuTransform.m[1][3] = 1.0f;  // y
 	menuTransform.m[2][3] = -3.0f; // z
 
-	VROverlay()->SetOverlayTransformAbsolute(mLayerMenu, TrackingUniverseStanding, &menuTransform);
+	if (mpDevice->IsSeatedPositionInUse())
+	{
+		VROverlay()->SetOverlayTransformAbsolute(mLayerMenu, TrackingUniverseSeated, &menuTransform);
+	}
+	else
+	{
+		menuTransform.m[1][3] = 1.5f;  // y
+		VROverlay()->SetOverlayTransformAbsolute(mLayerMenu, TrackingUniverseStanding, &menuTransform);
+	}
 
 
     mpHmd->GetRecommendedRenderTargetSize(&mRenderWidth, &mRenderHeight);
@@ -243,7 +250,6 @@ void HmdRendererOpenVr::BeginRenderingForEye(bool leftEye)
             qglBindFramebuffer(GL_FRAMEBUFFER, mFboMenuInfo.Fbo);
         }
 	}
-
 }
 
 void HmdRendererOpenVr::EndFrame()
@@ -265,16 +271,6 @@ void HmdRendererOpenVr::EndFrame()
         qglDisable(GL_STENCIL_TEST);
         qglBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		if (mCurrentHmdMode != GAMEWORLD)
-		{
-			Texture_t menuTexture;
-			menuTexture.handle = (void*)(uintptr_t)mFboMenuInfo.ColorBuffer;
-			menuTexture.eType = TextureType_OpenGL;
-			menuTexture.eColorSpace = ColorSpace_Gamma;
-
-			EVROverlayError err = VROverlay()->SetOverlayTexture(mLayerMenu, &menuTexture);
-		}
-
         Texture_t leftTex, rightTex;
         leftTex.handle = (void*)(uintptr_t)mFboInfos[0].ColorBuffer;
         leftTex.eType = TextureType_OpenGL;
@@ -287,6 +283,16 @@ void HmdRendererOpenVr::EndFrame()
         VRCompositor()->Submit(Eye_Left, &leftTex);
         VRCompositor()->Submit(Eye_Right, &rightTex);
         VRCompositor()->PostPresentHandoff();
+
+		if (mCurrentHmdMode != GAMEWORLD)
+		{
+			Texture_t menuTexture;
+			menuTexture.handle = (void*)(uintptr_t)mFboMenuInfo.ColorBuffer;
+			menuTexture.eType = TextureType_OpenGL;
+			menuTexture.eColorSpace = ColorSpace_Gamma;
+
+			EVROverlayError err = VROverlay()->SetOverlayTexture(mLayerMenu, &menuTexture);
+		}
 
         qglBindBuffer(GL_ARRAY_BUFFER, 0);
         qglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

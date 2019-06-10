@@ -51,6 +51,7 @@ public:
 
     IVRSystem* GetHmd() { return mpHmd; }
     bool IsDebugHmd() { return mUsingDebugHmd; }
+	bool IsSeatedPositionInUse() { return mUseSeatedPosition; }
 
 
 private:
@@ -58,12 +59,14 @@ private:
     HmdDeviceOpenVr(const HmdDeviceOpenVr&);
     HmdDeviceOpenVr& operator=(const HmdDeviceOpenVr&);
 
+	HmdMatrix34_t GetPoseWithOffset(const HmdMatrix34_t& pose);
     void ConvertQuatToEuler(const float* quat, float& rYaw, float& rPitch, float& rRoll);
-    int GetCpuCount();
+
     
     bool mIsInitialized;
     bool mUsingDebugHmd;
     bool mPositionTrackingEnabled;
+	bool mUseSeatedPosition;
     bool mIsRotated;
 
     IVRSystem* mpHmd;
@@ -75,6 +78,7 @@ private:
     std::string mInfo;
 
     float mHeightAdjust;
+
 };
 }
 #endif
