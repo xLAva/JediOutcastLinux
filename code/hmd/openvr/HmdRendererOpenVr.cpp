@@ -32,6 +32,7 @@ HmdRendererOpenVr::HmdRendererOpenVr(HmdDeviceOpenVr* pHmdDeviceOpenVr)
     ,mUseMirrorTexture(true)
     ,mpDevice(pHmdDeviceOpenVr)
     ,mpHmd(nullptr)
+	,mLayerMenu(k_ulOverlayHandleInvalid)
     ,mMenuStencilDepthBuffer(0)
     ,mCurrentHmdMode(GAMEWORLD)
 {
@@ -56,10 +57,54 @@ bool HmdRendererOpenVr::Init(int windowWidth, int windowHeight, PlatformInfo pla
     mWindowHeight = windowHeight;
 
     mpHmd = mpDevice->GetHmd();
-    
-    //TODO: Adjust to headset
-    mGuiScale = 0.475f;
-    mGuiOffsetFactorX = 50.0f;
+
+	char buffer[256];
+
+	VRSystem()->GetStringTrackedDeviceProperty(k_unTrackedDeviceIndex_Hmd, Prop_TrackingSystemName_String, buffer, 256);
+	std::string trackingSystemName(buffer);
+
+	VRSystem()->GetStringTrackedDeviceProperty(k_unTrackedDeviceIndex_Hmd, Prop_ModelNumber_String, buffer, 256);
+	std::string modelNumber(buffer);
+
+	if (trackingSystemName == "oculus")
+	{
+		// set some fallback values
+		mGuiScale = 0.475f;
+		mGuiOffsetFactorX = 0.07;
+
+		if (modelNumber == "Oculus Rift CV1")
+		{
+			mGuiOffsetFactorX = 0.07;
+		}
+	}
+	else
+	{
+		// vive
+		mGuiScale = 0.475f;
+		mGuiOffsetFactorX = 0.02; // this value is estimated - tweak if needed
+	}
+
+
+	// create a layer for the menus
+	EVROverlayError err = VROverlay()->CreateOverlay("41627e8d-71cd-4c88-8898-2a55e666fac1", "LayerMenu", &mLayerMenu);
+	err = VROverlay()->SetHighQualityOverlay(mLayerMenu);
+	err = VROverlay()->SetOverlayWidthInMeters(mLayerMenu, 2.5f);
+	err = VROverlay()->SetOverlayTexelAspect(mLayerMenu, 1.34f);
+
+
+	HmdMatrix34_t menuTransform;
+	memset(menuTransform.m, 0, sizeof(float) * 12);
+	
+	// no rotation
+	menuTransform.m[0][0] = 1;
+	menuTransform.m[1][1] = 1;
+	menuTransform.m[2][2] = 1;
+
+	menuTransform.m[1][3] = 1.0f;  // y
+	menuTransform.m[2][3] = -3.0f; // z
+
+	VROverlay()->SetOverlayTransformAbsolute(mLayerMenu, TrackingUniverseStanding, &menuTransform);
+
 
     mpHmd->GetRecommendedRenderTargetSize(&mRenderWidth, &mRenderHeight);
     
@@ -102,6 +147,12 @@ void HmdRendererOpenVr::Shutdown()
     }
 
     qglDeleteFramebuffers(1, &mFboMenuInfo.Fbo);
+
+
+	if (mLayerMenu != k_ulOverlayHandleInvalid)
+	{
+		VROverlay()->DestroyOverlay(mLayerMenu);
+	}
 
     mpHmd = nullptr;
 
@@ -177,12 +228,11 @@ void HmdRendererOpenVr::BeginRenderingForEye(bool leftEye)
     // bind framebuffer
     // this part can be called multiple times before the end of the frame
 
-    //TODO: Fix this back up?
-    //if (mCurrentHmdMode == GAMEWORLD)
+    if (mCurrentHmdMode == GAMEWORLD)
     {
         qglBindFramebuffer(GL_FRAMEBUFFER, mFboInfos[mEyeId].Fbo);
     }
-    /*else
+    else
     {
         if (leftEye)
         {
@@ -192,7 +242,8 @@ void HmdRendererOpenVr::BeginRenderingForEye(bool leftEye)
         {
             qglBindFramebuffer(GL_FRAMEBUFFER, mFboMenuInfo.Fbo);
         }
-    }*/
+	}
+
 }
 
 void HmdRendererOpenVr::EndFrame()
@@ -213,6 +264,16 @@ void HmdRendererOpenVr::EndFrame()
         qglDisable(GL_SCISSOR_TEST);
         qglDisable(GL_STENCIL_TEST);
         qglBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		if (mCurrentHmdMode != GAMEWORLD)
+		{
+			Texture_t menuTexture;
+			menuTexture.handle = (void*)(uintptr_t)mFboMenuInfo.ColorBuffer;
+			menuTexture.eType = TextureType_OpenGL;
+			menuTexture.eColorSpace = ColorSpace_Gamma;
+
+			EVROverlayError err = VROverlay()->SetOverlayTexture(mLayerMenu, &menuTexture);
+		}
 
         Texture_t leftTex, rightTex;
         leftTex.handle = (void*)(uintptr_t)mFboInfos[0].ColorBuffer;
@@ -257,7 +318,14 @@ void HmdRendererOpenVr::EndFrame()
 
         // keep for debugging
         //TODO: Better mirroring
+		if (mCurrentHmdMode != GAMEWORLD)
+		{
+			RenderTool::DrawFbos(&mFboMenuInfo, 1, mWindowWidth, mWindowHeight);
+		}
+		else
+		{
         RenderTool::DrawFbos(&mFboInfos[0], FBO_COUNT, mWindowWidth, mWindowHeight);
+    }
     }
     
     mEyeId = -1;
@@ -277,9 +345,25 @@ bool HmdRendererOpenVr::GetCustomProjectionMatrix(float* rProjectionMatrix, floa
     lastZNear = zNear;
     lastZFar = zFar;
 
+
+	bool allowCustomFov = mCurrentHmdMode == MENU_QUAD_WORLDPOS || mCurrentHmdMode == MENU_QUAD || mCurrentHmdMode == GAMEWORLD_QUAD_WORLDPOS;
+	if (allowCustomFov)
+	{
+		return false;
+	}
+
+	// ugly hardcoded default value
+	if (mAllowZooming && fov < 124)
+	{
+		// something needs zooming - todo
+		//return false;
+	}
+
+
     // FOV is forced by OpenVR, and we override zNear to 4 inches from the face
     HmdMatrix44_t projMatrix = mpHmd->GetProjectionMatrix(mEyeId ? Eye_Right : Eye_Left, 4.0f, zFar);
     ConvertMatrix(projMatrix, rProjectionMatrix);
+
 
     if (mEyeId)
     {
@@ -388,25 +472,25 @@ bool HmdRendererOpenVr::GetCustomViewMatrix(float* rViewMatrix, float& xPos, flo
 
 bool HmdRendererOpenVr::Get2DViewport(int& rX, int& rY, int& rW, int& rH)
 {
-    //TODO
-    /*if (mCurrentHmdMode == MENU_QUAD_WORLDPOS || mCurrentHmdMode == GAMEWORLD_QUAD_WORLDPOS || mCurrentHmdMode == MENU_QUAD)
+    if (mCurrentHmdMode == MENU_QUAD_WORLDPOS || mCurrentHmdMode == GAMEWORLD_QUAD_WORLDPOS || mCurrentHmdMode == MENU_QUAD)
     {
-        return true;
-    }*/
+		return false;
+    }
+
 
     // shrink the gui for the HMD display
-    float aspect = 1.0f;
-
+	float aspect = 0.75f;
     float guiScale = mGuiScale;
 
     rW = mRenderWidth *guiScale;
     rH = mRenderWidth *guiScale * aspect;
 
-    rX = (mRenderWidth - rW)/2.0f;
-    int xOff = mGuiOffsetFactorX != 0 ? (mRenderWidth / mGuiOffsetFactorX) : 0;
+	int xOff = mGuiOffsetFactorX != 0 ? (mGuiOffsetFactorX * mRenderWidth) : 0;
     xOff *= mEyeId == 0 ? 1 : -1;
-    rX += xOff;
+	rX = xOff;
 
+    
+	rX += (mRenderWidth - rW) / 2.0f;
     rY = (mRenderHeight - rH) / 2;
 
     return true;
@@ -429,6 +513,15 @@ bool HmdRendererOpenVr::Get2DOrtho(double &rLeft, double &rRight, double &rBotto
 void HmdRendererOpenVr::SetCurrentHmdMode(HmdMode mode)
 {
     mCurrentHmdMode = mode;
+
+	if (mCurrentHmdMode == GAMEWORLD)
+	{
+		EVROverlayError err = VROverlay()->HideOverlay(mLayerMenu);
+}
+	else
+	{
+		EVROverlayError err = VROverlay()->ShowOverlay(mLayerMenu);
+	}
 }
 
 

@@ -88,6 +88,7 @@ private:
 
     HmdDeviceOpenVr* mpDevice;
     IVRSystem* mpHmd;
+	VROverlayHandle_t mLayerMenu;
 
     GLuint mEyeStencilBuffer[2]; 
     GLuint mMenuStencilDepthBuffer;
